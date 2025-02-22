@@ -1,6 +1,4 @@
-#!@PYTHON@
-
-# scriptorium.in
+# editor.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -19,28 +17,13 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import os
-import sys
-import signal
-import locale
-import gettext
+from gi.repository import Gtk
+from gi.repository import Adw
 
-VERSION = '@VERSION@'
-pkgdatadir = '@pkgdatadir@'
-localedir = '@localedir@'
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor.ui")
+class Editor(Adw.NavigationPage):
+    __gtype_name__ = "Editor"
 
-sys.path.insert(1, pkgdatadir)
-signal.signal(signal.SIGINT, signal.SIG_DFL)
-locale.bindtextdomain('scriptorium', localedir)
-locale.textdomain('scriptorium')
-gettext.install('scriptorium', localedir)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-if __name__ == '__main__':
-    import gi
-
-    from gi.repository import Gio
-    resource = Gio.Resource.load(os.path.join(pkgdatadir, 'scriptorium.gresource'))
-    resource._register()
-
-    from scriptorium import main
-    sys.exit(main.main(VERSION))

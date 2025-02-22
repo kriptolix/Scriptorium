@@ -12,12 +12,12 @@
       </object>
     </child>
     <property name="content">
-      <object class="AdwNavigationView">
+      <object id="navigation" class="AdwNavigationView">
         <child>
           <object class="Library"/>
         </child>
         <child>
-          <object class="PageSecond"/>
+          <object class="Editor"/>
         </child>
       </object>
     </property>

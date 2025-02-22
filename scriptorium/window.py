@@ -1,6 +1,6 @@
 # window.py
 #
-# Copyright 2025 Unknown
+# Copyright 2025 Christophe Gueret
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,10 +16,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+import gi
+gi.require_version('Gtk', '4.0')
+gi.require_version('Adw', '1')
 
 from gi.repository import Adw
 from gi.repository import Gtk
 from gi.repository import Gdk
+
+import scriptorium.editor
 
 # Default status: show the gallery of books, a plus button on top left
 # and the title "Scriptorium"
@@ -45,21 +50,9 @@ class Library(Adw.NavigationPage):
             self.flowbox.append(manuscript)
 
     def on_manuscript_activated(self, _flowbox, manuscript):
-        self.get_parent().push_by_tag('page-2')
+        self.get_parent().push_by_tag('editor')
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/page2.ui")
-class PageSecond(Adw.NavigationPage):
-    __gtype_name__ = "PageSecond"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/page2_tab1.ui")
-class PageSecondFirstTab(Adw.Bin):
-    __gtype_name__ = "PageSecondFirstTab"
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/manuscript.ui")
 class Manuscript(Gtk.FlowBoxChild):
@@ -76,6 +69,9 @@ class Manuscript(Gtk.FlowBoxChild):
 class ScriptoriumWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'ScriptoriumWindow'
 
+    navigation = Gtk.Template.Child()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.navigation.push_by_tag('editor')

@@ -4,6 +4,7 @@
   <requires lib="Adw" version="1.0"/>
   <template class="Library" parent="AdwNavigationPage">
       <property name="title" translatable="yes">Manuscripts</property>
+      <property name="tag">library</property>
       <property name="child">
         <object class="AdwToolbarView">
           <child type="top">

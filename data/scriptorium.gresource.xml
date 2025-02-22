@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/cgueret/Scriptorium">
+    <!-- Main application UI -->
     <file preprocess="xml-stripblanks">ui/window.ui</file>
+
+    <!-- Library mode -->
     <file preprocess="xml-stripblanks">ui/library.ui</file>
-    <file preprocess="xml-stripblanks">ui/page2.ui</file>
-    <file preprocess="xml-stripblanks">ui/page2_tab1.ui</file>
     <file preprocess="xml-stripblanks">ui/manuscript.ui</file>
-    <file>cover.png</file>
+
+    <!-- Editor mode -->
+    <file preprocess="xml-stripblanks">ui/editor.ui</file>
+    <file preprocess="xml-stripblanks">ui/writing.ui</file>
+
+    <!-- Gtk help overlay -->
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
+
+    <!-- Images and icons -->
+    <file>cover.png</file>
     <file preprocess="xml-stripblanks">icons/library-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/plus-large-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/edit-symbolic.svg</file>
   </gresource>
 </gresources>
