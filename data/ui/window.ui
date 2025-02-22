@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <template class="ScriptoriumWindow" parent="AdwApplicationWindow">
+    <property name="default-height">600</property>
+    <property name="default-width">800</property>
+    <property name="title" translatable="yes">Scriptorium</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 550sp</condition>
+      </object>
+    </child>
+    <property name="content">
+      <object class="AdwNavigationView">
+        <child>
+          <object class="Library"/>
+        </child>
+        <child>
+          <object class="PageSecond"/>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>
+
