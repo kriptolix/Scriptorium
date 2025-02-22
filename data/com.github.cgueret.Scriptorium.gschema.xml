@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="scriptorium">
+	<schema id="com.github.cgueret.Scriptorium" path="/com/github/cgueret/Scriptorium/">
+	</schema>
+</schemalist>

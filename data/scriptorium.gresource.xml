@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/cgueret/Scriptorium">
+    <file preprocess="xml-stripblanks">ui/window.ui</file>
+    <file preprocess="xml-stripblanks">ui/library.ui</file>
+    <file preprocess="xml-stripblanks">ui/page2.ui</file>
+    <file preprocess="xml-stripblanks">ui/page2_tab1.ui</file>
+    <file preprocess="xml-stripblanks">ui/manuscript.ui</file>
+    <file>cover.png</file>
+    <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
+    <file preprocess="xml-stripblanks">icons/library-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/plus-large-symbolic.svg</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<cambalache-project version="0.94.0" target_tk="gtk-4.0">
+  <ui>
+	(2,1,None,"manuscript.ui",None,None,None,None,None,None,None)
+  </ui>
+  <object>
+	(2,1,"GtkFlowBoxChild","Manuscript",None,None,None,None,0,None,None),
+	(2,2,"GtkBox",None,1,None,None,None,0,None,None),
+	(2,3,"GtkLabel",None,2,None,None,None,0,None,None)
+  </object>
+  <object_property>
+	(2,1,"GtkFlowBoxChild","child",None,None,None,None,None,2,None,None,None,None),
+	(2,2,"GtkBox","baseline-position","top",None,None,None,None,None,None,None,None,None),
+	(2,2,"GtkWidget","valign","start",None,None,None,None,None,None,None,None,None),
+	(2,3,"GtkLabel","ellipsize","end",None,None,None,None,None,None,None,None,None),
+	(2,3,"GtkLabel","label","Testing",None,None,None,None,None,None,None,None,None)
+  </object_property>
+</cambalache-project>
