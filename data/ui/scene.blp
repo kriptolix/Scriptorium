@@ -1,0 +1,25 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SceneCard: Adw.Bin {
+  title: _("SceneCard");
+
+  child: Gtk.Box {
+    orientation: vertical;
+
+    Label {
+      label: "Name of scene";
+    }
+
+    Separator sep {}
+
+    Label {
+      label: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam id molestie ex, et scelerisque ligula. Praesent euismod egestas arcu quis mattis. Ut dignissim mauris vitae pellentesque pulvinar.";
+      hexpand: true;
+      xalign: 0;
+      wrap: true;
+      ellipsize: end;
+      lines: 3;
+    }
+  }
+}

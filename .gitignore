@@ -1,2 +1,4 @@
 /.flatpak-builder
+/builddir
 token.txt
+/subprojects/blueprint-compiler

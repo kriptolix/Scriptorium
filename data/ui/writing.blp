@@ -1,0 +1,103 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Writing: Adw.Bin {
+  child: Adw.OverlaySplitView split_view {
+
+    sidebar: ScrolledWindow {
+      margin-top: 6;
+      margin-bottom: 6;
+      margin-start: 6;
+      margin-end: 6;
+      height-request: 330;
+      has-frame: true;
+
+      child: ListView list_view {
+        factory: SignalListItemFactory item_factory {};
+        header-factory: SignalListItemFactory header_factory {};
+      };
+    };
+
+    content: Box {
+      orientation: vertical;
+      margin-top: 6;
+      margin-bottom: 6;
+      margin-start: 6;
+      margin-end: 6;
+
+      CenterBox bar_breadcrumb {
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-start: 6;
+        margin-end: 6;
+
+        name: "bar_breadcrumb";
+
+        [start]
+        Box {
+          Label {
+            label: _("Section");
+          }
+
+          Label label_section {
+            label: " section";
+          }
+
+          Separator {
+            styles ["spacer"]
+          }
+
+          Label {
+            label: _("Scene");
+          }
+
+          Label label_scene {
+            label: " scene";
+          }
+        }
+      }
+
+      ScrolledWindow {
+        TextView text_view {
+          styles [
+            "card",
+          ]
+
+          margin-top: 6;
+          margin-bottom: 6;
+          margin-start: 6;
+          margin-end: 6;
+          vexpand: true;
+
+          buffer: Gtk.TextBuffer {
+            enable-undo: true;
+          };
+
+          wrap-mode: word;
+
+          input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
+        }
+      }
+
+      CenterBox bar_status {
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-start: 6;
+        margin-end: 6;
+
+        name: "bar_status";
+
+        [end]
+        Box {
+          Label {
+            label: _("Words");
+          }
+
+          Label label_words {
+            label: " 0";
+          }
+        }
+      }
+    };
+  };
+}

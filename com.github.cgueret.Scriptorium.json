@@ -1,17 +1,17 @@
 {
-    "id" : "com.github.cgueret.Scriptorium",
-    "runtime" : "org.gnome.Platform",
-    "runtime-version" : "master",
-    "sdk" : "org.gnome.Sdk",
-    "command" : "scriptorium",
-    "finish-args" : [
+    "id": "com.github.cgueret.Scriptorium",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "47",
+    "sdk": "org.gnome.Sdk",
+    "command": "scriptorium",
+    "finish-args": [
         "--share=network",
         "--share=ipc",
         "--socket=fallback-x11",
         "--device=dri",
         "--socket=wayland"
     ],
-    "cleanup" : [
+    "cleanup": [
         "/include",
         "/lib/pkgconfig",
         "/man",
@@ -22,15 +22,15 @@
         "*.la",
         "*.a"
     ],
-    "modules" : [
+    "modules": [
         {
-            "name" : "scriptorium",
-            "builddir" : true,
-            "buildsystem" : "meson",
-            "sources" : [
+            "name": "scriptorium",
+            "builddir": true,
+            "buildsystem": "meson",
+            "sources": [
                 {
-                    "type" : "git",
-                    "url" : "file:///home/cgueret/Projects"
+                    "type": "git",
+                    "url": "file:///home/cgueret/Projects"
                 }
             ]
         }

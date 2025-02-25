@@ -1,0 +1,38 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Editor: Adw.NavigationPage {
+  title: _("Editor");
+  tag: "editor";
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar header_bar {
+      title-widget: Adw.ViewSwitcher switcher_title {
+        stack: stack;
+        policy: wide;
+      };
+    }
+
+    content: Box {
+      orientation: vertical;
+
+      Adw.ViewStack stack {
+        vexpand: true;
+
+        Adw.ViewStackPage page1 {
+          name: "writing";
+          title: _("Writing");
+          icon-name: "edit-symbolic";
+          use-underline: true;
+
+          child: $Writing {};
+        }
+      }
+
+      Adw.ViewSwitcherBar switcher_bar {
+        stack: stack;
+      }
+    };
+  };
+}

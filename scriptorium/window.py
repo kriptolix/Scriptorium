@@ -16,9 +16,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-import gi
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
 
 from gi.repository import Adw
 from gi.repository import Gtk
