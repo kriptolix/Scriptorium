@@ -24,7 +24,9 @@ scriptorium_sources = [
   'main.py',
   'window.py',
   'editor.py',
-  'writing.py'
+  'library.py',
+  'writing.py',
+  'model.py'
 ]
 
 install_data(scriptorium_sources, install_dir: moduledir)

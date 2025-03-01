@@ -11,6 +11,7 @@
     <!-- Editor mode -->
     <file preprocess="xml-stripblanks">ui/editor.ui</file>
     <file preprocess="xml-stripblanks">ui/writing.ui</file>
+    <file>ui/style.css</file>
 
     <!-- Gtk help overlay -->
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>

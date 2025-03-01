@@ -1,0 +1,54 @@
+# window.py
+#
+# Copyright 2025 Christophe Gueret
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+from gi.repository import Adw
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import Gio
+from gi.repository import GLib
+
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/manuscript.ui")
+class Manuscript(Gtk.FlowBoxChild):
+    __gtype_name__ = "Manuscript"
+
+    cover = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.cover.set_resource("/com/github/cgueret/Scriptorium/cover.png")
+
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/library.ui")
+class Library(Adw.NavigationPage):
+    __gtype_name__ = "Library"
+
+    flowbox = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.flowbox.connect('child-activated', self.on_manuscript_activated)
+
+        for i in range(10):
+            manuscript = Manuscript()
+            self.flowbox.append(manuscript)
+
+    def on_manuscript_activated(self, _flowbox, manuscript):
+        self.get_parent().push_by_tag('editor')
+

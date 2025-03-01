@@ -20,8 +20,15 @@
 from gi.repository import Adw
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import Gio
+from gi.repository import GLib
 
 import scriptorium.editor
+import scriptorium.library
+from .model import Library
+
+import logging
+logger = logging.getLogger(__name__)
 
 # Default status: show the gallery of books, a plus button on top left
 # and the title "Scriptorium"
@@ -31,36 +38,6 @@ import scriptorium.editor
 # In editor mode the + is replaced by a X to close the book and return select
 # a different one from the gallery
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/library.ui")
-class Library(Adw.NavigationPage):
-    __gtype_name__ = "Library"
-
-    flowbox = Gtk.Template.Child()
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.flowbox.connect('child-activated', self.on_manuscript_activated)
-
-        for i in range(10):
-            manuscript = Manuscript()
-            self.flowbox.append(manuscript)
-
-    def on_manuscript_activated(self, _flowbox, manuscript):
-        self.get_parent().push_by_tag('editor')
-
-
-
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/manuscript.ui")
-class Manuscript(Gtk.FlowBoxChild):
-    __gtype_name__ = "Manuscript"
-
-    cover = Gtk.Template.Child()
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.cover.set_resource("/com/github/cgueret/Scriptorium/cover.png")
 
 @Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/ui/window.ui')
 class ScriptoriumWindow(Adw.ApplicationWindow):
@@ -71,4 +48,14 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        # Load custom CSS
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/ui/style.css"))
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        # Get the data folder
+        data_dir = GLib.get_user_data_dir()
+        self.library = Library(data_dir)
+
+        # Display the editor (for working on it)
         self.navigation.push_by_tag('editor')
