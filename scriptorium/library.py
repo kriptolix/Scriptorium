@@ -35,8 +35,8 @@ class Manuscript(Gtk.FlowBoxChild):
         self.cover.set_resource("/com/github/cgueret/Scriptorium/cover.png")
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/library.ui")
-class Library(Adw.NavigationPage):
-    __gtype_name__ = "Library"
+class LibraryNavigationPage(Adw.NavigationPage):
+    __gtype_name__ = "LibraryNavigationPage"
 
     flowbox = Gtk.Template.Child()
 
@@ -45,10 +45,19 @@ class Library(Adw.NavigationPage):
 
         self.flowbox.connect('child-activated', self.on_manuscript_activated)
 
-        for i in range(10):
+        self.connect('showing', self.on_showing)
+
+
+    def on_showing(self, _window):
+        """Called when the library is displayed"""
+        print(self.get_parent())
+
+        self.flowbox.remove_all()
+        for i in range(5):
             manuscript = Manuscript()
             self.flowbox.append(manuscript)
 
     def on_manuscript_activated(self, _flowbox, manuscript):
+        """Called when a manuscript is selected"""
         self.get_parent().push_by_tag('editor')
 

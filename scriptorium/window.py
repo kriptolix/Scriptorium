@@ -22,6 +22,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
+from gi.repository import GObject
 
 import scriptorium.editor
 import scriptorium.library
@@ -38,12 +39,17 @@ logger = logging.getLogger(__name__)
 # In editor mode the + is replaced by a X to close the book and return select
 # a different one from the gallery
 
+from pathlib import Path
+
 
 @Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/ui/window.ui')
 class ScriptoriumWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'ScriptoriumWindow'
 
     navigation = Gtk.Template.Child()
+
+    # The library
+    library = None #GObject.Property(type=Library, default=None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -54,8 +60,9 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # Get the data folder
-        data_dir = GLib.get_user_data_dir()
-        self.library = Library(data_dir)
+        print(GLib.get_user_data_dir())
+        manuscript_path = Path(GLib.get_user_data_dir()) / Path('dating_at_a_convention')
 
         # Display the editor (for working on it)
+        self.navigation.find_page('editor').set_property('manuscript_path', manuscript_path.resolve())
         self.navigation.push_by_tag('editor')

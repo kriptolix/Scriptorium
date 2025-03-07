@@ -17,22 +17,18 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 from gi.repository import Adw
 
-class CustomModel(Gtk.StringList, Gtk.SectionModel):
+import logging
+logger = logging.getLogger(__name__)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/scene.ui")
+class SceneCard(Gtk.Box):
+    __gtype_name__ = "SceneCard"
 
-        for i in range(1, 21):
-            self.append(f"Item {i}")
-
-    def do_get_section(self, position):
-        print (position)
-        start = position
-        end = start + 5
-        return (start, end)
+    scene_title = GObject.Property(type=str)
+    scene_synopsis = GObject.Property(type=str)
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/writing.ui")
 class Writing(Adw.Bin):
@@ -42,11 +38,15 @@ class Writing(Adw.Bin):
     item_factory = Gtk.Template.Child()
     header_factory = Gtk.Template.Child()
 
+
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        custom_model = CustomModel()
 
+    def connect_to_model(self, model):
+        print ('Reload')
+        self.custom_model = model
 
         self.item_factory.connect("setup", self.on_setup_item)
         self.item_factory.connect("bind", self.on_bind_item)
@@ -54,17 +54,21 @@ class Writing(Adw.Bin):
         self.header_factory.connect("setup", self.on_setup_header)
         self.header_factory.connect("bind", self.on_bind_header)
 
-        selection_model = Gtk.SingleSelection(model=custom_model)
+        selection_model = Gtk.SingleSelection(model=self.custom_model)
         selection_model.connect("selection-changed", self.on_selection_changed)
         self.list_view.set_model(selection_model)
 
     def on_setup_item(self, _, list_item):
-        list_item.set_child(Gtk.Label(margin_start=12, halign=Gtk.Align.START))
+        list_item.set_child(SceneCard())
 
     def on_bind_item(self, _, list_item):
         item = list_item.get_item()
-        label = list_item.get_child()
-        label.set_label(item.get_string())
+        scene_card = list_item.get_child()
+        scene_title = self.custom_model.get_scene_title(item.get_string())
+        scene_card.set_property('scene_title', scene_title)
+
+        scene_synopsis = self.custom_model.get_scene_synopsis(item.get_string())
+        scene_card.set_property('scene_synopsis', scene_synopsis)
 
     def on_setup_header(self, _, list_item):
         list_item.set_child(Gtk.Label(halign=Gtk.Align.START))
@@ -72,13 +76,12 @@ class Writing(Adw.Bin):
     def on_bind_header(self, _, list_item):
         item = list_item.get_item()
         label = list_item.get_child()
+        self.custom_model.get_header_label(item)
         label.set_label("Header " + item.get_string())
 
     def on_selection_changed(self, selection, position, n_items):
-        print (selection)
-        print (position, n_items)
-        selected_item = selection.get_selected()
-        print(f"Model item selected from view: {selected_item}")
+        scene_id = self.custom_model.get_string(selection.get_selected())
+        logger.info(f"Scene selected: {scene_id}")
 
 
 

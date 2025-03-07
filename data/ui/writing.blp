@@ -3,19 +3,23 @@ using Adw 1;
 
 template $Writing: Adw.Bin {
   child: Adw.OverlaySplitView split_view {
+    sidebar: Box {
+      orientation: vertical;
 
-    sidebar: ScrolledWindow {
-      margin-top: 6;
-      margin-bottom: 6;
-      margin-start: 6;
-      margin-end: 6;
-      height-request: 330;
-      has-frame: true;
+      ScrolledWindow {
+        height-request: 330;
+        vexpand: true;
 
-      child: ListView list_view {
-        factory: SignalListItemFactory item_factory {};
-        header-factory: SignalListItemFactory header_factory {};
-      };
+        child: ListView list_view {
+          styles [
+            "card-sidebar",
+          ]
+
+          factory: SignalListItemFactory item_factory {};
+
+          header-factory: SignalListItemFactory header_factory {};
+        };
+      }
     };
 
     content: Box {
@@ -30,7 +34,6 @@ template $Writing: Adw.Bin {
         margin-bottom: 6;
         margin-start: 6;
         margin-end: 6;
-
         name: "bar_breadcrumb";
 
         [start]
@@ -44,7 +47,9 @@ template $Writing: Adw.Bin {
           }
 
           Separator {
-            styles ["spacer"]
+            styles [
+              "spacer",
+            ]
           }
 
           Label {
@@ -74,7 +79,6 @@ template $Writing: Adw.Bin {
           };
 
           wrap-mode: word;
-
           input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
         }
       }
@@ -84,7 +88,6 @@ template $Writing: Adw.Bin {
         margin-bottom: 6;
         margin-start: 6;
         margin-end: 6;
-
         name: "bar_status";
 
         [end]

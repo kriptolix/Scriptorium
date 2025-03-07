@@ -2,8 +2,8 @@ using Gtk 4.0;
 using Adw 1;
 
 template $ScriptoriumWindow: Adw.ApplicationWindow {
-  default-height: 600;
-  default-width: 800;
+  default-height: 768;
+  default-width: 1024;
   title: _("Scriptorium");
 
   styles [
@@ -15,8 +15,8 @@ template $ScriptoriumWindow: Adw.ApplicationWindow {
   }
 
   content: Adw.NavigationView navigation {
-    $Library {}
+    $LibraryNavigationPage library {}
 
-    $Editor {}
+    $EditorNavigationPage editor {}
   };
 }

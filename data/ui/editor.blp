@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $Editor: Adw.NavigationPage {
+template $EditorNavigationPage: Adw.NavigationPage {
   title: _("Editor");
   tag: "editor";
 
@@ -20,13 +20,13 @@ template $Editor: Adw.NavigationPage {
       Adw.ViewStack stack {
         vexpand: true;
 
-        Adw.ViewStackPage page1 {
+        Adw.ViewStackPage writing_tab {
           name: "writing";
           title: _("Writing");
           icon-name: "edit-symbolic";
           use-underline: true;
 
-          child: $Writing {};
+          child: $Writing writing {};
         }
       }
 
