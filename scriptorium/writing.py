@@ -37,15 +37,17 @@ class Writing(Adw.Bin):
     list_view = Gtk.Template.Child()
     item_factory = Gtk.Template.Child()
     header_factory = Gtk.Template.Child()
-
-
+    text_view = Gtk.Template.Child()
+    bar_breadcrumb_label_scene = Gtk.Template.Child()
+    label_words = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        # Connect a signal to refresh the word count
+        self.text_view.get_buffer().connect("changed", self.on_buffer_changed)
 
     def connect_to_model(self, model):
-        print ('Reload')
         self.custom_model = model
 
         self.item_factory.connect("setup", self.on_setup_item)
@@ -76,12 +78,26 @@ class Writing(Adw.Bin):
     def on_bind_header(self, _, list_item):
         item = list_item.get_item()
         label = list_item.get_child()
-        self.custom_model.get_header_label(item)
-        label.set_label("Header " + item.get_string())
+        chapter_title = self.custom_model.get_chapter_title(item)
+        label.set_label(chapter_title)
 
     def on_selection_changed(self, selection, position, n_items):
         scene_id = self.custom_model.get_string(selection.get_selected())
         logger.info(f"Scene selected: {scene_id}")
 
+        # Update the breadcrumb
+        scene_title = self.custom_model.get_scene_title(scene_id)
+        self.bar_breadcrumb_label_scene.set_label(scene_title)
 
+        # Get the content for the scene
+        content = self.custom_model.get_scene_content(scene_id)
+        buffer = self.text_view.get_buffer()
+        buffer.set_text(content)
+        start = buffer.get_start_iter()
+        buffer.place_cursor(start)
 
+    def on_buffer_changed(self, buffer):
+        start_iter, end_iter = buffer.get_bounds()
+        content = buffer.get_text(start_iter, end_iter, False)
+        words = len(content.split())
+        self.label_words.set_label(str(words))

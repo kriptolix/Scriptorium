@@ -39,11 +39,7 @@ template $Writing: Adw.Bin {
         [start]
         Box {
           Label {
-            label: _("Section");
-          }
-
-          Label label_section {
-            label: " section";
+            label: _("Current scene:");
           }
 
           Separator {
@@ -52,35 +48,30 @@ template $Writing: Adw.Bin {
             ]
           }
 
-          Label {
-            label: _("Scene");
-          }
-
-          Label label_scene {
-            label: " scene";
+          Label bar_breadcrumb_label_scene {
+            label: "";
           }
         }
       }
 
-      ScrolledWindow content {
-        TextView text_view {
-          styles [
-            "card",
-          ]
+      Frame {
+        child: ScrolledWindow content {
+          TextView text_view {
 
-          margin-top: 6;
-          margin-bottom: 6;
-          margin-start: 6;
-          margin-end: 6;
-          vexpand: true;
+            margin-top: 0;
+            margin-bottom: 0;
+            margin-start: 6;
+            margin-end: 6;
+            vexpand: true;
 
-          buffer: Gtk.TextBuffer {
-            enable-undo: true;
-          };
+            buffer: Gtk.TextBuffer {
+              enable-undo: true;
+            };
 
-          wrap-mode: word;
-          input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
-        }
+            wrap-mode: word;
+            input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
+          }
+        };
       }
 
       CenterBox bar_status {
@@ -93,11 +84,11 @@ template $Writing: Adw.Bin {
         [end]
         Box {
           Label {
-            label: _("Words");
+            label: _("Words ");
           }
 
           Label label_words {
-            label: " 0";
+            label: "";
           }
         }
       }

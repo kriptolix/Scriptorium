@@ -28,8 +28,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CustomModel(Gtk.StringList, Gtk.SectionModel):
-    # A chapter is defined as the start and end index of the scenes
-    _chapters = {}
+    # The base directory of the manuscript
+    _base_directory = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -38,12 +38,24 @@ class CustomModel(Gtk.StringList, Gtk.SectionModel):
         self._base_directory = manuscript_path
         logger.info(f'Loading content from {self._base_directory}')
 
+        # Load the data for this manuscript
         data_file = self._base_directory / pathlib.Path('manuscript.json')
         self.data = json.loads(data_file.read_text())
 
+        # Turn all the scenes into a list for the class
         for chapter in self.data['chapters']:
             for scene in chapter['scenes']:
                 self.append(scene)
+
+        # Update the mapping to chapters
+
+    def find_scene(self, scene_identifier):
+        position = 0
+        while self.get_item(position):
+            if self.get_item(position).get_string() == scene_identifier:
+                return position
+            position += 1
+        return None
 
     def get_scene_title(self, scene_identifier):
         return self.data['scenes'][scene_identifier]['title']
@@ -51,13 +63,28 @@ class CustomModel(Gtk.StringList, Gtk.SectionModel):
     def get_scene_synopsis(self, scene_identifier):
         return self.data['scenes'][scene_identifier]['synopsis']
 
-    def do_get_section(self, position):
-        start = position
-        end = start + 4
-        return (start, end)
+    def get_scene_content(self, scene_identifier):
+        scenes_dir = self._base_directory / pathlib.Path('scenes')
+        scene_file = scenes_dir / pathlib.Path(f'{scene_identifier}.md')
+        return scene_file.read_text()
 
-    def get_header_label(self, thing):
-        print (thing.get_string())
+    def do_get_section(self, position):
+        # Find the chapter that starts with the scene at position
+        start_scene = self.get_item(position).get_string()
+        logger.info(f'Find chapter starting with {position}:{start_scene}')
+        end_scene = None
+        for chapter in self.data['chapters']:
+            if chapter['scenes'][0] == start_scene:
+                end_scene = chapter['scenes'][-1]
+                return (position, self.find_scene(end_scene)+1)
+        return None
+
+    def get_chapter_title(self, scene_item):
+        first_scene_identifier = scene_item.get_string()
+        for chapter in self.data['chapters']:
+            if chapter['scenes'][0] == first_scene_identifier:
+                return chapter['title']
+        return None
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor.ui")
 class EditorNavigationPage(Adw.NavigationPage):

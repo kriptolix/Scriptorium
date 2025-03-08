@@ -1,12 +1,14 @@
 textview {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  border-radius: 12px;
-  border: solid 1px var(--border-color);
-  font-size: 16px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 14px;
   line-height: 1.2;
+}
+
+frame {
+    background-color: white;
 }
 
 #content {
@@ -35,12 +37,12 @@ textview {
     margin: 4px 0;
 }
 
-.card {
+.card-sidebar .card {
     background-color: @theme_bg_color;
     transition: background-color 0.3s;
 }
 
-.card:hover {
+.card-sidebar .card:hover {
     background-color: @theme_hover_bg_color;
 }
 

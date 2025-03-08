@@ -60,7 +60,7 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # Get the data folder
-        print(GLib.get_user_data_dir())
+        logger.info(f'Data location: {GLib.get_user_data_dir()}')
         manuscript_path = Path(GLib.get_user_data_dir()) / Path('dating_at_a_convention')
 
         # Display the editor (for working on it)
