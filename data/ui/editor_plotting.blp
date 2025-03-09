@@ -1,0 +1,52 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $EditorPlottingView: Adw.Bin {
+  child: Adw.NavigationSplitView {
+    sidebar: Adw.NavigationPage {
+      title: _("Sidebar");
+      tag: "sidebar";
+      child: ScrolledWindow {
+        vexpand: true;
+
+        child: ListBox {
+          vexpand: true;
+          styles ["navigation-sidebar"]
+
+          ListBoxRow {
+            styles ["pill"]
+            Grid {
+              column-spacing: 12;
+              Image {
+                icon-name: "view-columns-symbolic";
+                vexpand: true;
+                layout {
+                  row: 0;
+                  column: 0;
+                }
+              }
+              Label {
+                label: "Structure";
+                hexpand: true;
+                layout {
+                  row: 0;
+                  column: 1;
+                }
+              }
+            }
+          }
+        };
+      };
+    };
+
+    content: Adw.NavigationPage {
+      title: _("Content");
+      tag: "content";
+      child: Box boxes {
+        orientation: horizontal;
+        homogeneous: true;
+        spacing: 12;
+      };
+    };
+  };
+}

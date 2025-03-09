@@ -17,17 +17,23 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw
+from gi.repository import Adw, GObject
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
+from pathlib import Path
+
+import logging
+logger = logging.getLogger(__name__)
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/manuscript.ui")
 class Manuscript(Gtk.FlowBoxChild):
     __gtype_name__ = "Manuscript"
 
     cover = Gtk.Template.Child()
+
+    manuscript_identifier = GObject.Property(type=str)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -38,26 +44,36 @@ class Manuscript(Gtk.FlowBoxChild):
 class LibraryNavigationPage(Adw.NavigationPage):
     __gtype_name__ = "LibraryNavigationPage"
 
+    # The base path of all the manuscripts
+    manuscripts_base_path = GObject.Property(type=str)
+
     flowbox = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.flowbox.connect('child-activated', self.on_manuscript_activated)
+        self.flowbox.connect('child-activated', self.on_child_activated)
 
         self.connect('showing', self.on_showing)
 
 
     def on_showing(self, _window):
         """Called when the library is displayed"""
-        print(self.get_parent())
-
         self.flowbox.remove_all()
         for i in range(5):
             manuscript = Manuscript()
+            manuscript.set_property('manuscript_identifier', 'dating_at_a_convention')
             self.flowbox.append(manuscript)
 
-    def on_manuscript_activated(self, _flowbox, manuscript):
+    def on_child_activated(self, _flowbox, manuscript):
         """Called when a manuscript is selected"""
+        manuscript_identifier = manuscript.get_property('manuscript_identifier')
+        logger.info(f'Open {manuscript_identifier}')
+
+        # Set which Manuscript to load in the editor
+        manuscript_path = Path(self.manuscripts_base_path) / Path(manuscript_identifier)
+        self.get_parent().find_page('editor').set_property('manuscript_path', manuscript_path.resolve())
+
+        # Switch to the editor navigation page
         self.get_parent().push_by_tag('editor')
 

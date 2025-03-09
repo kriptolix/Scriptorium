@@ -20,14 +20,22 @@ template $EditorNavigationPage: Adw.NavigationPage {
       Adw.ViewStack stack {
         vexpand: true;
 
+        Adw.ViewStackPage plotting_tab {
+          name: "plotting";
+          title: _("Plotting");
+          icon-name: "notepad-symbolic";
+
+          child: $EditorPlottingView plotting {};
+        }
+
         Adw.ViewStackPage writing_tab {
           name: "writing";
           title: _("Writing");
           icon-name: "edit-symbolic";
-          use-underline: true;
 
           child: $Writing writing {};
         }
+
       }
 
       Adw.ViewSwitcherBar switcher_bar {

@@ -5,6 +5,8 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw
 from gi.repository import Gtk
 
-from scriptorium.writing import Writing
+from .editor_writing import Writing
+from .editor_plotting import EditorPlottingView
+
 
 

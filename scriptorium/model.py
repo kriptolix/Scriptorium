@@ -1,50 +1,61 @@
 import os
 import json
 from pathlib import Path
+from gi.repository import Gtk, GObject, Gio
 
 import logging
 logger = logging.getLogger(__name__)
 
+class Scene(GObject.Object):
+    scene_path = GObject.Property(type=str)
+    title = GObject.Property(type=str)
+    synopsis = GObject.Property(type=str)
 
-class Manuscript(object):
-    """
-    A manuscript is one particular entry of the library
-    """
+    def content(self):
+        return Path(self.scene_path).read_text()
 
-    # The base directory for this manuscript
-    _base_directory: Path = None
+class Chapter(GObject.Object):
+    title = GObject.Property(type=str)
+    synopsis = GObject.Property(type=str)
+    scenes: Gio.ListStore
 
-    # Store the chapters
-    _chapters = {}
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.scenes = Gio.ListStore.new(item_type=Scene)
 
-    # Store the scenes
-    _scenes = {}
+class Manuscript(GObject.Object):
+    # The base directory of the manuscript
+    _base_directory = None
 
-    def __init__(self, base_directory: str):
-        self._base_directory = base_directory
+    # Properties of the manuscript
+    title = GObject.Property(type=str)
+    synopsis = GObject.Property(type=str)
+    chapters = Gio.ListStore(item_type=Chapter)
 
-        self._load_content()
+    def __init__(self, manuscript_path, **kwargs):
+        super().__init__(**kwargs)
 
-    def _load_content(self):
-        """
-        Load the content of the manuscript from the directory
-        """
+        self._base_directory = manuscript_path
+        scenes_dir = self._base_directory / Path('scenes')
         logger.info(f'Loading content from {self._base_directory}')
 
-        # Load all the scenes
-        scenes_dir = self._base_directory / Path('scenes')
-        for scene_file in scenes_dir.glob('*.md'):
-            scene_name = scene_file.name.split('.')[0]
-            logger.info(f'Loading scene {scene_name}')
-            self._scenes[scene_name] = scene_file.read_text()
-
-        # Load the json description
+        # Load the data for this manuscript
         data_file = self._base_directory / Path('manuscript.json')
         data = json.loads(data_file.read_text())
-        self._chapters = data['chapters']
-        logger.info(self._chapters)
 
+        # Load the content of the chapters
+        for entry in data['chapters']:
+            logger.info(f"Adding chapter: {entry['title']}")
+            chapter = Chapter(title=entry['title'], synopsis=entry['synopsis'])
+            self.chapters.append(chapter)
 
+            for scene_identifier in entry['scenes']:
+                logger.info(f"Adding scene: {scene_identifier}")
+                scene_path = scenes_dir / Path(f'{scene_identifier}.md')
+                scene = Scene(scene_path=scene_path.resolve())
+                scene.title = data['scenes'][scene_identifier]['title']
+                scene.synopsis = data['scenes'][scene_identifier]['synopsis']
+                chapter.scenes.append(scene)
 
 class Library(object):
     """

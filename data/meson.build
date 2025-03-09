@@ -56,10 +56,11 @@ blueprints = custom_target(
 	input: files(
 		'gtk/help-overlay.blp',
 		'ui/editor.blp',
+		'ui/editor_writing.blp',
+		'ui/editor_plotting.blp',
 		'ui/library.blp',
 		'ui/manuscript.blp',
 		'ui/window.blp',
-		'ui/writing.blp',
 		'ui/scene.blp',
 	),
 	output: '.',

@@ -1,0 +1,97 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Writing: Adw.Bin {
+  child: Adw.NavigationSplitView split_view {
+    sidebar: Adw.NavigationPage {
+      title: _("Sidebar");
+      tag: "sidebar";
+
+      child: Box {
+        orientation: vertical;
+
+        DropDown chapters_drop_down {
+          enable-search: true;
+        }
+
+        ScrolledWindow {
+          vexpand: true;
+
+          child: ListView list_view {
+
+            factory: SignalListItemFactory item_factory {};
+          };
+        }
+      };
+    };
+
+    content: Adw.NavigationPage {
+      title: _("Content");
+      tag: "content";
+
+      child: Box {
+          orientation: vertical;
+          margin-bottom: 6;
+          margin-start: 6;
+          margin-end: 6;
+
+          CenterBox bar_breadcrumb {
+            margin-start: 6;
+            margin-end: 6;
+            name: "bar_breadcrumb";
+
+            [start]
+            Box {
+              Label {
+                label: _("Current scene:");
+              }
+
+              Separator {
+                styles [
+                  "spacer",
+                ]
+              }
+
+              Label bar_breadcrumb_label_scene {
+                label: "";
+              }
+            }
+          }
+
+          Frame {
+            child: ScrolledWindow content {
+              TextView text_view {
+                margin-start: 6;
+                margin-end: 6;
+                vexpand: true;
+
+                buffer: Gtk.TextBuffer {
+                  enable-undo: true;
+                };
+
+                wrap-mode: word;
+                input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
+              }
+            };
+          }
+
+          CenterBox bar_status {
+            name: "bar_status";
+            margin-start: 6;
+            margin-end: 6;
+
+            [end]
+            Box {
+              Label {
+                label: _("Words ");
+              }
+
+              Label label_words {
+                label: "";
+              }
+            }
+          }
+        };
+      };
+  };
+}

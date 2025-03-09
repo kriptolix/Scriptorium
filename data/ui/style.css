@@ -11,6 +11,24 @@ frame {
     background-color: white;
 }
 
+.sidebar-pane {
+    padding: 12px 12px 0px 12px;
+}
+
+listview {
+  background-color: transparent;
+}
+
+listview .card {
+    padding: 6px 6px 6px 6px;
+}
+
+listview row {
+    margin: 4px 0;
+}
+
+/*
+
 #content {
   margin-left: 12px;
   margin-right: 12px;
@@ -20,18 +38,16 @@ frame {
   min-height: 46px;
 }
 
-.overlay {
-  padding: 12px;
-}
 
-.card-sidebar {
-    padding: 8px;
+.navigation-sidebar {
+    padding: 6px 6px 0px 6px;
     background-color: transparent;
 }
 
-.card-sidebar .card {
-    padding: 6px 6px 6px 6px;
+.card-sidebar {
+    background-color: transparent;
 }
+
 
 .card-sidebar row {
     margin: 4px 0;
@@ -45,4 +61,4 @@ frame {
 .card-sidebar .card:hover {
     background-color: @theme_hover_bg_color;
 }
-
+*/

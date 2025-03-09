@@ -2,4 +2,5 @@
 /builddir
 token.txt
 /subprojects/blueprint-compiler
-local_data
+/.var
+

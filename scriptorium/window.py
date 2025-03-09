@@ -48,9 +48,6 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
 
     navigation = Gtk.Template.Child()
 
-    # The library
-    library = None #GObject.Property(type=Library, default=None)
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -61,8 +58,12 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
 
         # Get the data folder
         logger.info(f'Data location: {GLib.get_user_data_dir()}')
-        manuscript_path = Path(GLib.get_user_data_dir()) / Path('dating_at_a_convention')
+        manuscript_path = Path(GLib.get_user_data_dir())
+        self.navigation.find_page('library').set_property('manuscripts_base_path', manuscript_path.resolve())
+
 
         # Display the editor (for working on it)
-        self.navigation.find_page('editor').set_property('manuscript_path', manuscript_path.resolve())
-        self.navigation.push_by_tag('editor')
+        library = self.navigation.find_page('library')
+        first_child = library.flowbox.get_child_at_index(0)
+        library.flowbox.emit("child-activated", first_child)
+
