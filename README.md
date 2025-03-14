@@ -27,3 +27,5 @@ https://github.com/Taiko2k/GTK4PythonTutorial/blob/main/README.md
 https://python-gtk-3-tutorial.readthedocs.io/en/latest/textview.html
 https://github.com/natorsc/py-gtk/blob/main/src/libadwaita-widgets/navigation-split-view/MainWindow.py
 
+
+

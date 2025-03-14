@@ -28,16 +28,15 @@ template $Writing: Adw.Bin {
     content: Adw.NavigationPage {
       title: _("Content");
       tag: "content";
+      margin-start: 12;
+      margin-top: 12;
+      margin-bottom: 12;
+      margin-end: 12;
 
       child: Box {
           orientation: vertical;
-          margin-bottom: 6;
-          margin-start: 6;
-          margin-end: 6;
 
           CenterBox bar_breadcrumb {
-            margin-start: 6;
-            margin-end: 6;
             name: "bar_breadcrumb";
 
             [start]
@@ -77,8 +76,6 @@ template $Writing: Adw.Bin {
 
           CenterBox bar_status {
             name: "bar_status";
-            margin-start: 6;
-            margin-end: 6;
 
             [end]
             Box {

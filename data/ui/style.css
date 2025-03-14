@@ -19,6 +19,10 @@ listview {
   background-color: transparent;
 }
 
+list {
+  background-color: transparent;
+}
+
 listview .card {
     padding: 6px 6px 6px 6px;
 }
@@ -27,12 +31,13 @@ listview row {
     margin: 4px 0;
 }
 
-/*
-
 #content {
   margin-left: 12px;
   margin-right: 12px;
 }
+
+
+/*
 
 #bar_status {
   min-height: 46px;

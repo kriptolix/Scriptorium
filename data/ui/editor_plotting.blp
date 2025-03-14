@@ -9,30 +9,22 @@ template $EditorPlottingView: Adw.Bin {
       child: ScrolledWindow {
         vexpand: true;
 
-        child: ListBox {
+        child: Gtk.ListBox {
           vexpand: true;
-          styles ["navigation-sidebar"]
+          selection-mode: none;
 
           ListBoxRow {
-            styles ["pill"]
-            Grid {
-              column-spacing: 12;
-              Image {
-                icon-name: "view-columns-symbolic";
-                vexpand: true;
-                layout {
-                  row: 0;
-                  column: 0;
+            Button {
+              child: Box {
+                spacing: 12;
+                orientation: horizontal;
+                Image {
+                  icon-name: "view-columns-symbolic";
                 }
-              }
-              Label {
-                label: "Structure";
-                hexpand: true;
-                layout {
-                  row: 0;
-                  column: 1;
+                Label {
+                  label: "Structure";
                 }
-              }
+              };
             }
           }
         };
@@ -42,6 +34,10 @@ template $EditorPlottingView: Adw.Bin {
     content: Adw.NavigationPage {
       title: _("Content");
       tag: "content";
+      margin-start: 12;
+      margin-top: 12;
+      margin-bottom: 12;
+      margin-end: 12;
       child: Box boxes {
         orientation: horizontal;
         homogeneous: true;
