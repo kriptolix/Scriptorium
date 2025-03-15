@@ -22,9 +22,11 @@ import gi
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
+gi.require_version('WebKit', '6.0')
 
-from gi.repository import Gtk, Gio, Adw
+from gi.repository import Gtk, Gio, Adw, WebKit
 from .window import ScriptoriumWindow
+
 
 import logging
 logging.basicConfig(
@@ -42,6 +44,9 @@ class ScriptoriumApplication(Adw.Application):
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
+
+        # Force loading WebKit, otherwise it is not recognized in Builder
+        dummy = WebKit.WebView()
 
     def do_activate(self):
         """Called when the application is activated.

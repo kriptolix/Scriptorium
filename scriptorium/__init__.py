@@ -7,6 +7,7 @@ from gi.repository import Gtk
 
 from .editor_writing import Writing
 from .editor_plotting import EditorPlottingView
+from .editor_formatting import EditorFormattingView
 
 
 

@@ -1,0 +1,78 @@
+using Gtk 4.0;
+using Adw 1;
+using WebKit 6.0;
+
+template $EditorFormattingView: Adw.Bin {
+  child: Box {
+    vexpand: true;
+    hexpand: true;
+
+    Adw.StatusPage status_page {
+      hexpand: true;
+      title: _("Templates");
+      description: _("Place holder for the templates");
+      icon-name: "preferences-other-symbolic";
+    }
+
+
+    Adw.Clamp {
+      maximum-size: 400;
+      hexpand: false;
+      Box {
+        orientation: vertical;
+        margin-top: 12;
+        margin-bottom: 12;
+        margin-start: 12;
+        margin-end: 12;
+
+        Box {
+          orientation: vertical;
+          margin-top: 12;
+          margin-bottom: 12;
+          spacing: 6;
+
+          Label {
+            label: _("Manuscript preview");
+            styles [
+              "title-1"
+            ]
+          }
+        }
+
+        Frame {
+          margin-top: 12;
+          margin-bottom: 12;
+
+          WebKit.WebView web_view {
+            zoom-level: 1;
+            vexpand: true;
+            hexpand: true;
+
+            styles [
+              "view"
+            ]
+          }
+        }
+
+        CenterBox controls {
+          [end]
+          Box {
+            spacing: 12;
+
+            Button button_previous_page {
+              icon-name: "pan-start-symbolic";
+              tooltip-text: _("Previous");
+            }
+
+            Button button_next_page {
+              icon-name: "pan-end-symbolic";
+              tooltip-text: _("Next");
+            }
+          }
+        }
+      }
+    }
+  };
+}
+
+

@@ -20,6 +20,14 @@ template $EditorNavigationPage: Adw.NavigationPage {
       Adw.ViewStack stack {
         vexpand: true;
 
+        Adw.ViewStackPage formatting_tab {
+          name: "formatting";
+          title: _("Formatting");
+          icon-name: "battery-good-charging-symbolic";
+
+          child: $EditorFormattingView formatting {};
+        }
+
         Adw.ViewStackPage plotting_tab {
           name: "plotting";
           title: _("Plotting");

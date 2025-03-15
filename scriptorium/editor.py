@@ -40,6 +40,7 @@ class EditorNavigationPage(Adw.NavigationPage):
     # Instances of all the facets for the manuscript
     plotting = Gtk.Template.Child()
     writing = Gtk.Template.Child()
+    formatting = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
