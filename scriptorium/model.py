@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from gi.repository import Gtk, GObject, Gio
 
+from .utils import html_to_buffer, buffer_to_html
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -11,8 +13,37 @@ class Scene(GObject.Object):
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
 
-    def content(self):
-        return Path(self.scene_path).read_text()
+    _buffer: Gtk.TextBuffer
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def load_into_buffer(self, buffer: Gtk.TextBuffer):
+        logger.info(f'Loading info buffer from {self.scene_path}')
+
+        # Load the content of the file and push to the buffer
+        html_content = self.to_html()
+        html_to_buffer(html_content, buffer)
+
+    def save_from_buffer(self, buffer: Gtk.TextBuffer):
+        logger.info(f'Saving buffer to {self.scene_path}')
+
+        # Write the content of the buffer
+        html_content = buffer_to_html(buffer)
+        Path(self.scene_path).write_text(html_content)
+
+    def to_html(self):
+        """
+        Get the HTML payload for the scene
+        """
+        logger.info(f'Loading raw HTML from {self.scene_path}')
+
+        # Check if we can do that
+        if not Path(self.scene_path).exists():
+            raise FileNotFoundError(f'Could not open {scene_path}')
+
+        html_content = Path(self.scene_path).read_text()
+        return html_content
 
 class Chapter(GObject.Object):
     title = GObject.Property(type=str)
@@ -22,6 +53,15 @@ class Chapter(GObject.Object):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.scenes = Gio.ListStore.new(item_type=Scene)
+
+    def to_html(self):
+        """
+        Get the HTML payload for the chapter
+        """
+        content = []
+        for scene in self.scenes:
+            content.append(scene.to_html())
+        return '\n'.join(content)
 
 class Manuscript(GObject.Object):
     # The base directory of the manuscript
@@ -51,7 +91,7 @@ class Manuscript(GObject.Object):
 
             for scene_identifier in entry['scenes']:
                 logger.info(f"Adding scene: {scene_identifier}")
-                scene_path = scenes_dir / Path(f'{scene_identifier}.md')
+                scene_path = scenes_dir / Path(f'{scene_identifier}.html')
                 scene = Scene(scene_path=scene_path.resolve())
                 scene.title = data['scenes'][scene_identifier]['title']
                 scene.synopsis = data['scenes'][scene_identifier]['synopsis']

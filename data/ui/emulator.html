@@ -30,23 +30,17 @@
     <style id="theme">
         p {
           margin-top: 0;
-          margin-bottom: 1em;
+          margin-bottom: 0em;
           text-indent: 3ch;
           font-family: Arial, sans-serif;
-          font-size: 18px;
+          font-size: 16px;
         }
     </style>
 </head>
 <body>
     <div class="container" id="container">
       <div class="content" id="content">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vel sollicitudin mauris, nec cursus diam. Sed consectetur sapien in lorem facilisis, quis consequat quam condimentum. Ut venenatis diam eu lacus ullamcorper volutpat. In at ipsum at metus venenatis molestie. Nullam venenatis, massa ornare posuere tincidunt, elit elit venenatis eros, at posuere risus elit non est. Curabitur interdum odio non metus malesuada, ac efficitur lorem mollis. Ut sodales ut massa sit amet ornare. Aenean lacus tellus, gravida eu urna vitae, ultricies pharetra sem. Integer non sapien eu sem imperdiet condimentum. </p>
-          <p>Aenean pulvinar congue eros at pharetra. Proin quam erat, elementum quis dignissim at, facilisis viverra neque. Vivamus imperdiet convallis nunc, ut cursus velit scelerisque quis. Donec aliquet, neque ac semper facilisis, odio augue posuere mi, et ultrices lacus orci vel leo. Mauris lacinia mauris enim, quis aliquet massa tincidunt quis. Quisque ullamcorper, nibh non dignissim semper, ex nisi venenatis dui, id condimentum erat lorem quis nisl. Donec eget libero ut tellus ultrices molestie eget at nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nullam condimentum, purus ut vulputate faucibus, erat nulla dictum ante, ac posuere dolor enim ut lorem. In pharetra cursus dolor in faucibus. </p>
-          <p>Nulla a tortor turpis. Quisque iaculis rhoncus enim a blandit. Cras tincidunt faucibus lorem quis ornare. Duis sit amet egestas urna, nec pharetra magna. Integer dictum nulla id dolor dictum feugiat. Nulla commodo dolor non purus luctus vulputate nec eget libero. Sed eu erat laoreet, hendrerit dui a, tristique neque. Nam sed velit consequat, imperdiet urna a, blandit arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In vel urna eros. Aliquam et eros ac felis porttitor laoreet. Morbi eu orci porta, feugiat velit eu, luctus lacus. In mollis viverra ipsum, sit amet pretium massa ullamcorper sit amet. Nunc vulputate id neque eget commodo. Maecenas ut porta enim, sit amet egestas massa. Phasellus quis pulvinar est, ut rhoncus nunc. </p>
-          <p>In ex nisi, semper ut tortor sit amet, lobortis sollicitudin libero. Aliquam erat volutpat. Integer fermentum quam at augue porta facilisis. Suspendisse potenti. Phasellus eget turpis mi. Maecenas sed iaculis urna. Fusce felis arcu, dictum ut ipsum aliquet, eleifend pulvinar diam. Quisque consequat, libero nec molestie placerat, eros erat laoreet tellus, nec efficitur ante nunc id magna. Nulla vel lacus a purus aliquam sodales. </p>
-          <p>Fusce pretium ipsum tincidunt turpis gravida molestie. Phasellus vel metus a purus feugiat gravida. Praesent laoreet magna mattis ipsum tincidunt, ac ullamcorper neque elementum. Donec sed massa eu tortor placerat cursus vel vel lorem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse quis efficitur turpis, et posuere massa. Aliquam non nibh a ante rhoncus egestas nec a leo. Nullam sem tortor, efficitur ut rhoncus non, feugiat ac erat. Curabitur quis ipsum interdum, cursus purus sed, vehicula odio. Quisque pulvinar nisi felis, eget condimentum massa vestibulum ut. Maecenas consequat risus vitae dignissim convallis. Nam eleifend mollis nibh eget ultricies. Curabitur sagittis purus eget dolor lobortis viverra. Nunc tincidunt diam felis. </p>
-          <p>Donec tincidunt ligula eget velit bibendum, sed faucibus turpis cursus. Nulla facilisi. Integer eget turpis non orci fermentum condimentum...</p>
-          <p>Nam rhoncus dui eget tellus blandit, id scelerisque dui interdum. Curabitur dictum, metus a posuere iaculis, orci dui consectetur risus...</p>
+        {content}
       </div>
     </div>
     <script>
@@ -76,11 +70,6 @@
             }
             return currentPage;
         }
-
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "ArrowDown") nextPage();
-            if (event.key === "ArrowUp") prevPage();
-        });
     </script>
 
 </body>

@@ -29,7 +29,8 @@ scriptorium_sources = [
   'editor_formatting.py',
   'scene.py',
   'library.py',
-  'model.py'
+  'model.py',
+  'utils.py'
 ]
 
 install_data(scriptorium_sources, install_dir: moduledir)

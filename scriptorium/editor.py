@@ -55,5 +55,6 @@ class EditorNavigationPage(Adw.NavigationPage):
             self.manuscript = Manuscript(self.manuscript_path)
             self.writing.bind_to_manuscript(self.manuscript)
             self.plotting.bind_to_manuscript(self.manuscript)
+            self.formatting.bind_to_manuscript(self.manuscript)
 
 

@@ -20,6 +20,14 @@ template $EditorNavigationPage: Adw.NavigationPage {
       Adw.ViewStack stack {
         vexpand: true;
 
+        Adw.ViewStackPage writing_tab {
+          name: "writing";
+          title: _("Writing");
+          icon-name: "edit-symbolic";
+
+          child: $Writing writing {};
+        }
+
         Adw.ViewStackPage formatting_tab {
           name: "formatting";
           title: _("Formatting");
@@ -34,14 +42,6 @@ template $EditorNavigationPage: Adw.NavigationPage {
           icon-name: "notepad-symbolic";
 
           child: $EditorPlottingView plotting {};
-        }
-
-        Adw.ViewStackPage writing_tab {
-          name: "writing";
-          title: _("Writing");
-          icon-name: "edit-symbolic";
-
-          child: $Writing writing {};
         }
 
       }

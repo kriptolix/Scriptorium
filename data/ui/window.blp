@@ -6,10 +6,6 @@ template $ScriptoriumWindow: Adw.ApplicationWindow {
   default-width: 1024;
   title: _("Scriptorium");
 
-  Adw.Breakpoint {
-    condition ("max-width: 550sp")
-  }
-
   content: Adw.NavigationView navigation {
     $LibraryNavigationPage library {}
 

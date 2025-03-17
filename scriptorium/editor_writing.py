@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, Pango
 from gi.repository import Adw
 from .model import Chapter
 from .scene import SceneCard
@@ -32,6 +32,9 @@ class Writing(Adw.Bin):
     # The manuscript
     manuscript = None
 
+    # The scene that was previously displayed, used to trigger a save when switching
+    previous_scene = None
+
     list_view = Gtk.Template.Child()
     item_factory = Gtk.Template.Child()
     text_view = Gtk.Template.Child()
@@ -41,9 +44,13 @@ class Writing(Adw.Bin):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        buffer = self.text_view.get_buffer()
+
+        # Create the tags for the buffer
+        buffer.create_tag('em', style=Pango.Style.ITALIC)
 
         # Connect a signal to refresh the word count
-        self.text_view.get_buffer().connect("changed", self.on_buffer_changed)
+        buffer.connect("changed", self.on_buffer_changed)
 
         self.chapters_drop_down.connect("notify::selected-item", self.on_selected_item)
         self.item_factory.connect("setup", self.on_setup_item)
@@ -82,18 +89,33 @@ class Writing(Adw.Bin):
         scene_card.set_property('scene_synopsis', scene.synopsis)
 
     def on_selection_changed(self, selection, position, n_items):
+        buffer = self.text_view.get_buffer()
         selected_scene = selection.get_selected_item()
         logger.info(f"Scene selected: {selected_scene.title}")
 
         # Update the breadcrumb
         self.bar_breadcrumb_label_scene.set_label(selected_scene.title)
 
-        # Get the content for the scene
-        content = selected_scene.content()
-        buffer = self.text_view.get_buffer()
-        buffer.set_text(content)
-        start = buffer.get_start_iter()
-        buffer.place_cursor(start)
+        # We don't want undo to span across scenes
+        buffer.begin_irreversible_action()
+
+        # If there was a scene displayed, save it first!
+        if self.previous_scene:
+            self.previous_scene.save_from_buffer(buffer)
+
+        # Delete previous content
+        start_iter, end_iter = buffer.get_bounds()
+        buffer.delete(start_iter, end_iter)
+
+        # Load the scene
+        selected_scene.load_into_buffer(buffer)
+
+        # Finish
+        buffer.end_irreversible_action()
+
+        # This will be our new previous scene
+        self.previous_scene = selected_scene
+
 
     def on_buffer_changed(self, buffer):
         start_iter, end_iter = buffer.get_bounds()

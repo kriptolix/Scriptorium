@@ -47,6 +47,10 @@ template $EditorFormattingView: Adw.Bin {
             zoom-level: 1;
             vexpand: true;
             hexpand: true;
+            margin-start: 6;
+            margin-end: 6;
+            margin-top: 6;
+            margin-bottom: 6;
 
             styles [
               "view"
@@ -58,6 +62,10 @@ template $EditorFormattingView: Adw.Bin {
           [end]
           Box {
             spacing: 12;
+
+            DropDown chapters_drop_down {
+              enable-search: true;
+            }
 
             Button button_previous_page {
               icon-name: "pan-start-symbolic";
