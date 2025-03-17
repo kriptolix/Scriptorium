@@ -16,11 +16,15 @@ frame {
     padding: 12px 12px 0px 12px;
 }
 
-listview {
+list {
   background-color: transparent;
 }
 
-list {
+gridview {
+  background-color: transparent;
+}
+
+listview {
   background-color: transparent;
 }
 
