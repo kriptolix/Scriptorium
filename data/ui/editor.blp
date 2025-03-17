@@ -20,6 +20,14 @@ template $EditorNavigationPage: Adw.NavigationPage {
       Adw.ViewStack stack {
         vexpand: true;
 
+        Adw.ViewStackPage plotting_tab {
+          name: "plotting";
+          title: _("Plotting");
+          icon-name: "notepad-symbolic";
+
+          child: $EditorPlottingView plotting {};
+        }
+
         Adw.ViewStackPage writing_tab {
           name: "writing";
           title: _("Writing");
@@ -31,17 +39,9 @@ template $EditorNavigationPage: Adw.NavigationPage {
         Adw.ViewStackPage formatting_tab {
           name: "formatting";
           title: _("Formatting");
-          icon-name: "battery-good-charging-symbolic";
+          icon-name: "open-book-symbolic";
 
           child: $EditorFormattingView formatting {};
-        }
-
-        Adw.ViewStackPage plotting_tab {
-          name: "plotting";
-          title: _("Plotting");
-          icon-name: "notepad-symbolic";
-
-          child: $EditorPlottingView plotting {};
         }
 
       }

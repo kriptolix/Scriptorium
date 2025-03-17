@@ -42,6 +42,9 @@ class EditorNavigationPage(Adw.NavigationPage):
     writing = Gtk.Template.Child()
     formatting = Gtk.Template.Child()
 
+    # The stack controlling them
+    stack = Gtk.Template.Child()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -57,4 +60,4 @@ class EditorNavigationPage(Adw.NavigationPage):
             self.plotting.bind_to_manuscript(self.manuscript)
             self.formatting.bind_to_manuscript(self.manuscript)
 
-
+        self.stack.set_visible_child_name('plotting')

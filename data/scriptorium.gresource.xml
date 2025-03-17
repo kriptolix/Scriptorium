@@ -27,5 +27,6 @@
     <file preprocess="xml-stripblanks">icons/edit-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/notepad-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/view-columns-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/open-book-symbolic.svg</file>
   </gresource>
 </gresources>
