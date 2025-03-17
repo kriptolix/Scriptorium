@@ -24,9 +24,8 @@ from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import GObject
 
-import scriptorium.editor
 import scriptorium.library
-from .model import Library
+import scriptorium.editor
 
 import logging
 logger = logging.getLogger(__name__)
@@ -56,14 +55,18 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
         css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/ui/style.css"))
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
+        self._open_library()
+
+    def _open_library(self):
         # Get the data folder
-        logger.info(f'Data location: {GLib.get_user_data_dir()}')
-        manuscript_path = Path(GLib.get_user_data_dir())
+        manuscript_path = Path(GLib.get_user_data_dir()) / Path('manuscripts')
+        if not manuscript_path.exists():
+            manuscript_path.mkdir()
+        logger.info(f'Data location: {manuscript_path}')
         self.navigation.find_page('library').set_property('manuscripts_base_path', manuscript_path.resolve())
 
-
         # Display the editor (for working on it)
-        library = self.navigation.find_page('library')
-        first_child = library.flowbox.get_child_at_index(0)
-        library.flowbox.emit("child-activated", first_child)
+        #library = self.navigation.find_page('library')
+        #first_child = library.flowbox.get_child_at_index(0)
+        #library.flowbox.emit("child-activated", first_child)
 

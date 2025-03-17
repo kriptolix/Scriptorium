@@ -31,11 +31,8 @@ logger = logging.getLogger(__name__)
 class EditorNavigationPage(Adw.NavigationPage):
     __gtype_name__ = "EditorNavigationPage"
 
-    # The base path of the manuscript behing edited
-    manuscript_path = GObject.Property(type=str)
-
-    # The custom data model representing the Manuscript
-    manuscript = None
+    # The manuscript the editor is connected to
+    manuscript = GObject.Property(type=Manuscript)
 
     # Instances of all the facets for the manuscript
     plotting = Gtk.Template.Child()
@@ -48,16 +45,18 @@ class EditorNavigationPage(Adw.NavigationPage):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.connect('showing', self.on_showing)
+        # Keep an eye for changes to the manuscript base path
+        self.connect('notify::manuscript', self.on_manuscript_changed)
 
-    def on_showing(self, _window):
-        """Called when the Editor is displayed"""
+    def on_manuscript_changed(self, _manuscript, _other):
+        """
+        Called when the editor is connected to a new manuscript
+        """
 
         # Load the book content for the writing tab
-        if self.manuscript is None:
-            self.manuscript = Manuscript(self.manuscript_path)
-            self.writing.bind_to_manuscript(self.manuscript)
-            self.plotting.bind_to_manuscript(self.manuscript)
-            self.formatting.bind_to_manuscript(self.manuscript)
+        self.writing.bind_to_manuscript(self.manuscript)
+        self.plotting.bind_to_manuscript(self.manuscript)
+        self.formatting.bind_to_manuscript(self.manuscript)
 
+        # Open the plotting tab by default
         self.stack.set_visible_child_name('plotting')

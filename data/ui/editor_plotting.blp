@@ -38,10 +38,13 @@ template $EditorPlottingView: Adw.Bin {
       margin-top: 12;
       margin-bottom: 12;
       margin-end: 12;
-      child: Box boxes {
-        orientation: horizontal;
-        homogeneous: true;
-        spacing: 12;
+      child: ScrolledWindow {
+        vexpand: true;
+        child: Box boxes {
+          orientation: horizontal;
+          homogeneous: true;
+          spacing: 12;
+        };
       };
     };
   };

@@ -5,8 +5,8 @@
     <file preprocess="xml-stripblanks">ui/window.ui</file>
 
     <!-- Library mode -->
-    <file preprocess="xml-stripblanks">ui/library.ui</file>
-    <file preprocess="xml-stripblanks">ui/manuscript.ui</file>
+    <file preprocess="xml-stripblanks">ui/library/library.ui</file>
+    <file preprocess="xml-stripblanks">ui/library/manuscript.ui</file>
 
     <!-- Editor mode -->
     <file preprocess="xml-stripblanks">ui/editor.ui</file>

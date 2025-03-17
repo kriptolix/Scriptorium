@@ -36,6 +36,11 @@ class EditorPlottingView(Adw.Bin):
         logger.info(f'Connect to manuscript {manuscript}')
         self.manuscript = manuscript
 
+        # Clear up all the previous columns
+        while self.boxes.get_first_child() is not None:
+            self.boxes.remove(self.boxes.get_first_child())
+
+        # Add one column per chapter
         for chapter in manuscript.chapters:
             column = chapter.title
             column_box = self.create_column(chapter)

@@ -47,6 +47,7 @@ class ScriptoriumApplication(Adw.Application):
 
         # Force loading WebKit, otherwise it is not recognized in Builder
         dummy = WebKit.WebView()
+        del dummy
 
     def do_activate(self):
         """Called when the application is activated.

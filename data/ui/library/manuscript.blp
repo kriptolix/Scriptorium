@@ -1,0 +1,37 @@
+using Gtk 4.0;
+
+template $ManuscriptItem: Box {
+  orientation: vertical;
+  width-request: 100;
+  halign: center;
+  valign: end;
+  margin-start: 12;
+  margin-end: 12;
+  margin-top: 6;
+  margin-bottom: 6;
+
+  Frame {
+    Stack stack {
+      StackPage {
+        name: 'cover';
+        child: Picture cover_picture {
+            valign: end;
+            content-fit: fill;
+            height-request: 160;
+        };
+      }
+      StackPage {
+        name: 'label';
+        child: Label cover_label {
+          wrap: true;
+        };
+      }
+    }
+  }
+
+  Inscription {
+    text-overflow: ellipsize_end;
+    min-lines: 2;
+    text: bind template.title;
+  }
+}

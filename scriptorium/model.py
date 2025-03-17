@@ -62,8 +62,11 @@ class Scene(GObject.Object):
         return html_content
 
 class Chapter(GObject.Object):
+    # Properties of the chapter
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
+
+    # The scenes contained in this chapter
     scenes: Gio.ListStore
 
     def __init__(self, **kwargs):
@@ -91,19 +94,34 @@ class Chapter(GObject.Object):
         return data
 
 class Manuscript(GObject.Object):
-    # The base directory of the manuscript
-    _base_directory = None
-
     # Properties of the manuscript
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
-    chapters = Gio.ListStore(item_type=Chapter)
+    cover = GObject.Property(type=str)
+
+    # The base directory of the manuscript
+    _base_directory = None
+
+    # The chapters contained in the manuscript
+    chapters: Gio.ListStore
 
     def __init__(self, manuscript_path, **kwargs):
         super().__init__(**kwargs)
 
+        # Keep track of the attributes
         self._base_directory = manuscript_path
+        self.chapters = Gio.ListStore.new(item_type=Chapter)
+
+        # Load the description file from disk
         self.load_from_disk()
+
+    def get_cover_path(self):
+        if self.cover is None:
+            return None
+
+        img_path = self._base_directory / Path('img') / Path(self.cover)
+        return img_path.resolve()
+
 
     def metadata(self):
         """
@@ -114,6 +132,11 @@ class Manuscript(GObject.Object):
             'synopsis': self.synopsis,
             'chapters': [chapter.metadata() for chapter in self.chapters],
         }
+
+        # If a cover has been set save it
+        if self.cover is not None:
+            data['cover'] = self.cover
+
         return data
 
     def save_to_disk(self):
@@ -124,7 +147,7 @@ class Manuscript(GObject.Object):
 
         yaml_file = self._base_directory / Path('manuscript.yml')
         with yaml_file.open(mode='w') as file:
-            yaml.dump(data, file, width=80, indent=2)
+            yaml.safe_dump(data, file, width=80, indent=2, sort_keys=True)
 
     def load_from_disk(self):
         """
@@ -136,13 +159,14 @@ class Manuscript(GObject.Object):
 
         self.title = data['title']
         self.synopsis = data['synopsis']
+        self.cover = data.get('cover', None)
         for chapter in data['chapters']:
-            logger.info(f"Adding chapter: {chapter['title']}")
+            logger.debug(f"Adding chapter: {chapter['title']}")
             chapter_entry = Chapter()
             chapter_entry.title = chapter['title']
             chapter_entry.synopsis = chapter['synopsis'].replace('\n', ' ')
             for scene in chapter['scenes']:
-                logger.info(f"Adding scene: {scene['title']}")
+                logger.debug(f"Adding scene: {scene['title']}")
                 scenes_dir = self._base_directory / Path('scenes')
                 scene_entry = Scene(identifier=scene['identifier'], base_path=scenes_dir)
                 scene_entry.title = scene['title']
@@ -156,18 +180,28 @@ class Library(object):
     """
     The library is the collection of manuscripts
     """
-
     # The base directory where all the manuscripts are located
     _base_directory: Path = None
 
     # Map of manuscripts
-    _manuscripts = {}
+    manuscripts: Gio.ListStore
 
     def __init__(self, base_directory: str):
+        # Keep track of attributes
         self._base_directory = Path(base_directory)
-        logger.info(self._base_directory)
+
+        # Initialise the list store
+        self.manuscripts = Gio.ListStore.new(item_type=Manuscript)
+
+        # Perform a scan of the data directory
+        self._scan_datadir()
+
+    def _scan_datadir(self):
+        logger.info(f'Scanning content of {self._base_directory}')
 
         # Create one manuscript entry per directory
         for directory in self._base_directory.iterdir():
-            self._manuscripts[directory.name] = Manuscript(directory)
+            logger.info(f'Adding manuscript {directory.name}')
+            manuscript = Manuscript(directory)
+            self.manuscripts.append(manuscript)
 
