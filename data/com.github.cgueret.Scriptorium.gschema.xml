@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="scriptorium">
 	<schema id="com.github.cgueret.Scriptorium" path="/com/github/cgueret/Scriptorium/">
-	</schema>
+    <key name="window-width" type="i">
+      <default>1024</default>
+    </key>
+    <key name="window-height" type="i">
+      <default>768</default>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+    </key>
+    <key name="open-last-project" type="b">
+      <default>true</default>
+    </key>
+  </schema>
 </schemalist>

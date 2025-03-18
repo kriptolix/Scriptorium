@@ -88,12 +88,13 @@ class LibraryNavigationPage(Adw.NavigationPage):
         """
         # Get the select manuscript and unselect it
         selected_manuscript = selection.get_selected_item()
-        logger.info(f'Selected manuscript {selected_manuscript.title}')
-        selection.set_selected(Gtk.INVALID_LIST_POSITION)
+        if selected_manuscript is not None:
+            logger.info(f'Selected manuscript {selected_manuscript.title}')
+            selection.set_selected(Gtk.INVALID_LIST_POSITION)
 
-        # Set which Manuscript to load in the editor
-        self.get_parent().find_page('editor').set_property('manuscript', selected_manuscript)
+            # Set which Manuscript to load in the editor
+            self.get_parent().find_page('editor').set_property('manuscript', selected_manuscript)
 
-        # Switch to the editor navigation page
-        self.get_parent().push_by_tag('editor')
+            # Switch to the editor navigation page
+            self.get_parent().push_by_tag('editor')
 

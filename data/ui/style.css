@@ -42,33 +42,3 @@ listview row {
 }
 
 
-/*
-
-#bar_status {
-  min-height: 46px;
-}
-
-
-.navigation-sidebar {
-    padding: 6px 6px 0px 6px;
-    background-color: transparent;
-}
-
-.card-sidebar {
-    background-color: transparent;
-}
-
-
-.card-sidebar row {
-    margin: 4px 0;
-}
-
-.card-sidebar .card {
-    background-color: @theme_bg_color;
-    transition: background-color 0.3s;
-}
-
-.card-sidebar .card:hover {
-    background-color: @theme_hover_bg_color;
-}
-*/

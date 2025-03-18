@@ -55,18 +55,42 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
         css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/ui/style.css"))
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
+        # Load the settings up
+        self.settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+
+        # Bind the settings related to the window
+        self.settings.bind("window-width", self, "default-width",
+            Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind("window-height", self, "default-height",
+            Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind("window-maximized", self, "maximized",
+            Gio.SettingsBindFlags.DEFAULT)
+
+        # TODO Implement the setting for data folder
+
+        # Connect to save the name of the last edited project
+        self.connect("close-request", self.on_close_request)
+
         self._open_library()
 
+    def on_close_request(self, event):
+        logger.info("Window close requested")
+        # TODO Remember the name of the project currently open in library
+
+
+    # TODO Turn that into a call back for when the data folder is changed
     def _open_library(self):
-        # Get the data folder
+        # Get a reference to the library panel
+        library_panel = self.navigation.find_page('library')
+
+        # Set the data folder
         manuscript_path = Path(GLib.get_user_data_dir()) / Path('manuscripts')
         if not manuscript_path.exists():
             manuscript_path.mkdir()
         logger.info(f'Data location: {manuscript_path}')
-        self.navigation.find_page('library').set_property('manuscripts_base_path', manuscript_path.resolve())
+        library_panel.set_property('manuscripts_base_path', manuscript_path.resolve())
 
-        # Display the editor (for working on it)
-        #library = self.navigation.find_page('library')
-        #first_child = library.flowbox.get_child_at_index(0)
-        #library.flowbox.emit("child-activated", first_child)
+        if self.settings.get_boolean("open-last-project"):
+            manuscripts_model = library_panel.manuscripts_grid.get_model()
+            manuscripts_model.select_item(0, True)
 
