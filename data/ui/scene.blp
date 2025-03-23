@@ -1,32 +1,38 @@
 using Gtk 4.0;
+using Adw 1;
 
-template $SceneCard: Gtk.Box {
-  styles [
-    "card",
-  ]
+template $SceneCard: Adw.Bin {
+    styles [
+      "card",
+    ]
 
-  orientation: vertical;
-  spacing: 6;
-  vexpand: true;
+    child: Box {
 
-  Label {
-    label: bind template.scene_title ;
-    halign: start;
-    margin-start: 6;
-  }
-
-  Separator {
-    margin-start: 6;
+    orientation: vertical;
+    spacing: 6;
     vexpand: true;
-  }
 
-  Label scene_synopsis {
-    label: bind template.scene_synopsis;
-    margin-start: 6;
-    hexpand: true;
-    xalign: 0;
-    wrap: true;
-    ellipsize: end;
-    lines: 3;
-  }
+    Label {
+      label: bind template.scene_title ;
+      halign: start;
+      margin-start: 6;
+      margin-end: 6;
+    }
+
+    Separator {
+      margin-start: 6;
+      vexpand: true;
+      margin-end: 6;
+    }
+
+    Label scene_synopsis {
+      label: bind template.scene_synopsis;
+      margin-start: 6;
+      hexpand: true;
+      xalign: 0;
+      wrap: true;
+      ellipsize: end;
+      lines: 3;
+    }
+  };
 }

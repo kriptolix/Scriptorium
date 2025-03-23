@@ -1,0 +1,28 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ChapterColumn: Adw.Bin {
+    child: Box {
+      orientation: vertical;
+      spacing: 6;
+      width-request: 200;
+      vexpand: true;
+      hexpand: true;
+
+      Label {
+        label: bind template.chapter_title ;
+        halign: start;
+        margin-start: 6;
+        margin-end: 6;
+      }
+
+      ScrolledWindow {
+        hscrollbar-policy: never;
+        vexpand: true;
+
+        child: ListView scenes_list {
+          factory: SignalListItemFactory scene_card_factory {};
+        };
+      }
+  };
+}

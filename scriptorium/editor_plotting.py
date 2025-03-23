@@ -19,6 +19,7 @@
 
 from gi.repository import Adw, Gtk, GObject, Gio, Gdk
 from .scene import SceneCard
+from .chapter_column import ChapterColumn
 
 import logging
 logger = logging.getLogger(__name__)
@@ -27,25 +28,26 @@ logger = logging.getLogger(__name__)
 class EditorPlottingView(Adw.Bin):
     __gtype_name__ = "EditorPlottingView"
 
-    boxes = Gtk.Template.Child()
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    chapter_columns = Gtk.Template.Child()
+    chapter_column_factory = Gtk.Template.Child()
 
     def bind_to_manuscript(self, manuscript):
         logger.info(f'Connect to manuscript {manuscript}')
         self.manuscript = manuscript
 
-        # Clear up all the previous columns
-        while self.boxes.get_first_child() is not None:
-            self.boxes.remove(self.boxes.get_first_child())
+        self.chapter_column_factory.connect("setup", self.on_setup_item)
+        self.chapter_column_factory.connect("bind", self.on_bind_item)
 
-        # Add one column per chapter
-        for chapter in manuscript.chapters:
-            column = chapter.title
-            column_box = self.create_column(chapter)
-            self.boxes.append(column_box)
+        selection_model = Gtk.NoSelection(model=manuscript.chapters)
+        self.chapter_columns.set_model(selection_model)
 
+    def on_setup_item(self, _, list_item):
+        list_item.set_child(ChapterColumn())
+
+    def on_bind_item(self, _, list_item):
+        chapter = list_item.get_item()
+        chapter_column = list_item.get_child()
+        chapter_column.connect_to_chapter(chapter)
 
     def create_column(self, chapter):
         logger.info(f'Create {chapter.title}')
@@ -65,6 +67,7 @@ class EditorPlottingView(Adw.Bin):
         list_view.set_vexpand(True)
         list_view.set_hexpand(True)
 
+
         # Set factory for rendering items
         factory = Gtk.SignalListItemFactory()
         factory.connect("setup", self.on_setup_item)
@@ -75,13 +78,45 @@ class EditorPlottingView(Adw.Bin):
 
         return vbox
 
-    def on_setup_item(self, _, list_item):
-        list_item.set_child(SceneCard())
+    def on_setup_item_other(self, _, list_item):
+        card = SceneCard()
+        list_item.set_child(card)
 
-    def on_bind_item(self, _, list_item):
+        # Drag and drop
+        drag_source = Gtk.DragSource(actions=Gdk.DragAction.MOVE)
+        drag_source.connect("prepare", self.on_prepare, list_item)
+        drag_source.connect("drag-begin", self.on_drag_begin, list_item)
+        card.add_controller(drag_source)
+
+        # Configure them as drop target
+        drop_target = Gtk.DropTarget.new(SceneCard, Gdk.DragAction.MOVE)
+        drop_target.connect("drop", self.on_drop, list_item)
+        card.add_controller(drop_target)
+
+    def on_bind_item_other(self, _, list_item):
         scene = list_item.get_item()
         scene_card = list_item.get_child()
         scene_card.set_property('scene_title', scene.title)
         scene_card.set_property('scene_synopsis', scene.synopsis)
 
+    def on_prepare(self, _source, x, y, list_item):
+        scene_card = list_item.get_child()
+
+        value = GObject.Value()
+        value.init(SceneCard)
+        value.set_object(scene_card)
+
+        return Gdk.ContentProvider.new_for_value(value)
+
+    def on_drag_begin(self, drag_source, drag, list_item):
+        scene_card = list_item.get_child()
+        snapshot = Gtk.WidgetPaintable.new(list_item.get_child())
+
+        icon = Gtk.DragIcon.get_for_drag(drag)
+        icon.set_child(Gtk.Picture.new_for_paintable(snapshot))
+
+    def on_drop(self, drop, value, x, y, list_item):
+        #target_row = list_view.get_row_at_y(y)
+        #target_index = target_row.get_index()
+        logger.info(f'Drop {drop}, {value}, {list_item}')
 

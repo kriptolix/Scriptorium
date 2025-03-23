@@ -40,12 +40,8 @@ class ManuscriptItem(Gtk.Box):
         self.connect('notify::cover', self.on_cover_changed)
 
     def on_cover_changed(self, _cover, _other):
-        # Set cover
-        logger.info(f'Set cover to "{self.cover}"')
-
         if self.cover is not None:
             # Load the image
-            logger.info('Load image')
             self.cover_picture.set_filename(self.cover)
             self.stack.set_visible_child_name('cover')
         else:

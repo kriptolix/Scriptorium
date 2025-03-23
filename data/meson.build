@@ -63,6 +63,7 @@ blueprints = custom_target(
 		'ui/library/manuscript.blp',
 		'ui/window.blp',
 		'ui/scene.blp',
+		'ui/chapter_column.blp',
 	),
 	output: '.',
 	command: [

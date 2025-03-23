@@ -38,13 +38,11 @@ template $EditorPlottingView: Adw.Bin {
       margin-top: 12;
       margin-bottom: 12;
       margin-end: 12;
-      child: ScrolledWindow {
-        vexpand: true;
-        child: Box boxes {
+      child: ListView chapter_columns {
           orientation: horizontal;
-          homogeneous: true;
-          spacing: 12;
-        };
+          vexpand: true;
+          hexpand: true;
+          factory: SignalListItemFactory chapter_column_factory {};
       };
     };
   };

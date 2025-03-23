@@ -28,6 +28,7 @@ scriptorium_sources = [
   'editor_plotting.py',
   'editor_formatting.py',
   'scene.py',
+  'chapter_column.py',
   'library/library.py',
   'library/manuscript.py',
   'model.py',

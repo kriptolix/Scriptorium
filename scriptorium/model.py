@@ -13,6 +13,7 @@ class Scene(GObject.Object):
     identifier = GObject.Property(type=str)
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
+    _chapter = None
 
     _scene_path = None
 
@@ -22,6 +23,25 @@ class Scene(GObject.Object):
 
         scene_path = base_path / Path(f'{self.identifier}.html')
         self._scene_path = scene_path.resolve()
+
+    def set_chapter(self, chapter):
+        if chapter is not None:
+            logger.info(f'{self.title} in {chapter.title} now')
+        else:
+            logger.info(f'{self.title} orphan')
+
+        self._chapter = chapter
+
+    def get_chapter(self):
+        return self._chapter
+
+    def move_to_chapter(self, chapter, position: int = 0):
+        # Remove the scene from its current chapter
+        current_chapter = self.get_chapter()
+        current_chapter.remove_scene(self)
+
+        # Insert into the new chapter
+        chapter.add_scene(self, position)
 
     def metadata(self):
         """
@@ -72,6 +92,27 @@ class Chapter(GObject.Object):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.scenes = Gio.ListStore.new(item_type=Scene)
+
+    def remove_scene(self, scene):
+        """
+        Remove a scene from the chapter
+        """
+        found, position = self.scenes.find(scene)
+        if found:
+            self.scenes.remove(position)
+            scene.set_chapter(None)
+        else:
+            logger.warning(f'Could not find {scene}')
+
+    def add_scene(self, scene, position: int = 0):
+        """
+        Add scene to the chapter
+        """
+        if position >= 0:
+            self.scenes.insert(position, scene)
+        else:
+            self.scenes.append(scene)
+        scene.set_chapter(self)
 
     def to_html(self):
         """
@@ -171,7 +212,7 @@ class Manuscript(GObject.Object):
                 scene_entry = Scene(identifier=scene['identifier'], base_path=scenes_dir)
                 scene_entry.title = scene['title']
                 scene_entry.synopsis = scene['synopsis'].replace('\n', ' ')
-                chapter_entry.scenes.append(scene_entry)
+                chapter_entry.add_scene(scene_entry)
             self.chapters.append(chapter_entry)
 
 
