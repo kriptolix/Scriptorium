@@ -2,27 +2,45 @@ using Gtk 4.0;
 using Adw 1;
 
 template $ChapterColumn: Adw.Bin {
-    child: Box {
-      orientation: vertical;
+  margin-start: 2;
+  margin-end: 2;
+  margin-top: 2;
+  margin-bottom: 2;
+  styles [
+    "scriptorium-chapter-column",
+  ]
+
+  child: Box {
+    orientation: vertical;
+    spacing: 6;
+    width-request: 300;
+    vexpand: true;
+
+    Box chapter_header {
+      orientation: horizontal;
+      margin-start: 6;
+      margin-end: 6;
       spacing: 6;
-      width-request: 200;
-      vexpand: true;
-      hexpand: true;
 
       Label {
-        label: bind template.chapter_title ;
+        label: bind template.chapter_title;
         halign: start;
-        margin-start: 6;
+      }
+    }
+
+    ScrolledWindow {
+      hscrollbar-policy: never;
+      vexpand: true;
+
+      child: ListView scenes_list {
         margin-end: 6;
-      }
+        margin-start: 6;
+        styles [
+          "scriptorium-scene-card-list",
+        ]
 
-      ScrolledWindow {
-        hscrollbar-policy: never;
-        vexpand: true;
-
-        child: ListView scenes_list {
-          factory: SignalListItemFactory scene_card_factory {};
-        };
-      }
+        factory: SignalListItemFactory scene_card_factory {};
+      };
+    }
   };
 }

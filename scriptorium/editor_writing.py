@@ -38,7 +38,6 @@ class Writing(Adw.Bin):
     list_view = Gtk.Template.Child()
     item_factory = Gtk.Template.Child()
     text_view = Gtk.Template.Child()
-    bar_breadcrumb_label_scene = Gtk.Template.Child()
     label_words = Gtk.Template.Child()
     chapters_drop_down = Gtk.Template.Child()
 
@@ -92,9 +91,6 @@ class Writing(Adw.Bin):
         buffer = self.text_view.get_buffer()
         selected_scene = selection.get_selected_item()
         logger.info(f"Scene selected: {selected_scene.title}")
-
-        # Update the breadcrumb
-        self.bar_breadcrumb_label_scene.set_label(selected_scene.title)
 
         # We don't want undo to span across scenes
         buffer.begin_irreversible_action()

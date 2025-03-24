@@ -14,10 +14,7 @@ template $EditorNavigationPage: Adw.NavigationPage {
       };
     }
 
-    content: Box {
-      orientation: vertical;
-
-      Adw.ViewStack stack {
+    content: Adw.ViewStack stack {
         vexpand: true;
 
         Adw.ViewStackPage plotting_tab {
@@ -43,12 +40,6 @@ template $EditorNavigationPage: Adw.NavigationPage {
 
           child: $EditorFormattingView formatting {};
         }
-
-      }
-
-      Adw.ViewSwitcherBar switcher_bar {
-        stack: stack;
-      }
     };
   };
 }

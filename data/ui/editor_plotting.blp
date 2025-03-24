@@ -6,28 +6,29 @@ template $EditorPlottingView: Adw.Bin {
     sidebar: Adw.NavigationPage {
       title: _("Sidebar");
       tag: "sidebar";
-      child: ScrolledWindow {
+
+      child: Gtk.ListBox {
         vexpand: true;
+        selection-mode: single;
 
-        child: Gtk.ListBox {
-          vexpand: true;
-          selection-mode: none;
+        styles [
+          "navigation-sidebar",
+        ]
 
-          ListBoxRow {
-            Button {
-              child: Box {
-                spacing: 12;
-                orientation: horizontal;
-                Image {
-                  icon-name: "view-columns-symbolic";
-                }
-                Label {
-                  label: "Structure";
-                }
-              };
+        ListBoxRow {
+          Box {
+            spacing: 12;
+            orientation: horizontal;
+
+            Image {
+              icon-name: "view-columns-symbolic";
+            }
+
+            Label {
+              label: "Chapters";
             }
           }
-        };
+        }
       };
     };
 
@@ -38,11 +39,22 @@ template $EditorPlottingView: Adw.Bin {
       margin-top: 12;
       margin-bottom: 12;
       margin-end: 12;
-      child: ListView chapter_columns {
-          orientation: horizontal;
-          vexpand: true;
-          hexpand: true;
-          factory: SignalListItemFactory chapter_column_factory {};
+
+      child: Box {
+        orientation: horizontal;
+
+        ScrolledWindow {
+          child: ListView chapter_columns {
+            orientation: horizontal;
+            vexpand: true;
+            hexpand: true;
+            styles [
+              "scriptorium-scene-card-list",
+            ]
+
+            factory: SignalListItemFactory chapter_column_factory {};
+          };
+        }
       };
     };
   };

@@ -7,6 +7,7 @@ textview {
   line-height: 1.2;
   background-color: white;
 }
+/*
 
 frame {
     background-color: white;
@@ -19,6 +20,7 @@ frame {
 list {
   background-color: transparent;
 }
+
 
 gridview {
   background-color: transparent;
@@ -40,12 +42,23 @@ listview row {
   margin-left: 12px;
   margin-right: 12px;
 }
-
-.card {
   background-color: white;
-  border: 1px solid @theme_base_color;
+border: 1px solid @theme_base_color;
+*/
+
+.scriptorium-scene-card {
   border-radius: 0;
+  background-color: var(--popover-bg-color);
   padding: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px var(--headerbar-shade-color);
+  margin: 2px;
+}
+
+.scriptorium-scene-card-list {
+  background: transparent;
+}
+
+.scriptorium-chapter-column {
+  background-color: var(--secondary-sidebar-bg-color);
 }
 

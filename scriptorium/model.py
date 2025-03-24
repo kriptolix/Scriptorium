@@ -25,11 +25,6 @@ class Scene(GObject.Object):
         self._scene_path = scene_path.resolve()
 
     def set_chapter(self, chapter):
-        if chapter is not None:
-            logger.info(f'{self.title} in {chapter.title} now')
-        else:
-            logger.info(f'{self.title} orphan')
-
         self._chapter = chapter
 
     def get_chapter(self):
@@ -89,6 +84,8 @@ class Chapter(GObject.Object):
     # The scenes contained in this chapter
     scenes: Gio.ListStore
 
+    _manuscript = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.scenes = Gio.ListStore.new(item_type=Scene)
@@ -134,6 +131,12 @@ class Chapter(GObject.Object):
         }
         return data
 
+    def set_manuscript(self, manuscript):
+        self._manuscript = manuscript
+
+    def get_manuscript(self):
+        return self._manuscript
+
 class Manuscript(GObject.Object):
     # Properties of the manuscript
     title = GObject.Property(type=str)
@@ -146,12 +149,21 @@ class Manuscript(GObject.Object):
     # The chapters contained in the manuscript
     chapters: Gio.ListStore
 
+    # A special chapter for scenes that are not assigned to any chapter
+    unassigned: Chapter
+
     def __init__(self, manuscript_path, **kwargs):
         super().__init__(**kwargs)
 
         # Keep track of the attributes
         self._base_directory = manuscript_path
+
+        # Create the list of chapters
         self.chapters = Gio.ListStore.new(item_type=Chapter)
+
+        # Create the chapter
+        self.unassigned = Chapter()
+        self.unassigned.title = 'Unassigned scenes'
 
         # Load the description file from disk
         self.load_from_disk()
@@ -213,8 +225,31 @@ class Manuscript(GObject.Object):
                 scene_entry.title = scene['title']
                 scene_entry.synopsis = scene['synopsis'].replace('\n', ' ')
                 chapter_entry.add_scene(scene_entry)
-            self.chapters.append(chapter_entry)
+            self.add_chapter(chapter_entry)
 
+    def add_chapter(self, chapter, position: int = 0):
+        """
+        Add chapter to the manuscript
+        """
+        if position >= 0:
+            self.chapters.insert(position, chapter)
+        else:
+            self.chapters.append(chapter)
+        chapter.set_manuscript(self)
+
+    def splice_chapters(self, source_chapter, target_chapter):
+        """
+        Move the source chapter to the position target chapter is at
+        """
+        # Start by finding the positions of each chapter
+        found_source, source_position = self.chapters.find(source_chapter)
+        found_target, target_position = self.chapters.find(target_chapter)
+        if not found_source or not found_target:
+            raise KeyError(f'Could not find the chapters to swap')
+
+        # Now move the source where the target used to be located
+        self.chapters.remove(source_position)
+        self.chapters.insert(target_position, source_chapter)
 
 
 class Library(object):

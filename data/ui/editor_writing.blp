@@ -6,9 +6,14 @@ template $Writing: Adw.Bin {
     sidebar: Adw.NavigationPage {
       title: _("Sidebar");
       tag: "sidebar";
+      margin-start: 6;
+      margin-end: 6;
+      margin-top: 6;
+      margin-bottom: 6;
 
       child: Box {
         orientation: vertical;
+        spacing: 6;
 
         DropDown chapters_drop_down {
           enable-search: true;
@@ -18,7 +23,9 @@ template $Writing: Adw.Bin {
           vexpand: true;
 
           child: ListView list_view {
-
+            styles [
+              "scriptorium-scene-card-list",
+            ]
             factory: SignalListItemFactory item_factory {};
           };
         }
@@ -28,54 +35,32 @@ template $Writing: Adw.Bin {
     content: Adw.NavigationPage {
       title: _("Content");
       tag: "content";
-      margin-start: 12;
-      margin-top: 12;
-      margin-bottom: 12;
-      margin-end: 12;
 
       child: Box {
           orientation: vertical;
 
-          CenterBox bar_breadcrumb {
-            name: "bar_breadcrumb";
+          ScrolledWindow content {
+            TextView text_view {
+              vexpand: true;
 
-            [start]
-            Box {
-              Label {
-                label: _("Current scene:");
-              }
+              buffer: Gtk.TextBuffer {
+                enable-undo: true;
+              };
 
-              Separator {
-                styles [
-                  "spacer",
-                ]
-              }
-
-              Label bar_breadcrumb_label_scene {
-                label: "";
-              }
+              wrap-mode: word;
+              input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
             }
           }
 
-          Frame {
-            child: ScrolledWindow content {
-              TextView text_view {
-                margin-start: 6;
-                margin-end: 6;
-                vexpand: true;
-
-                buffer: Gtk.TextBuffer {
-                  enable-undo: true;
-                };
-
-                wrap-mode: word;
-                input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
-              }
-            };
+          Separator {
           }
 
           CenterBox bar_status {
             name: "bar_status";
+            margin-top: 6;
+            margin-start: 12;
+            margin-end: 12;
+            margin-bottom: 6;
 
             [end]
             Box {

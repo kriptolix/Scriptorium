@@ -18,11 +18,12 @@ def html_to_buffer(html_content: str, buffer: Gtk.TextBuffer):
     for paragraph in paragraphs:
         for child in paragraph.children:
             text = child.get_text()
-            start = buffer.get_end_iter()
-            if child.name:
-                buffer.insert_with_tags_by_name(start, text, child.name)
-            else:
-                buffer.insert(start, text)
+            if len(text) > 1:
+                start = buffer.get_end_iter()
+                if child.name:
+                    buffer.insert_with_tags_by_name(start, text, child.name)
+                else:
+                    buffer.insert(start, text)
         start = buffer.get_end_iter()
         buffer.insert(start, "\n\n")
 
@@ -64,7 +65,7 @@ def buffer_to_html(buffer: Gtk.TextBuffer):
 
     # Split according to paragraphs
     paragraphs = ''.join(html_content).split('\n\n')
-    html_content = [f'<p>{paragraph}</p>' for paragraph in paragraphs]
+    html_content = [f'<p>{paragraph}</p>' for paragraph in paragraphs if len(paragraph) > 1]
 
     return '\n'.join(html_content)
     
