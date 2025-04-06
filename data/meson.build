@@ -58,6 +58,7 @@ blueprints = custom_target(
 		'ui/editor/editor.blp',
 		'ui/editor/writing.blp',
 		'ui/editor/plotting.blp',
+		'ui/editor/plotting_overview.blp',
 		'ui/editor/formatting.blp',
 		'ui/library/library.blp',
 		'ui/library/manuscript.blp',

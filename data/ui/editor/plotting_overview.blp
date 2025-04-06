@@ -1,0 +1,22 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PlottingOverviewPanel: Adw.Bin {
+  Box {
+    orientation: horizontal;
+
+    ScrolledWindow {
+      child: ListView chapter_columns {
+        orientation: horizontal;
+        vexpand: true;
+        hexpand: true;
+
+        styles [
+          "scriptorium-scene-card-list",
+        ]
+
+        factory: SignalListItemFactory chapter_column_factory {};
+      };
+    }
+  }
+}

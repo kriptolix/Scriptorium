@@ -7,28 +7,13 @@ template $EditorPlottingView: Adw.Bin {
       title: _("Sidebar");
       tag: "sidebar";
 
-      child: Gtk.ListBox {
+      child: Gtk.ListBox panels_navigation {
         vexpand: true;
         selection-mode: single;
 
         styles [
           "navigation-sidebar",
         ]
-
-        ListBoxRow {
-          Box {
-            spacing: 12;
-            orientation: horizontal;
-
-            Image {
-              icon-name: "view-columns-symbolic";
-            }
-
-            Label {
-              label: "Chapters";
-            }
-          }
-        }
       };
     };
 
@@ -40,22 +25,8 @@ template $EditorPlottingView: Adw.Bin {
       margin-bottom: 12;
       margin-end: 12;
 
-      child: Box {
-        orientation: horizontal;
-
-        ScrolledWindow {
-          child: ListView chapter_columns {
-            orientation: horizontal;
-            vexpand: true;
-            hexpand: true;
-            styles [
-              "scriptorium-scene-card-list",
-            ]
-
-            factory: SignalListItemFactory chapter_column_factory {};
-          };
-        }
-      };
+      child: Gtk.Stack panels_content {};
     };
   };
 }
+

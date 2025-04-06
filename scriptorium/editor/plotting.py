@@ -20,32 +20,77 @@
 from gi.repository import Adw, Gtk, GObject, Gio, Gdk
 from .scene import SceneCard
 from .chapter_column import ChapterColumn
+from .plotting_overview import PlottingOverviewPanel
 
 import logging
 logger = logging.getLogger(__name__)
+
+#        ListBoxRow {
+#          Box {
+#            spacing: 12;
+#            orientation: horizontal;
+#
+#            Image {
+#              icon-name: "view-columns-symbolic";
+#            }
+#
+#            Label {
+#             label: "Chapters";
+#            }
+#          }
+#        }
+
+PANELS = [
+    ('overview', PlottingOverviewPanel())
+]
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting.ui")
 class EditorPlottingView(Adw.Bin):
     __gtype_name__ = "EditorPlottingView"
 
-    chapter_columns = Gtk.Template.Child()
-    chapter_column_factory = Gtk.Template.Child()
+    panels_navigation = Gtk.Template.Child()
+    panels_content = Gtk.Template.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # Setup all the panels
+        self.initialise_panels()
+
+        # Connect the signal for navigation
+        self.panels_navigation.connect("row-selected", self.on_selected_item)
+
+
+    def initialise_panels(self):
+        """
+        Add all the panels to the menu
+        """
+        for panel_id, panel_content in PANELS:
+            # Create a menu entry
+            metadata = panel_content.metadata()
+            box = Gtk.Box.new(spacing=12, orientation=Gtk.Orientation.HORIZONTAL)
+            image = Gtk.Image.new_from_icon_name(icon_name=metadata['icon_name'])
+            box.append(image)
+            label = Gtk.Label.new(metadata['title'])
+            box.append(label)
+            #box.set_data('test', panel_id)
+            box.panel_id = panel_id
+            self.panels_navigation.append(box)
+
+            # Add the panel to the stack
+            self.panels_content.add_named(panel_content, panel_id)
+
+    def on_selected_item(self, _list_box, _selected_item):
+        panel_id = _selected_item.get_child().panel_id
+        logger.info(f'Switching to {panel_id}')
+        self.panels_content.set_visible_child_name(panel_id)
 
     def bind_to_manuscript(self, manuscript):
-        logger.info(f'Connect to manuscript {manuscript}')
+        logger.info(f'Connect to manuscript {manuscript.title}')
         self.manuscript = manuscript
 
-        self.chapter_column_factory.connect("setup", self.on_setup_item)
-        self.chapter_column_factory.connect("bind", self.on_bind_item)
+        # Connect all the panels
+        for panel_id, panel_content in PANELS:
+            panel_content.bind_to_manuscript(manuscript)
 
-        selection_model = Gtk.NoSelection(model=manuscript.chapters)
-        self.chapter_columns.set_model(selection_model)
-
-    def on_setup_item(self, _, list_item):
-        list_item.set_child(ChapterColumn())
-
-    def on_bind_item(self, _, list_item):
-        chapter = list_item.get_item()
-        chapter_column = list_item.get_child()
-        chapter_column.connect_to_chapter(chapter)
 
