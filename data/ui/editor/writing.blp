@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $Writing: Adw.Bin {
+template $EditorWritingView: Adw.Bin {
   child: Adw.NavigationSplitView split_view {
     sidebar: Adw.NavigationPage {
       title: _("Sidebar");
@@ -26,6 +26,7 @@ template $Writing: Adw.Bin {
             styles [
               "scriptorium-scene-card-list",
             ]
+
             factory: SignalListItemFactory item_factory {};
           };
         }

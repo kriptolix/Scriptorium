@@ -9,10 +9,10 @@
     <file preprocess="xml-stripblanks">ui/library/manuscript.ui</file>
 
     <!-- Editor mode -->
-    <file preprocess="xml-stripblanks">ui/editor.ui</file>
-    <file preprocess="xml-stripblanks">ui/editor_plotting.ui</file>
-    <file preprocess="xml-stripblanks">ui/editor_writing.ui</file>
-    <file preprocess="xml-stripblanks">ui/editor_formatting.ui</file>
+    <file preprocess="xml-stripblanks">ui/editor/editor.ui</file>
+    <file preprocess="xml-stripblanks">ui/editor/plotting.ui</file>
+    <file preprocess="xml-stripblanks">ui/editor/writing.ui</file>
+    <file preprocess="xml-stripblanks">ui/editor/formatting.ui</file>
     <file preprocess="xml-stripblanks">ui/scene.ui</file>
     <file preprocess="xml-stripblanks">ui/chapter_column.ui</file>
     <file>ui/style.css</file>

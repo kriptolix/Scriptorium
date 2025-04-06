@@ -24,7 +24,7 @@ from .chapter_column import ChapterColumn
 import logging
 logger = logging.getLogger(__name__)
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor_plotting.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting.ui")
 class EditorPlottingView(Adw.Bin):
     __gtype_name__ = "EditorPlottingView"
 

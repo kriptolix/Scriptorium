@@ -27,7 +27,7 @@ from .model import Manuscript
 import logging
 logger = logging.getLogger(__name__)
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/editor.ui")
 class EditorNavigationPage(Adw.NavigationPage):
     __gtype_name__ = "EditorNavigationPage"
 

@@ -6,8 +6,11 @@ template $EditorNavigationPage: Adw.NavigationPage {
   tag: "editor";
 
   child: Adw.ToolbarView {
+    top-bar-style: raised;
+
     [top]
     Adw.HeaderBar header_bar {
+
       title-widget: Adw.ViewSwitcher switcher_title {
         stack: stack;
         policy: wide;
@@ -30,7 +33,7 @@ template $EditorNavigationPage: Adw.NavigationPage {
           title: _("Writing");
           icon-name: "edit-symbolic";
 
-          child: $Writing writing {};
+          child: $EditorWritingView writing {};
         }
 
         Adw.ViewStackPage formatting_tab {

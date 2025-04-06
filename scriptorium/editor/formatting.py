@@ -28,7 +28,7 @@ from .model import Chapter
 import logging
 logger = logging.getLogger(__name__)
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor_formatting.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/formatting.ui")
 class EditorFormattingView(Adw.Bin):
     __gtype_name__ = "EditorFormattingView"
 

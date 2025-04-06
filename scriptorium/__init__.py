@@ -5,9 +5,9 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw
 from gi.repository import Gtk
 
-from .editor_writing import Writing
-from .editor_plotting import EditorPlottingView
-from .editor_formatting import EditorFormattingView
+from .writing import EditorWritingView
+from .plotting import EditorPlottingView
+from .formatting import EditorFormattingView
 
 
 
