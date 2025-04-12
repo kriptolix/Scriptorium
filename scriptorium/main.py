@@ -18,13 +18,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import sys
-import gi
 
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
-gi.require_version('WebKit', '6.0')
-
-from gi.repository import Gtk, Gio, Adw, WebKit
+from gi.repository import Gio, Adw, WebKit
 from .window import ScriptoriumWindow
 
 
@@ -69,7 +64,7 @@ class ScriptoriumApplication(Adw.Application):
                                 developers=['Unknown'],
                                 copyright='© 2025 Unknown')
         # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
-        about.set_translator_credits(_('translator-credits'))
+        #about.set_translator_credits(_('translator-credits'))
         about.present(self.props.active_window)
 
     def on_preferences_action(self, widget, _):

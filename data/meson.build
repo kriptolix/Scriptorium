@@ -54,10 +54,10 @@ configure_file(
 blueprints = custom_target(
 	'blueprints',
 	input: files(
-		'gtk/help-overlay.blp',
 		'ui/editor/editor.blp',
 		'ui/editor/writing.blp',
 		'ui/editor/plotting.blp',
+		'ui/editor/plotting_entity.blp',
 		'ui/editor/plotting_overview.blp',
 		'ui/editor/formatting.blp',
 		'ui/library/library.blp',

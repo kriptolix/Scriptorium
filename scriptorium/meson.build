@@ -26,6 +26,7 @@ scriptorium_sources = [
   'editor/editor.py',
   'editor/writing.py',
   'editor/plotting.py',
+  'editor/plotting_entity.py',
   'editor/plotting_overview.py',
   'editor/formatting.py',
   'editor/scene.py',

@@ -1,4 +1,4 @@
-# editor_plotting.py
+# plotting_overview.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -17,12 +17,12 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject, Gio, Gdk
-from .scene import SceneCard
+from gi.repository import Adw, Gtk
 from .chapter_column import ChapterColumn
 
 import logging
 logger = logging.getLogger(__name__)
+
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting_overview.ui")
 class PlottingOverviewPanel(Adw.Bin):
@@ -54,4 +54,3 @@ class PlottingOverviewPanel(Adw.Bin):
         chapter = list_item.get_item()
         chapter_column = list_item.get_child()
         chapter_column.connect_to_chapter(chapter)
-

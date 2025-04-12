@@ -19,12 +19,7 @@
 
 from gi.repository import Adw, GObject
 from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import Gio
-from gi.repository import GLib
-from pathlib import Path
-
-from .model import Library, Manuscript
+from .model import Library
 from .manuscript import ManuscriptItem
 
 import logging

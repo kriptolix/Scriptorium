@@ -16,12 +16,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-
-from gi.repository import GObject
-from gi.repository import Gtk
-
 import logging
+from gi.repository import Gtk
+from gi.repository import GObject
+
 logger = logging.getLogger(__name__)
+
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/library/manuscript.ui")
 class ManuscriptItem(Gtk.Box):

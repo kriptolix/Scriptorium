@@ -1,4 +1,4 @@
-# editor_plotting.py
+# plotting.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -17,31 +17,19 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject, Gio, Gdk
-from .scene import SceneCard
-from .chapter_column import ChapterColumn
-from .plotting_overview import PlottingOverviewPanel
-
 import logging
 logger = logging.getLogger(__name__)
 
-#        ListBoxRow {
-#          Box {
-#            spacing: 12;
-#            orientation: horizontal;
-#
-#            Image {
-#              icon-name: "view-columns-symbolic";
-#            }
-#
-#            Label {
-#             label: "Chapters";
-#            }
-#          }
-#        }
+from gi.repository import Adw, Gtk
+from .plotting_entity import PlottingEntityPanel
+from .plotting_overview import PlottingOverviewPanel
+
+
+
 
 PANELS = [
-    ('overview', PlottingOverviewPanel())
+    ('people', PlottingEntityPanel()),
+    ('overview', PlottingOverviewPanel()),
 ]
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting.ui")
@@ -60,7 +48,6 @@ class EditorPlottingView(Adw.Bin):
         # Connect the signal for navigation
         self.panels_navigation.connect("row-selected", self.on_selected_item)
 
-
     def initialise_panels(self):
         """
         Add all the panels to the menu
@@ -73,7 +60,6 @@ class EditorPlottingView(Adw.Bin):
             box.append(image)
             label = Gtk.Label.new(metadata['title'])
             box.append(label)
-            #box.set_data('test', panel_id)
             box.panel_id = panel_id
             self.panels_navigation.append(box)
 

@@ -22,7 +22,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
-from gi.repository import GObject
+
 
 import scriptorium.library
 import scriptorium.editor
@@ -39,6 +39,9 @@ logger = logging.getLogger(__name__)
 # a different one from the gallery
 
 from pathlib import Path
+
+
+
 
 
 @Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/ui/window.ui')

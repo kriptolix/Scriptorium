@@ -1,10 +1,11 @@
-from gi.repository import Adw, Gtk, GObject, Gio, Gdk
+from gi.repository import Adw, Gtk, GObject, Gdk
 
 from .model import Chapter
 from .scene import SceneCard
 
 import logging
 logger = logging.getLogger(__name__)
+
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/chapter_column.ui")
 class ChapterColumn(Adw.Bin):
@@ -21,7 +22,8 @@ class ChapterColumn(Adw.Bin):
         super().__init__(**kwargs)
 
         self.scene_card_factory.connect("setup", self.on_setup_scene_card)
-        self.scene_card_factory.connect("bind", self.on_bind_scene_card, self.scenes_list)
+        self.scene_card_factory.connect("bind", self.on_bind_scene_card,
+                                        self.scenes_list)
 
     def connect_to_chapter(self, chapter: Chapter):
         """

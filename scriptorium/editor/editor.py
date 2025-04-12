@@ -24,6 +24,10 @@ import json
 # The editor interface is using the model for a manuscript
 from .model import Manuscript
 
+from .writing import EditorWritingView
+from .plotting import EditorPlottingView
+from .formatting import EditorFormattingView
+
 import logging
 logger = logging.getLogger(__name__)
 

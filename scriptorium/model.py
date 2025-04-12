@@ -1,13 +1,11 @@
-import os
-import json
 from pathlib import Path
 from gi.repository import Gtk, GObject, Gio
 import yaml
-
 from .utils import html_to_buffer, buffer_to_html
-
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class Scene(GObject.Object):
     identifier = GObject.Property(type=str)
@@ -17,7 +15,7 @@ class Scene(GObject.Object):
 
     _scene_path = None
 
-    def __init__(self, identifier:str, base_path: Path, **kwargs):
+    def __init__(self, identifier: str, base_path: Path, **kwargs):
         super().__init__(**kwargs)
         self.identifier = identifier
 
@@ -75,6 +73,7 @@ class Scene(GObject.Object):
 
         html_content = Path(self._scene_path).read_text()
         return html_content
+
 
 class Chapter(GObject.Object):
     # Properties of the chapter
@@ -137,6 +136,7 @@ class Chapter(GObject.Object):
     def get_manuscript(self):
         return self._manuscript
 
+
 class Manuscript(GObject.Object):
     # Properties of the manuscript
     title = GObject.Property(type=str)
@@ -174,7 +174,6 @@ class Manuscript(GObject.Object):
 
         img_path = self._base_directory / Path('img') / Path(self.cover)
         return img_path.resolve()
-
 
     def metadata(self):
         """
