@@ -17,36 +17,23 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import logging
+import scriptorium.library
+import scriptorium.editor
 from gi.repository import Adw
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
-
-
-import scriptorium.library
-import scriptorium.editor
-
-import logging
-logger = logging.getLogger(__name__)
-
-# Default status: show the gallery of books, a plus button on top left
-# and the title "Scriptorium"
-# People click on one of the book to switch mode. Using + opens a simple
-# dialog to ask for the name and create a new book
-
-# In editor mode the + is replaced by a X to close the book and return select
-# a different one from the gallery
-
 from pathlib import Path
 
+logger = logging.getLogger(__name__)
 
 
 
-
-@Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/ui/window.ui')
-class ScriptoriumWindow(Adw.ApplicationWindow):
-    __gtype_name__ = 'ScriptoriumWindow'
+@Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/window.ui')
+class ScrptWindow(Adw.ApplicationWindow):
+    __gtype_name__ = 'ScrptWindow'
 
     navigation = Gtk.Template.Child()
 
@@ -55,8 +42,14 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
 
         # Load custom CSS
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/ui/style.css"))
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/style.css"))
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(),
+                                                    css_provider,
+                                                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        # Load custom icons
+        theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
+        theme.add_resource_path("/com/github/cgueret/Scriptorium/icons/actions")
 
         # Load the settings up
         self.settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
@@ -80,7 +73,6 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
         logger.info("Window close requested")
         # TODO Remember the name of the project currently open in library
 
-
     # TODO Turn that into a call back for when the data folder is changed
     def _open_library(self):
         # Get a reference to the library panel
@@ -91,7 +83,8 @@ class ScriptoriumWindow(Adw.ApplicationWindow):
         if not manuscript_path.exists():
             manuscript_path.mkdir()
         logger.info(f'Data location: {manuscript_path}')
-        library_panel.set_property('manuscripts_base_path', manuscript_path.resolve())
+        library_panel.set_property('manuscripts_base_path',
+                                    manuscript_path.resolve())
 
         if self.settings.get_boolean("open-last-project"):
             manuscripts_model = library_panel.manuscripts_grid.get_model()

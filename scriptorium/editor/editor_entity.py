@@ -1,4 +1,4 @@
-# plotting_entity.py
+# editor_entity.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -24,12 +24,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting_entity.ui")
-class PlottingEntityPanel(Adw.Bin):
-    __gtype_name__ = "PlottingEntityPanel"
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_entity.ui")
+class ScrptEntityPanel(Adw.Bin):
+    __gtype_name__ = "ScrptEntityPanel"
 
     def metadata(self):
-        logger.info("Metadata")
         return {
             "icon_name": "system-users-symbolic",
             "title": "People",
@@ -37,5 +36,4 @@ class PlottingEntityPanel(Adw.Bin):
         }
 
     def bind_to_manuscript(self, manuscript):
-        logger.info('Bind')
         self._manuscript = manuscript

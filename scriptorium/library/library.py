@@ -26,9 +26,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/library/library.ui")
-class LibraryNavigationPage(Adw.NavigationPage):
-    __gtype_name__ = "LibraryNavigationPage"
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/library/library.ui")
+class ScrptLibraryView(Adw.NavigationPage):
+    __gtype_name__ = "ScrptLibraryView"
 
     # The library
     library: Library

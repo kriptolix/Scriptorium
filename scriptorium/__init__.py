@@ -8,3 +8,6 @@ gi.require_version('Tsparql', '3.0')
 # Manually init Adw to be sure it's recognized
 from gi.repository import Adw
 Adw.init()
+
+
+

@@ -25,9 +25,9 @@ from .model import Chapter
 import logging
 logger = logging.getLogger(__name__)
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/formatting.ui")
-class EditorFormattingView(Adw.Bin):
-    __gtype_name__ = "EditorFormattingView"
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_formatting.ui")
+class ScrptFormattingPanel(Adw.Bin):
+    __gtype_name__ = "ScrptFormattingPanel"
 
     web_view = Gtk.Template.Child()
     button_next_page = Gtk.Template.Child()

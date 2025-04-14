@@ -32,7 +32,7 @@ PANELS = [
     ('overview', PlottingOverviewPanel()),
 ]
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/plotting.ui")
 class EditorPlottingView(Adw.Bin):
     __gtype_name__ = "EditorPlottingView"
 

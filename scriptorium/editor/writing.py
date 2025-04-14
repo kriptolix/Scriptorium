@@ -25,7 +25,7 @@ from .scene import SceneCard
 import logging
 logger = logging.getLogger(__name__)
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/writing.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/writing.ui")
 class EditorWritingView(Adw.Bin):
     __gtype_name__ = "EditorWritingView"
 

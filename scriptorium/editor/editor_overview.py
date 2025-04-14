@@ -24,9 +24,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/editor/plotting_overview.ui")
-class PlottingOverviewPanel(Adw.Bin):
-    __gtype_name__ = "PlottingOverviewPanel"
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_overview.ui")
+class ScrptOverviewPanel(Adw.Bin):
+    __gtype_name__ = "ScrptOverviewPanel"
 
     chapter_columns = Gtk.Template.Child()
     chapter_column_factory = Gtk.Template.Child()

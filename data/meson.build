@@ -51,38 +51,4 @@ configure_file(
 	install_dir: get_option('datadir') / 'dbus-1' / 'services',
 )
 
-blueprints = custom_target(
-	'blueprints',
-	input: files(
-		'ui/editor/editor.blp',
-		'ui/editor/writing.blp',
-		'ui/editor/plotting.blp',
-		'ui/editor/plotting_entity.blp',
-		'ui/editor/plotting_overview.blp',
-		'ui/editor/formatting.blp',
-		'ui/library/library.blp',
-		'ui/library/manuscript.blp',
-		'ui/window.blp',
-		'ui/scene.blp',
-		'ui/chapter_column.blp',
-	),
-	output: '.',
-	command: [
-		find_program('blueprint-compiler'),
-		'batch-compile',
-		'@OUTPUT@',
-		'@CURRENT_SOURCE_DIR@',
-		'@INPUT@',
-	],
-)
-
-gnome.compile_resources(
-	'scriptorium',
-	'scriptorium.gresource.xml',
-	gresource_bundle: true,
-	install: true,
-	install_dir: pkgdatadir,
-	dependencies: blueprints,
-)
-
 subdir('icons')

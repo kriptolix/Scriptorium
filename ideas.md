@@ -1,3 +1,11 @@
+# Default status: show the gallery of books, a plus button on top left
+# and the title "Scriptorium"
+# People click on one of the book to switch mode. Using + opens a simple
+# dialog to ask for the name and create a new book
+
+# In editor mode the + is replaced by a X to close the book and return select
+# a different one from the gallery
+
 Add a feature in the library to quickly jolt down some ideas for a new book
 
 

@@ -149,6 +149,9 @@ class Manuscript(GObject.Object):
     # The chapters contained in the manuscript
     chapters: Gio.ListStore
 
+    # The scenes contained in the manuscript
+    scenes: Gio.ListStore
+
     # A special chapter for scenes that are not assigned to any chapter
     unassigned: Chapter
 
@@ -160,6 +163,9 @@ class Manuscript(GObject.Object):
 
         # Create the list of chapters
         self.chapters = Gio.ListStore.new(item_type=Chapter)
+
+        # Create the list of scenes
+        self.scenes = Gio.ListStore.new(item_type=Scene)
 
         # Create the chapter
         self.unassigned = Chapter()
@@ -224,6 +230,9 @@ class Manuscript(GObject.Object):
                 scene_entry.title = scene['title']
                 scene_entry.synopsis = scene['synopsis'].replace('\n', ' ')
                 chapter_entry.add_scene(scene_entry)
+
+                # Add the scene to the list of scenes
+                self.scenes.append(scene_entry)
             self.add_chapter(chapter_entry)
 
     def add_chapter(self, chapter, position: int = 0):

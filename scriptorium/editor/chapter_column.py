@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/ui/chapter_column.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/chapter_column.ui")
 class ChapterColumn(Adw.Bin):
     __gtype_name__ = "ChapterColumn"
 

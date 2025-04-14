@@ -20,7 +20,7 @@
 import sys
 
 from gi.repository import Gio, Adw, WebKit
-from .window import ScriptoriumWindow
+from .window import ScrptWindow
 
 
 import logging
@@ -29,6 +29,7 @@ logging.basicConfig(
     format='%(name)-20s: %(levelname)-8s %(message)s'
 )
 logger = logging.getLogger(__name__)
+
 
 class ScriptoriumApplication(Adw.Application):
     """The main application singleton class."""
@@ -52,7 +53,7 @@ class ScriptoriumApplication(Adw.Application):
         """
         win = self.props.active_window
         if not win:
-            win = ScriptoriumWindow(application=self)
+            win = ScrptWindow(application=self)
         win.present()
 
     def on_about_action(self, *args):
@@ -69,7 +70,7 @@ class ScriptoriumApplication(Adw.Application):
 
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
-        print('app.preferences action activated')
+        logger.info('app.preferences action activated')
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
