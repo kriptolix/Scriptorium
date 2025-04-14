@@ -43,16 +43,19 @@ class ScrptWritingPanel(Adw.Bin):
     def __init__(self, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
-        buffer = self.text_view.get_buffer()
+        text_buffer = self.text_view.get_buffer()
 
         # Create the tags for the buffer
-        buffer.create_tag("em", style=Pango.Style.ITALIC)
+        text_buffer.create_tag("em", style=Pango.Style.ITALIC)
 
         # Connect a signal to refresh the word count
-        buffer.connect("changed", self.on_buffer_changed)
+        text_buffer.connect("changed", self.on_buffer_changed)
 
         # Let users switch to edit mode when clicking anywhere on the scene
         self.scenes_list.connect("row-activated", self.on_row_activated)
+
+        # Detect when the editor is getting closed
+        self.edit_scene.connect("hiding", self.on_editor_closing)
 
     def metadata(self):
         """Return the metadata for this panel."""
@@ -79,32 +82,36 @@ class ScrptWritingPanel(Adw.Bin):
 
     def on_edit_scene(self, _button, scene):
         """Switch to editing the scene that has been selected."""
-        logger.info(f"Edit {scene.title}")
+        logger.info(f"Open editor for {scene.title}")
 
         # Set the editor title to the title of the scene
         self.edit_scene.set_title(scene.title)
 
-        buffer = self.text_view.get_buffer()
+        # Get the text buffer
+        text_buffer = self.text_view.get_buffer()
+
+        # Assign the scene to it
+        text_buffer.scene = scene
 
         # We don't want undo to span across scenes
-        buffer.begin_irreversible_action()
+        text_buffer.begin_irreversible_action()
 
         # Delete previous content
-        start_iter, end_iter = buffer.get_bounds()
-        buffer.delete(start_iter, end_iter)
+        start_iter, end_iter = text_buffer.get_bounds()
+        text_buffer.delete(start_iter, end_iter)
 
         # Load the scene
-        scene.load_into_buffer(buffer)
+        scene.load_into_buffer(text_buffer)
 
         # Finish
-        buffer.end_irreversible_action()
+        text_buffer.end_irreversible_action()
 
         self.navigation.push_by_tag("edit_scene")
 
-    def on_buffer_changed(self, buffer):
+    def on_buffer_changed(self, text_buffer):
         """Keep an eye on modifications of the buffer."""
-        start_iter, end_iter = buffer.get_bounds()
-        content = buffer.get_text(start_iter, end_iter, False)
+        start_iter, end_iter = text_buffer.get_bounds()
+        content = text_buffer.get_text(start_iter, end_iter, False)
         words = len(content.split())
         self.label_words.set_label(str(words))
 
@@ -112,3 +119,8 @@ class ScrptWritingPanel(Adw.Bin):
         """Switch to the editing mode if a row is clicked."""
         scene_card.edit_button.emit("clicked")
 
+    def on_editor_closing(self, _page):
+        """Perform any action needed when closing the editor."""
+        text_buffer = self.text_view.get_buffer()
+        logger.info(f"Save content of {text_buffer.scene.title}")
+        text_buffer.scene.save_from_buffer(text_buffer)
