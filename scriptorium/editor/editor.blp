@@ -5,48 +5,59 @@ template $ScrptEditorView: Adw.NavigationPage {
   title: _("Editor");
   tag: "editor";
 
-  child: Adw.ToolbarView  {
-    top-bar-style: raised;
+  child: Adw.OverlaySplitView split_view {
+    show-sidebar: bind show_sidebar_button.active;
 
-    [top]
-    Adw.HeaderBar {
-      show-title: true;
-      show-back-button: true;
+    sidebar: Adw.NavigationPage {
+      title: _("Name of manuscript");
+      tag: "sidebar";
 
-      [start]
-      ToggleButton show_sidebar_button {
-        icon-name: "sidebar-show-symbolic";
-        tooltip-text: _("Toggle Sidebar");
-        active: bind split_view.show-sidebar;
-      }
+      child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            show-title: true;
 
-      [end]
-      MenuButton {
-        icon-name: "open-menu-symbolic";
-        tooltip-text: _("Main Menu");
-        primary: true;
-        menu-model: window_menu;
-      }
-    }
+            [end]
+            MenuButton {
+              icon-name: "open-menu-symbolic";
+              tooltip-text: _("Main Menu");
+              primary: true;
+              menu-model: window_menu;
+            }
+          }
 
-    content: Adw.OverlaySplitView split_view {
-      show-sidebar: bind show_sidebar_button.active;
+          content: Gtk.ListBox panels_navigation {
+            vexpand: true;
+            selection-mode: single;
 
-      sidebar: Adw.NavigationPage {
-        title: _("Scriptorium");
-        tag: "sidebar";
-
-        child: Gtk.ListBox panels_navigation {
-          vexpand: true;
-          selection-mode: single;
-
-          styles [
-            "navigation-sidebar",
-          ]
-        };
+            styles [
+              "navigation-sidebar",
+            ]
+          };
       };
+    };
 
-      content: Stack panels_content {};
+    content: Adw.NavigationPage panels_content_page {
+      title: _("Name of current section");
+      tag: "content";
+
+      child: Adw.ToolbarView {
+
+        [top]
+        Adw.HeaderBar {
+          show-title: true;
+          show-back-button: false;
+
+          [start]
+          ToggleButton show_sidebar_button {
+            icon-name: "sidebar-show-symbolic";
+            tooltip-text: _("Toggle Sidebar");
+            active: bind split_view.show-sidebar;
+          }
+        }
+
+        content: Stack panels_content {};
+      };
     };
   };
 }

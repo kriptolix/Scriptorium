@@ -35,6 +35,7 @@ scriptorium_sources = [
 	'editor/chapter_column.py',
 	'library/library.py',
 	'library/manuscript.py',
+	'editor/writer.py',
 ]
 
 blueprints = custom_target(
@@ -51,6 +52,7 @@ blueprints = custom_target(
 		'library/library.blp',
 		'library/manuscript.blp',
 		'window.blp',
+		'editor/writer.blp',
 	),
 	output: '.',
 	command: [

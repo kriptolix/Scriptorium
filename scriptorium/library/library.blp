@@ -6,8 +6,6 @@ template $ScrptLibraryView: Adw.NavigationPage {
   tag: "library";
 
   child: Adw.ToolbarView {
-    top-bar-style: raised;
-
     [top]
     Adw.HeaderBar {
 
@@ -25,11 +23,7 @@ template $ScrptLibraryView: Adw.NavigationPage {
       }
     }
 
-    content: ScrolledWindow {
-      hscrollbar-policy: never;
-      vexpand: true;
-
-      child: GridView manuscripts_grid {
+    content: GridView manuscripts_grid {
         margin-top: 12;
         margin-end: 12;
         margin-bottom: 12;
@@ -37,7 +31,6 @@ template $ScrptLibraryView: Adw.NavigationPage {
         min-columns: 1;
         max-columns: 20;
         factory: SignalListItemFactory item_factory {};
-      };
     };
   };
 }

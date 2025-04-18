@@ -1,50 +1,12 @@
 textview {
-  padding-left: 6px;
-  padding-right: 6px;
-  padding-top: 6px;
-  padding-bottom: 6px;
   font-size: 16px;
   line-height: 1.2;
-  background-color: white;
 }
-/*
-
-frame {
-    background-color: white;
-}
-
-.sidebar-pane {
-    padding: 12px 12px 0px 12px;
-}
-
-list {
-  background-color: transparent;
-}
-
 
 gridview {
   background-color: transparent;
 }
 
-listview {
-  background-color: transparent;
-}
-
-listview .card {
-    padding: 6px 6px 6px 6px;
-}
-
-listview row {
-    margin: 4px 0;
-}
-
-#content {
-  margin-left: 12px;
-  margin-right: 12px;
-}
-  background-color: white;
-border: 1px solid @theme_base_color;
-*/
 
 .scriptorium-scene-card {
   border-radius: 0;
