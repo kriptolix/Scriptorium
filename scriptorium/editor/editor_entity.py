@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, Gtk, GObject
 
 import logging
 logger = logging.getLogger(__name__)
@@ -28,12 +28,20 @@ logger = logging.getLogger(__name__)
 class ScrptEntityPanel(Adw.Bin):
     __gtype_name__ = "ScrptEntityPanel"
 
-    def metadata(self):
-        return {
-            "icon_name": "system-users-symbolic",
-            "title": "People",
-            "description": "Blah"
-        }
+    @GObject.Property
+    def icon_name(self):
+        """Return the name of the icon for this panel."""
+        return "system-users-symbolic"
+
+    @GObject.Property
+    def title(self):
+        """Return the title for this panel."""
+        return "People"
+
+    @GObject.Property
+    def description(self):
+        """Return the description for this panel."""
+        return ""
 
     def bind_to_manuscript(self, manuscript):
         self._manuscript = manuscript

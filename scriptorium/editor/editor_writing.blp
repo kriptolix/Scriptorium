@@ -2,98 +2,62 @@ using Gtk 4.0;
 using Adw 1;
 
 template $ScrptWritingPanel: Adw.Bin {
-  child: Adw.NavigationView navigation {
-    Adw.NavigationPage {
-      title: "Select scene";
-      tag: "select_scene";
+  child: Adw.NavigationPage {
+    title: "Scenes";
 
-      ScrolledWindow  {
-        child: Adw.Clamp {
-          maximum-size: 600;
-          margin-top: 12;
+    child: Adw.NavigationView navigation {
+      Adw.NavigationPage {
+        title: "Select scene";
+        tag: "select_scene";
 
-          Adw.PreferencesGroup {
-            title: "Scenes";
-            description: "This is the list of scenes in the manuscript";
+        child:Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            show-title: true;
+            show-back-button: false;
 
-            ListBox scenes_list {
-              selection-mode: none;
-
-              styles [
-                "boxed-list",
-              ]
+            [start]
+            ToggleButton show_sidebar_button {
+              icon-name: "sidebar-show-symbolic";
+              tooltip-text: _("Toggle Sidebar");
+              // active: bind split_view.show-sidebar;
             }
           }
+
+          content: ScrolledWindow {
+            child: Adw.Clamp {
+              maximum-size: 600;
+              margin-top: 12;
+
+              Adw.PreferencesGroup {
+              ListBox scenes_list {
+                selection-mode: none;
+
+                styles [
+                  "boxed-list",
+                ]
+              }
+              }
+            };
+          };
         };
       }
-    }
 
-    Adw.NavigationPage edit_scene {
-      title: "Scene editor";
-      tag: "edit_scene";
+      Adw.NavigationPage edit_scene {
+        title: "Scene editor";
+        tag: "edit_scene";
 
-      child: Adw.ToolbarView {
-        [top]
-        Adw.HeaderBar {
-          show-title: true;
-          show-end-title-buttons: false;
-          decoration-layout: "";
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            show-title: true;
+            show-back-button: true;
 
-          [end]
-          ToggleButton show_sidebar_button {
-            icon-name: "info-outline-symbolic";
-            tooltip-text: _("Toggle text details");
-            active: bind split_view.show-sidebar;
           }
-        }
 
-        content:  Adw.OverlaySplitView split_view {
-          show-sidebar: bind show_sidebar_button.active;
-          sidebar-position: end;
-
-          sidebar: Box {
-            orientation: vertical;
-            Separator {}
-          };
-
-          content: Box {
-            orientation: vertical;
-            Separator {}
-
-            ScrolledWindow content {
-              TextView text_view {
-                vexpand: true;
-
-                buffer: Gtk.TextBuffer {
-                  enable-undo: true;
-                };
-
-                wrap-mode: word;
-                input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
-              }
-            }
-
-            Separator {}
-
-            CenterBox bar_status {
-              name: "bar_status";
-              margin-top: 6;
-              margin-start: 12;
-              margin-end: 12;
-              margin-bottom: 6;
-
-              [end]
-              Box {
-                Label {
-                  label: _("Words ");
-                }
-
-                Label label_words {}
-              }
-            }
-          };
+          content: Box {};
         };
-      };
-    }
+      }
+    };
   };
 }

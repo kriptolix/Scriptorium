@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, Gtk, GObject
 from .chapter_column import ChapterColumn
 
 import logging
@@ -31,12 +31,20 @@ class ScrptOverviewPanel(Adw.Bin):
     chapter_columns = Gtk.Template.Child()
     chapter_column_factory = Gtk.Template.Child()
 
-    def metadata(self):
-        return {
-            "icon_name": "view-columns-symbolic",
-            "title": "Overview",
-            "description": "Overview of all the content"
-        }
+    @GObject.Property
+    def icon_name(self):
+        """Return the name of the icon for this panel."""
+        return "view-columns-symbolic"
+
+    @GObject.Property
+    def title(self):
+        """Return the title for this panel."""
+        return "Overview"
+
+    @GObject.Property
+    def description(self):
+        """Return the description for this panel."""
+        return "Overview of all the content"
 
     def bind_to_manuscript(self, manuscript):
         self.manuscript = manuscript

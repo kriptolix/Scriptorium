@@ -20,11 +20,12 @@
 
 import logging
 
-from gi.repository import Adw, Gtk, Pango
+from gi.repository import Adw, Gtk, Pango, GObject
 
 from .globals import BASE
 from .scene import SceneCard
 from .writer import Writer
+from .panel import ScrptPanel
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +37,9 @@ class ScrptWritingPanel(Adw.Bin):
     __gtype_name__ = "ScrptWritingPanel"
 
     scenes_list = Gtk.Template.Child()
-    label_words = Gtk.Template.Child()
     edit_scene = Gtk.Template.Child()
-
+    navigation: Adw.NavigationView = Gtk.Template.Child()
+    show_sidebar_button = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         """Create an instance of the panel."""
@@ -50,13 +51,29 @@ class ScrptWritingPanel(Adw.Bin):
         # Let users switch to edit mode when clicking anywhere on the scene
         self.scenes_list.connect("row-activated", self.on_row_activated)
 
-    def metadata(self):
-        """Return the metadata for this panel."""
-        return {
-            "icon_name": "edit-symbolic",
-            "title": "Scenes",
-            "description": "Edit the content of the scenes",
-        }
+    @GObject.Property
+    def icon_name(self):
+        """Return the name of the icon for this panel."""
+        return "edit-symbolic"
+
+    @GObject.Property
+    def title(self):
+        """Return the title for this panel."""
+        return "Scenes"
+
+    @GObject.Property
+    def description(self):
+        """Return the description for this panel."""
+        return "Edit the content of the scenes"
+
+    def bind_side_bar_button(self, split_view):
+        split_view.bind_property(
+            "show_sidebar",
+            self.show_sidebar_button,
+            "active",
+            GObject.BindingFlags.BIDIRECTIONAL
+            | GObject.BindingFlags.SYNC_CREATE
+        )
 
     def bind_to_manuscript(self, manuscript):
         """Connect the panel to the manuscript."""
@@ -77,8 +94,10 @@ class ScrptWritingPanel(Adw.Bin):
         """Switch to editing the scene that has been selected."""
         logger.info(f"Open editor for {scene.title}")
 
-        self.writer_dialog.load_scene(scene)
-        self.writer_dialog.present(self)
+        self.edit_scene.set_title(scene.title)
+        self.navigation.push_by_tag('edit_scene')
+        #self.writer_dialog.load_scene(scene)
+        #self.writer_dialog.present(self)
 
     def on_row_activated(self, _selected_row, scene_card):
         """Switch to the editing mode if a row is clicked."""

@@ -31,9 +31,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 PANELS = [
-    ('scenes', ScrptWritingPanel()),
-    ('people', ScrptEntityPanel()),
-    #('overview', ScrptOverviewPanel()),
+    ("scenes", ScrptWritingPanel()),
+    # ("people", ScrptEntityPanel()),
+    # ('overview', ScrptOverviewPanel()),
 ]
 
 
@@ -42,7 +42,9 @@ class ScrptEditorView(Adw.NavigationPage):
     __gtype_name__ = "ScrptEditorView"
 
     panels_navigation = Gtk.Template.Child()
-    panels_content = Gtk.Template.Child()
+    panels = Gtk.Template.Child()
+    #panels_page = Gtk.Template.Child()
+    split_view = Gtk.Template.Child()
 
     # The manuscript the editor is connected to
     manuscript = GObject.Property(type=Manuscript)
@@ -57,43 +59,47 @@ class ScrptEditorView(Adw.NavigationPage):
         self.panels_navigation.connect("row-selected", self.on_selected_item)
 
         # Keep an eye for changes to the manuscript base path
-        self.connect('notify::manuscript', self.on_manuscript_changed)
+        self.connect("notify::manuscript", self.on_manuscript_changed)
 
     def initialise_panels(self):
-        """
-        Add all the panels to the menu
-        """
-        for panel_id, panel_content in PANELS:
+        """Add all the panels to the menu."""
+        for panel_id, panel in PANELS:
             # Create a menu entry
-            data = panel_content.metadata()
             box = Gtk.Box.new(spacing=12, orientation=Gtk.Orientation.HORIZONTAL)
-            image = Gtk.Image.new_from_icon_name(icon_name=data['icon_name'])
+            image = Gtk.Image.new_from_icon_name(icon_name=panel.icon_name)
             box.append(image)
-            label = Gtk.Label.new(data['title'])
+            label = Gtk.Label.new(panel.title)
             box.append(label)
-            box.panel_id = panel_id
             self.panels_navigation.append(box)
 
+            # Add the id and title to the box for easy retrieval later
+            box.panel_id = panel_id
+            box.title = panel.title
+
             # Add the panel to the stack
-            self.panels_content.add_named(panel_content, panel_id)
+            self.panels.add_named(panel, panel_id)
+
+            # Connect the side bar button(s)
+            panel.bind_side_bar_button(self.split_view)
 
     def on_selected_item(self, _list_box, _selected_item):
-        panel_id = _selected_item.get_child().panel_id
-        logger.info(f"Switching to panel {panel_id}")
-        self.panels_content.set_visible_child_name(panel_id)
+        """Change the panel currently displayed."""
+        selection = _selected_item.get_child()
+        logger.info(f"Switching to panel {selection.title}")
+        self.panels.set_visible_child_name(selection.panel_id)
 
     def on_manuscript_changed(self, _manuscript, _other):
-        """
-        Called when the editor is connected to a manuscript
-        """
+        """Connect the editor to a manuscript."""
         logger.info(f"Connect editor to {self.manuscript.title}")
 
         # Set the title of the window
         self.set_title(self.manuscript.title)
 
         # Connect all the panels
-        for panel_id, panel_content in PANELS:
-            panel_content.bind_to_manuscript(self.manuscript)
+        for panel_id, panel in PANELS:
+            panel.bind_to_manuscript(self.manuscript)
 
-        # Open the plotting tab by default
-        #self.stack.set_visible_child_name('plotting')
+        # Open the first entry by default
+        row = self.panels_navigation.get_row_at_index(0)
+        self.panels_navigation.emit("row-selected", row)
+
