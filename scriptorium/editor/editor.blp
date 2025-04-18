@@ -8,7 +8,7 @@ template $ScrptEditorView: Adw.NavigationPage {
   child: Adw.OverlaySplitView split_view {
     //show-sidebar: bind show_sidebar_button.active;
 
-    sidebar: Adw.NavigationPage {
+    sidebar: Adw.NavigationPage panels_sidebar {
       title: _("Name of manuscript");
       tag: "sidebar";
 
@@ -40,7 +40,7 @@ template $ScrptEditorView: Adw.NavigationPage {
     content: Adw.NavigationPage {
       title: "panels";
 
-      child: Stack panels {};
+      child: Adw.NavigationView panels {};
     };
   };
 }

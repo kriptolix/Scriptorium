@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 @Gtk.Template(resource_path=f"{BASE}/editor/editor_writing.ui")
-class ScrptWritingPanel(Adw.Bin):
+class ScrptWritingPanel(Adw.NavigationPage):
     """Panel to list all the scenes and edit their content."""
 
     __gtype_name__ = "ScrptWritingPanel"
@@ -55,11 +55,6 @@ class ScrptWritingPanel(Adw.Bin):
     def icon_name(self):
         """Return the name of the icon for this panel."""
         return "edit-symbolic"
-
-    @GObject.Property
-    def title(self):
-        """Return the title for this panel."""
-        return "Scenes"
 
     @GObject.Property
     def description(self):
