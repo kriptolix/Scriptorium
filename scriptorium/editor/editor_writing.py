@@ -20,12 +20,13 @@
 
 import logging
 
-from gi.repository import Adw, Gtk, Pango, GObject
+from gi.repository import Adw, Gtk, GObject
 
 from .globals import BASE
 from .scene import SceneCard
 from .writer import Writer
-from .panel import ScrptPanel
+from .editor_writing_details import ScrptWritingDetailsPanel
+from .dialog_add_scene import ScrptAddSceneDialog
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptWritingPanel"
 
     scenes_list = Gtk.Template.Child()
-    edit_scene = Gtk.Template.Child()
     navigation: Adw.NavigationView = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
 
@@ -62,6 +62,7 @@ class ScrptWritingPanel(Adw.NavigationPage):
         return "Edit the content of the scenes"
 
     def bind_side_bar_button(self, split_view):
+        """Connect the button to collapse the sidebar."""
         split_view.bind_property(
             "show_sidebar",
             self.show_sidebar_button,
@@ -73,11 +74,10 @@ class ScrptWritingPanel(Adw.NavigationPage):
     def bind_to_manuscript(self, manuscript):
         """Connect the panel to the manuscript."""
         self._manuscript = manuscript
-        self.scenes_list.bind_model(manuscript.scenes,
-                                    self.on_add_scene_to_list)
+        self.scenes_list.bind_model(manuscript.scenes, self.bind_card)
 
-    def on_add_scene_to_list(self, scene):
-        """Add the new scene to the list."""
+    def bind_card(self, scene):
+        """Bind a scene card to a scene."""
         scene_card = SceneCard(scene)
 
         # Connect the button to switching to the editor view
@@ -89,12 +89,22 @@ class ScrptWritingPanel(Adw.NavigationPage):
         """Switch to editing the scene that has been selected."""
         logger.info(f"Open editor for {scene.title}")
 
-        self.edit_scene.set_title(scene.title)
-        self.navigation.push_by_tag('edit_scene')
-        #self.writer_dialog.load_scene(scene)
-        #self.writer_dialog.present(self)
+        writing_details = ScrptWritingDetailsPanel(scene)
+        self.navigation.push(writing_details)
 
     def on_row_activated(self, _selected_row, scene_card):
         """Switch to the editing mode if a row is clicked."""
         scene_card.edit_button.emit("clicked")
 
+    def on_add_scene(self, dialog, _task):
+        response = dialog.choose_finish(_task)
+        if response == "add":
+            logger.info(f"Add scene {dialog.title}: {dialog.synopsis}")
+            self._manuscript.create_scene(dialog.title, dialog.synopsis)
+
+    @Gtk.Template.Callback()
+    def on_add_scene_clicked(self, _button):
+        logger.info("Open dialog to add scene")
+        dialog = ScrptAddSceneDialog()
+        response = dialog.choose(self, None, self.on_add_scene)
+        logger.info(response)

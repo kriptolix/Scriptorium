@@ -1,0 +1,95 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MultiLineEntryRow: Adw.PreferencesRow {
+  activatable: true;
+  selectable: true;
+
+  accessibility {
+    labelled-by: title;
+    described-by: content;
+  }
+
+  styles [
+    "entry"
+  ]
+
+  Box header {
+    valign: center;
+    hexpand: false;
+
+    styles [
+      "header",
+    ]
+
+    Box prefixes {
+      visible: false;
+
+      styles [
+        "prefixes",
+      ]
+    }
+
+    Box editable_area {
+      styles [
+        "editable-area"
+      ]
+
+      Box title_box {
+        orientation: vertical;
+        valign: center;
+        hexpand: true;
+        margin-top: 6;
+
+        styles [
+          "title"
+        ]
+
+        Label title {
+          ellipsize: none;
+          wrap: true;
+          wrap-mode: word;
+          xalign: 0;
+          label: bind template.title;
+
+          styles [
+            "subtitle"
+          ]
+        }
+
+        ScrolledWindow {
+          height-request: 120;
+          hexpand: true;
+
+          TextView content {
+            wrap-mode: word;
+            styles [
+              "multiline_content"
+            ]
+            state-flags-changed => $on_state_flags_changed();
+          }
+        }
+      }
+
+      Image edit_icon {
+        valign: center;
+        can-target: false;
+        icon-name: "document-edit-symbolic";
+        accessible-role: presentation;
+
+
+        styles [
+          "edit-icon"
+        ]
+      }
+    }
+
+    Box suffixes {
+      visible: false;
+
+      styles [
+        "suffixes",
+      ]
+    }
+  }
+}

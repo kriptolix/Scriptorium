@@ -1,12 +1,21 @@
+/*
 textview {
   font-size: 16px;
   line-height: 1.2;
 }
+*/
 
 gridview {
   background-color: transparent;
 }
 
+listview {
+  background-color: transparent;
+}
+
+.multiline_content {
+  background-color: transparent;
+}
 
 .scriptorium-scene-card {
   border-radius: 0;

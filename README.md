@@ -15,6 +15,9 @@ https://github.com/sonnyp/Eloquent/blob/main/src/window.blp
 
 https://www.atticus.io/
 
+https://github.com/Bavarder/Bavarder/blob/main/src/main.py
+
+
 Papers
 https://gitlab.gnome.org/GNOME/Incubator/papers/-/blob/main/shell/resources/pps-sidebar-annotations.ui
 

@@ -4,6 +4,8 @@ using Adw 1;
 template $ScrptEditorView: Adw.NavigationPage {
   title: _("Editor");
   tag: "editor";
+  hidden => $on_editorview_closed();
+  unrealize => $on_editorview_closed();
 
   child: Adw.OverlaySplitView split_view {
     //show-sidebar: bind show_sidebar_button.active;
@@ -29,6 +31,7 @@ template $ScrptEditorView: Adw.NavigationPage {
           content: Gtk.ListBox panels_navigation {
             vexpand: true;
             selection-mode: single;
+            activate-on-single-click: true;
 
             styles [
               "navigation-sidebar",

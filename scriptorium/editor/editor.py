@@ -31,11 +31,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 PANELS = [
+    ("overview", ScrptOverviewPanel()),
     ("scenes", ScrptWritingPanel()),
     # ("people", ScrptEntityPanel()),
-    # ('overview', ScrptOverviewPanel()),
 ]
 
+DEFAULT = "scenes"
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor.ui")
 class ScrptEditorView(Adw.NavigationPage):
@@ -64,9 +65,12 @@ class ScrptEditorView(Adw.NavigationPage):
         # Keep an eye for changes to the manuscript base path
         self.connect("notify::manuscript", self.on_manuscript_changed)
 
-        # Open the first panel by default
-        row = self.panels_navigation.get_row_at_index(0)
-        self.panels_navigation.emit("row-selected", row)
+        # Open the default panel
+        row = None
+        for index in range(len(PANELS)):
+            if PANELS[index][0] == DEFAULT:
+                row = self.panels_navigation.get_row_at_index(index)
+                self.panels_navigation.select_row(row)
 
     def initialise_panels(self):
         """Add all the panels to the menu."""
@@ -105,4 +109,8 @@ class ScrptEditorView(Adw.NavigationPage):
         for panel_id, panel in PANELS:
             panel.bind_to_manuscript(self.manuscript)
 
-
+    @Gtk.Template.Callback()
+    def on_editorview_closed(self, _editorview):
+        """Handle a request to close the editor."""
+        logger.info("Editor is closed, saving the manuscript")
+        self.manuscript.save_to_disk()

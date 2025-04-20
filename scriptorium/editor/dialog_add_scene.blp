@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptAddSceneDialog: Adw.AlertDialog {
+  default-response: _("Add scene");
+  close-response: _("Cancel");
+  body: "Please provide a title for the new scene. The synopsis is optional.";
+  heading: "Add a new scene";
+  prefer_wide_layout: true;
+
+  extra_child: Adw.PreferencesGroup {
+    title: "Summary";
+
+    Adw.EntryRow edit_title {
+      title: "Title";
+      text: bind template.title bidirectional;
+      changed => $on_title_changed();
+    }
+
+    $MultiLineEntryRow edit_synopsis {
+      title: "Synopsis";
+      text: bind template.synopsis bidirectional;
+    }
+  };
+
+  responses [
+    cancel: _("Cancel"),
+    add: _("Add scene") suggested disabled,
+  ]
+}

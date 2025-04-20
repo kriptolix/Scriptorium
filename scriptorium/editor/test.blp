@@ -1,0 +1,31 @@
+              Adw.PreferencesRow {
+                activatable: false;
+                focusable: false;
+
+                styles [
+                  "entry",
+                ]
+
+                Box {
+                  orientation: vertical;
+                  hexpand: true;
+                  vexpand: true;
+
+                  CenterBox {
+                    [start]
+                    Label {
+                      label: "Synopsis";
+
+                      styles [
+                        "dim-label",
+                        "title",
+                      ]
+                    }
+                  }
+
+                  TextView edit_synopsis {
+                    height-request: 220;
+                    wrap-mode: word;
+                  }
+                }
+              }

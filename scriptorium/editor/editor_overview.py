@@ -25,10 +25,11 @@ logger = logging.getLogger(__name__)
 
 
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_overview.ui")
-class ScrptOverviewPanel(Adw.Bin):
+class ScrptOverviewPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptOverviewPanel"
 
     chapter_columns = Gtk.Template.Child()
+    show_sidebar_button = Gtk.Template.Child()
     chapter_column_factory = Gtk.Template.Child()
 
     @GObject.Property
@@ -37,23 +38,37 @@ class ScrptOverviewPanel(Adw.Bin):
         return "view-columns-symbolic"
 
     @GObject.Property
-    def title(self):
-        """Return the title for this panel."""
-        return "Overview"
-
-    @GObject.Property
     def description(self):
         """Return the description for this panel."""
         return "Overview of all the content"
 
+    def bind_side_bar_button(self, split_view):
+        """Connect the button to collapse the sidebar."""
+        split_view.bind_property(
+            "show_sidebar",
+            self.show_sidebar_button,
+            "active",
+            GObject.BindingFlags.BIDIRECTIONAL
+            | GObject.BindingFlags.SYNC_CREATE
+        )
+
     def bind_to_manuscript(self, manuscript):
-        self.manuscript = manuscript
+        self._manuscript = manuscript
 
         self.chapter_column_factory.connect("setup", self.on_setup_item)
         self.chapter_column_factory.connect("bind", self.on_bind_item)
 
         selection_model = Gtk.NoSelection(model=manuscript.chapters)
         self.chapter_columns.set_model(selection_model)
+
+    def bind_chapter(self, chapter):
+        """Bind a scene card to a scene."""
+        chapter_card = ChapterColumn(chapter)
+
+        # Connect the button to switching to the editor view
+        # scene_card.edit_button.connect("clicked", self.on_edit_scene, scene)
+
+        return chapter_card
 
     def on_setup_item(self, _, list_item):
         list_item.set_child(ChapterColumn())

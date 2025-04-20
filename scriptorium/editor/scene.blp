@@ -1,12 +1,76 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $SceneCard: Adw.ActionRow {
+template $SceneCard: Adw.PreferencesRow {
   activatable: true;
 
-  [suffix]
-  Button edit_button {
-    icon-name: "right-symbolic";
+  accessibility {
+    labelled-by: title;
+    described-by: synopsis;
+  }
+
+  Box {
     valign: center;
+    hexpand: false;
+
+    styles [
+      "header",
+    ]
+
+    Box prefixes {
+      visible: false;
+
+      styles [
+        "prefixes",
+      ]
+    }
+
+    Box title_box {
+      orientation: vertical;
+      valign: center;
+      hexpand: true;
+
+      styles [
+        "title",
+      ]
+
+      Label title {
+        ellipsize: none;
+        wrap: true;
+        wrap-mode: word;
+        xalign: 0;
+        label: bind template.title;
+
+        styles [
+          "title",
+        ]
+      }
+
+      Label synopsis {
+        ellipsize: end;
+        wrap: true;
+        wrap-mode: word;
+        xalign: 0;
+        label: bind template.synopsis;
+        lines: 3;
+
+        styles [
+          "dim-label",
+        ]
+      }
+    }
+
+    Box suffixes {
+      visible: true;
+
+      styles [
+        "suffixes",
+      ]
+
+      Button edit_button {
+        icon-name: "right-symbolic";
+        valign: center;
+      }
+    }
   }
 }

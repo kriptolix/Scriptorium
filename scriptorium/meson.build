@@ -36,7 +36,10 @@ scriptorium_sources = [
 	'library/library.py',
 	'library/manuscript.py',
 	'editor/writer.py',
-	'editor/panel.py',
+	'editor/editor_writing_details.py',
+	'editor/multiline_entry_row.py',
+	'editor/dialog_add_scene.py',
+
 ]
 
 blueprints = custom_target(
@@ -53,8 +56,10 @@ blueprints = custom_target(
 		'library/library.blp',
 		'library/manuscript.blp',
 		'window.blp',
-		'editor/panel.blp',
 		'editor/writer.blp',
+		'editor/editor_writing_details.blp',
+		'editor/multiline_entry_row.blp',
+		'editor/dialog_add_scene.blp',
 	),
 	output: '.',
 	command: [

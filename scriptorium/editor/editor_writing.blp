@@ -29,33 +29,32 @@ template $ScrptWritingPanel: Adw.NavigationPage {
             maximum-size: 600;
             margin-top: 12;
 
-            Adw.PreferencesGroup {
-            ListBox scenes_list {
-              selection-mode: none;
+            Box {
+              orientation: vertical;
+              spacing: 12;
 
-              styles [
-                "boxed-list",
-              ]
-            }
+              Adw.PreferencesGroup {
+                header-suffix: Button {
+                  clicked => $on_add_scene_clicked();
+
+                  Adw.ButtonContent {
+                    icon-name: "list-add-symbolic";
+                    label: "Add a scene ...";
+                    use-underline: true;
+                  }
+                };
+
+                ListBox scenes_list {
+                  selection-mode: none;
+
+                  styles [
+                    "boxed-list",
+                  ]
+                }
+              }
             }
           };
         };
-      };
-    }
-
-    Adw.NavigationPage edit_scene {
-      title: "Scene editor";
-      tag: "edit_scene";
-
-      child: Adw.ToolbarView {
-        [top]
-        Adw.HeaderBar {
-          show-title: true;
-          show-back-button: true;
-
-        }
-
-        content: Box {};
       };
     }
   };

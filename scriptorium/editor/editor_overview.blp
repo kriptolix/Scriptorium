@@ -1,22 +1,42 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptOverviewPanel: Adw.Bin {
-  Box {
-    orientation: horizontal;
+template $ScrptOverviewPanel: Adw.NavigationPage {
+  title: "Overview";
+  tag: "overview";
 
-    ScrolledWindow {
-      child: ListView chapter_columns {
-        orientation: horizontal;
-        vexpand: true;
-        hexpand: true;
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: true;
+      show-back-button: false;
 
-        styles [
-          "scriptorium-scene-card-list",
-        ]
-
-        factory: SignalListItemFactory chapter_column_factory {};
-      };
+      [start]
+      ToggleButton show_sidebar_button {
+        icon-name: "sidebar-show-symbolic";
+        tooltip-text: _("Toggle Sidebar");
+      }
     }
-  }
+
+    content: Adw.Clamp {
+      maximum-size: 1024;
+      width-request: 1024;
+
+      Adw.PreferencesGroup {
+        ScrolledWindow {
+          height-request: 800;
+          vexpand: true;
+
+          // TODO Replace with https://api.pygobject.gnome.org/Gtk-4.0/class-FlowBox.html
+          ListView chapter_columns {
+            orientation: horizontal;
+            hexpand: true;
+            vexpand: true;
+
+            factory: SignalListItemFactory chapter_column_factory {};
+          }
+        }
+      }
+    };
+  };
 }

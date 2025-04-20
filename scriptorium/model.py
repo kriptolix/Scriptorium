@@ -1,16 +1,40 @@
+# model.py
+#
+# Copyright 2025 Christophe Gueret
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Model for storing information about manuscripts and their content."""
+
 from pathlib import Path
 from gi.repository import Gtk, GObject, Gio
 import yaml
 from .utils import html_to_buffer, buffer_to_html
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
 
 class Scene(GObject.Object):
+    """A scene is a basic building block of manuscripts."""
+
     identifier = GObject.Property(type=str)
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
+
     _chapter = None
 
     _scene_path = None
@@ -19,8 +43,13 @@ class Scene(GObject.Object):
         super().__init__(**kwargs)
         self.identifier = identifier
 
-        scene_path = base_path / Path(f'{self.identifier}.html')
+        # The content of the scene
+        scene_path = base_path / Path(f"{self.identifier}.html")
         self._scene_path = scene_path.resolve()
+
+        # If the content file does not exist we create it
+        if not self._scene_path.exists():
+            self._scene_path.touch()
 
     def set_chapter(self, chapter):
         self._chapter = chapter
@@ -36,40 +65,27 @@ class Scene(GObject.Object):
         # Insert into the new chapter
         chapter.add_scene(self, position)
 
-    def metadata(self):
-        """
-        Return the metadata as a map
-        """
-        data = {
-            'title': self.title,
-            'synopsis': self.synopsis,
-            'identifier': self.identifier,
-        }
-        return data
-
     def load_into_buffer(self, buffer: Gtk.TextBuffer):
-        logger.info(f'Loading info buffer from {self._scene_path}')
+        logger.info(f"Loading info buffer from {self._scene_path}")
 
         # Load the content of the file and push to the buffer
         html_content = self.to_html()
         html_to_buffer(html_content, buffer)
 
     def save_from_buffer(self, buffer: Gtk.TextBuffer):
-        logger.info(f'Saving buffer to {self._scene_path}')
+        logger.info(f"Saving buffer to {self._scene_path}")
 
         # Write the content of the buffer
         html_content = buffer_to_html(buffer)
         Path(self._scene_path).write_text(html_content)
 
     def to_html(self):
-        """
-        Get the HTML payload for the scene
-        """
-        logger.info(f'Loading raw HTML from {self._scene_path}')
+        """Return the HTML payload for the scene."""
+        logger.info(f"Loading raw HTML from {self._scene_path}")
 
         # Check if we can do that
         if not Path(self._scene_path).exists():
-            raise FileNotFoundError(f'Could not open {self._scene_path}')
+            raise FileNotFoundError(f"Could not open {self._scene_path}")
 
         html_content = Path(self._scene_path).read_text()
         return html_content
@@ -98,37 +114,22 @@ class Chapter(GObject.Object):
             self.scenes.remove(position)
             scene.set_chapter(None)
         else:
-            logger.warning(f'Could not find {scene}')
+            logger.warning(f"Could not find {scene}")
 
-    def add_scene(self, scene, position: int = 0):
-        """
-        Add scene to the chapter
-        """
-        if position >= 0:
+    def add_scene(self, scene: Scene, position: int = None):
+        """Add an existing scene to the chapter."""
+        if position is not None and position >= 0:
             self.scenes.insert(position, scene)
         else:
             self.scenes.append(scene)
         scene.set_chapter(self)
 
     def to_html(self):
-        """
-        Get the HTML payload for the chapter
-        """
+        """ReturnGet the HTML payload for the chapter."""
         content = []
         for scene in self.scenes:
             content.append(scene.to_html())
-        return '\n'.join(content)
-
-    def metadata(self):
-        """
-        Return the metadata as a map
-        """
-        data = {
-            'title': self.title,
-            'synopsis': self.synopsis,
-            'scenes': [s.metadata() for s in self.scenes],
-        }
-        return data
+        return "\n".join(content)
 
     def set_manuscript(self, manuscript):
         self._manuscript = manuscript
@@ -152,9 +153,6 @@ class Manuscript(GObject.Object):
     # The scenes contained in the manuscript
     scenes: Gio.ListStore
 
-    # A special chapter for scenes that are not assigned to any chapter
-    unassigned: Chapter
-
     def __init__(self, manuscript_path, **kwargs):
         super().__init__(**kwargs)
 
@@ -167,10 +165,6 @@ class Manuscript(GObject.Object):
         # Create the list of scenes
         self.scenes = Gio.ListStore.new(item_type=Scene)
 
-        # Create the chapter
-        self.unassigned = Chapter()
-        self.unassigned.title = 'Unassigned scenes'
-
         # Load the description file from disk
         self.load_from_disk()
 
@@ -178,114 +172,137 @@ class Manuscript(GObject.Object):
         if self.cover is None:
             return None
 
-        img_path = self._base_directory / Path('img') / Path(self.cover)
+        img_path = self._base_directory / Path("img") / Path(self.cover)
         return img_path.resolve()
 
-    def metadata(self):
-        """
-        Return the metadata as a map
-        """
+    def save_to_disk(self):
+        """Save the content of the manuscript as a file."""
+        # Create the YAML data structure
         data = {
-            'title': self.title,
-            'synopsis': self.synopsis,
-            'chapters': [chapter.metadata() for chapter in self.chapters],
+            "manuscript": {
+                "title": self.title,
+                "synopsis": self.synopsis,
+                "cover": self.cover,
+            },
+            "scenes": [
+                {
+                    "title": scene.title,
+                    "synopsis": scene.synopsis,
+                    "identifier": scene.identifier,
+                }
+                for scene in self.scenes
+            ],
+            "chapters": [
+                {
+                    "title": chapter.title,
+                    "synopsis": chapter.synopsis,
+                    "scenes": [scene.identifier for scene in chapter.scenes],
+                }
+                for chapter in self.chapters
+            ],
         }
 
-        # If a cover has been set save it
-        if self.cover is not None:
-            data['cover'] = self.cover
-
-        return data
-
-    def save_to_disk(self):
-        """
-        Save the content of the manuscript as a file
-        """
-        data = self.metadata()
-
-        yaml_file = self._base_directory / Path('manuscript.yml')
-        with yaml_file.open(mode='w') as file:
-            yaml.safe_dump(data, file, width=80, indent=2, sort_keys=True)
+        # Save to disk
+        yaml_file = self._base_directory / Path("manuscript.yml")
+        with yaml_file.open(mode="w") as file:
+            yaml.safe_dump(data, file, indent=2, sort_keys=True)
 
     def load_from_disk(self):
-        """
-        Load the content of the manuscript from a file
-        """
-        yaml_file = self._base_directory / Path('manuscript.yml')
-        with yaml_file.open('r') as file:
+        """Load the content of the manuscript from a file."""
+        # Load the YAML data
+        yaml_file = self._base_directory / Path("manuscript.yml")
+        with yaml_file.open("r") as file:
             data = yaml.safe_load(file)
 
-        self.title = data['title']
-        self.synopsis = data['synopsis']
-        self.cover = data.get('cover', None)
-        for chapter in data['chapters']:
-            logger.debug(f"Adding chapter: {chapter['title']}")
+        # Load basic information
+        self.title = data["manuscript"]["title"]
+        self.synopsis = data["manuscript"]["synopsis"]
+        self.cover = data["manuscript"].get("cover", None)
+
+        # Load all the scenes
+        scenes_dir = self._base_directory / Path("scenes")
+        for scene in data["scenes"]:
+            logger.debug(f"Loading scene: {scene['title']}")
+            scene_entry = Scene(identifier=scene["identifier"], base_path=scenes_dir)
+            scene_entry.title = scene["title"]
+            scene_entry.synopsis = scene["synopsis"].replace("\n", " ")
+            self.add_scene(scene_entry)
+
+        # Load all the chapters
+        for chapter in data["chapters"]:
+            logger.debug(f"Loading chapter: {chapter['title']}")
             chapter_entry = Chapter()
-            chapter_entry.title = chapter['title']
-            chapter_entry.synopsis = chapter['synopsis'].replace('\n', ' ')
-            for scene in chapter['scenes']:
-                logger.debug(f"Adding scene: {scene['title']}")
-                scenes_dir = self._base_directory / Path('scenes')
-                scene_entry = Scene(identifier=scene['identifier'], base_path=scenes_dir)
-                scene_entry.title = scene['title']
-                scene_entry.synopsis = scene['synopsis'].replace('\n', ' ')
-                chapter_entry.add_scene(scene_entry)
-
-                # Add the scene to the list of scenes
-                self.scenes.append(scene_entry)
+            chapter_entry.title = chapter["title"]
+            chapter_entry.synopsis = chapter["synopsis"].replace("\n", " ")
             self.add_chapter(chapter_entry)
+            for scene_identifier in chapter["scenes"]:
+                scene = self.get_scene(scene_identifier)
+                chapter_entry.add_scene(scene)
 
-    def add_chapter(self, chapter, position: int = 0):
-        """
-        Add chapter to the manuscript
-        """
-        if position >= 0:
+    def get_scene(self, identifier):
+        for scene in self.scenes:
+            if scene.identifier == identifier:
+                return scene
+        return None
+
+    def add_chapter(self, chapter: Chapter, position: int = None):
+        """Add an existing chapter to the manuscript."""
+        if position is not None and position >= 0:
             self.chapters.insert(position, chapter)
         else:
             self.chapters.append(chapter)
         chapter.set_manuscript(self)
 
+    def add_scene(self, scene: Scene, position: int = None):
+        """Add an existing scene to the manuscript."""
+        if position is not None and position >= 0:
+            self.scenes.insert(position, scene)
+        else:
+            self.scenes.append(scene)
+
+    def create_scene(self, title: str, synopsis: str = ""):
+        """Create a new scene."""
+        identifier = uuid.uuid4()
+        new_scene = Scene(identifier, self._base_directory / Path("scenes"))
+        new_scene.title = title
+        new_scene.synopsis = synopsis
+        self.scenes.append(new_scene)
+
     def splice_chapters(self, source_chapter, target_chapter):
-        """
-        Move the source chapter to the position target chapter is at
-        """
+        """Move the source chapter to the position target chapter is at."""
         # Start by finding the positions of each chapter
         found_source, source_position = self.chapters.find(source_chapter)
         found_target, target_position = self.chapters.find(target_chapter)
         if not found_source or not found_target:
-            raise KeyError(f'Could not find the chapters to swap')
+            raise KeyError(f"Could not find the chapters to swap")
 
         # Now move the source where the target used to be located
         self.chapters.remove(source_position)
         self.chapters.insert(target_position, source_chapter)
 
 
-class Library(object):
-    """
-    The library is the collection of manuscripts
-    """
+class Library(GObject.Object):
+    """The library is the collection of manuscripts."""
+
     # The base directory where all the manuscripts are located
     _base_directory: Path = None
 
     # Map of manuscripts
-    manuscripts: Gio.ListStore
+    manuscripts: Gio.ListStore = Gio.ListStore.new(item_type=Manuscript)
 
     def __init__(self, base_directory: str):
         # Keep track of attributes
         self._base_directory = Path(base_directory)
 
-        # Initialise the list store
-        self.manuscripts = Gio.ListStore.new(item_type=Manuscript)
-
         # Perform a scan of the data directory
         self._scan_datadir()
 
     def _scan_datadir(self):
-        logger.info(f'Scanning content of {self._base_directory}')
+        logger.info(f"Scanning content of {self._base_directory}")
 
         # Create one manuscript entry per directory
         for directory in self._base_directory.iterdir():
-            logger.info(f'Adding manuscript {directory.name}')
+            logger.info(f"Adding manuscript {directory.name}")
             manuscript = Manuscript(directory)
             self.manuscripts.append(manuscript)
 

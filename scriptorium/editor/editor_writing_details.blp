@@ -1,0 +1,52 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptWritingDetailsPanel: Adw.NavigationPage {
+  title: "Scene details";
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: true;
+      show-back-button: true;
+    }
+
+    content: ScrolledWindow {
+      child: Adw.Clamp {
+        maximum-size: 600;
+        margin-top: 12;
+
+        Box {
+          orientation: vertical;
+          spacing: 12;
+
+          Adw.PreferencesGroup {
+            title: "Summary";
+
+            Adw.EntryRow edit_title {
+              title: "Title";
+            }
+
+            $MultiLineEntryRow edit_synopsis {
+              title: "Synopsis";
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: "Content";
+
+            Adw.ButtonRow open_editor {
+              title: "Open text editor";
+              end-icon-name: "go-next-symbolic";
+              styles [
+                "suggested-action"
+              ]
+              activated => $on_buttonrow_activated();
+            }
+          }
+        }
+      };
+    };
+  };
+}
+

@@ -60,9 +60,9 @@ class ScriptoriumApplication(Adw.Application):
         """Callback for the app.about action."""
         about = Adw.AboutDialog(application_name='scriptorium',
                                 application_icon='com.github.cgueret.Scriptorium',
-                                developer_name='Unknown',
+                                developer_name='Christophe Guéret',
                                 version='0.1.0',
-                                developers=['Unknown'],
+                                developers=['Christophe Guéret'],
                                 copyright='© 2025 Unknown')
         # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
         #about.set_translator_credits(_('translator-credits'))
