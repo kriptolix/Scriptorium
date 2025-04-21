@@ -25,7 +25,10 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
 
             Adw.ActionRow identifier {
               title: "Identifier";
-              subtitle: "fdfdfdf";
+              subtitle: "uuid";
+              styles [
+                "property",
+              ]
             }
 
             Adw.EntryRow edit_title {
@@ -35,6 +38,7 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
             $MultiLineEntryRow edit_synopsis {
               title: "Synopsis";
             }
+
             Adw.ButtonRow open_editor {
               title: "Open text editor";
               end-icon-name: "go-next-symbolic";
@@ -42,6 +46,18 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
                 "suggested-action"
               ]
               activated => $on_open_editor_activated();
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: "History";
+
+            ListBox history_list {
+              selection-mode: none;
+
+              styles [
+                "boxed-list",
+              ]
             }
           }
 

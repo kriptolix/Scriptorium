@@ -36,6 +36,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
     edit_synopsis = Gtk.Template.Child()
     open_editor = Gtk.Template.Child()
     identifier = Gtk.Template.Child()
+    history_list = Gtk.Template.Child()
 
     def __init__(self, scene, **kwargs):
         """Create an instance of the panel."""
@@ -67,8 +68,19 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
             GObject.BindingFlags.SYNC_CREATE
         )
 
+        self.history_list.bind_model(scene.history, self.create_message_entry)
+
+    def create_message_entry(self, message):
+        """Bind a scene card to a scene."""
+        message_entry = Adw.ActionRow()
+        message_entry.add_css_class("property")
+        message_entry.set_title(message.datetime)
+        message_entry.set_subtitle(message.message)
+        return message_entry
+
     @Gtk.Template.Callback()
     def on_open_editor_activated(self, _button):
+        """Open the scene editor."""
         logger.info(f"Open text editor for {self._scene.title}")
         writer = Writer()
         writer.load_scene(self._scene)

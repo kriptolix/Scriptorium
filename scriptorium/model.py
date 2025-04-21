@@ -26,8 +26,24 @@ import logging
 import uuid
 import git
 
+
 logger = logging.getLogger(__name__)
 
+
+class CommitMessage(GObject.Object):
+    def __init__(self, datetime, message):
+        super().__init__()
+
+        self._datetime = datetime
+        self._message = message
+
+    @GObject.Property(type=str)
+    def datetime(self) -> str:
+        return self._datetime
+
+    @GObject.Property(type=str)
+    def message(self) -> str:
+        return self._message
 
 class Scene(GObject.Object):
     """A scene is a basic building block of manuscripts."""
@@ -49,10 +65,20 @@ class Scene(GObject.Object):
         scene_path = base_path / Path(f"{self.identifier}.html")
         self._scene_path = scene_path.resolve()
 
-        #logger.info(self._identifier)
-        #vers = self._manuscript.repo.iter_commits(all=True, max_count=10, paths=self._scene_path)
-        #for ver in vers:
-        #    logger.info(ver)
+    @property
+    def history(self):
+        """Return the history of commits about that scene."""
+        messages_list = Gio.ListStore.new(item_type=CommitMessage)
+        commits = self._manuscript.repo.iter_commits(all=True,
+                                                     paths=self._scene_path)
+        for commit in commits:
+            datetime = commit.committed_datetime
+            message_datetime = datetime.strftime("%A %d %B %Y, %H:%M")
+            message = commit.message.strip()
+            msg = CommitMessage(message_datetime, message)
+            messages_list.append(msg)
+
+        return messages_list
 
     @property
     def scene_path(self):
