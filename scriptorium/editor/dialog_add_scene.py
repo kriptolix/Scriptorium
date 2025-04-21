@@ -37,7 +37,6 @@ class ScrptAddSceneDialog(Adw.AlertDialog):
     @Gtk.Template.Callback()
     def on_title_changed(self, entry_row):
         """Check the length of the title."""
-        logger.info(self.title)
         new_title = entry_row.get_text()
         self.set_response_enabled("add", len(new_title) > 1)
 

@@ -24,6 +24,7 @@ import yaml
 from .utils import html_to_buffer, buffer_to_html
 import logging
 import uuid
+import git
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +49,15 @@ class Scene(GObject.Object):
         scene_path = base_path / Path(f"{self.identifier}.html")
         self._scene_path = scene_path.resolve()
 
-        # If the content file does not exist we create it
-        if not self._scene_path.exists():
-            self._scene_path.touch()
+        #logger.info(self._identifier)
+        #vers = self._manuscript.repo.iter_commits(all=True, max_count=10, paths=self._scene_path)
+        #for ver in vers:
+        #    logger.info(ver)
+
+    @property
+    def scene_path(self):
+        """Return the full path to the HTML content of the scene."""
+        return self._scene_path
 
     @GObject.Property(type=GObject.Object)
     def manuscript(self):
@@ -62,17 +69,32 @@ class Scene(GObject.Object):
         """Return the identifier of the scene."""
         return self._identifier
 
+    def create(self):
+        """Create the scene."""
+        if self._scene_path.exists():
+            raise ValueError("The scene is already on disk.")
+
+        # Create the content file for the scene
+        self._scene_path.touch()
+
+        # Keep track of the creation of this scene in the history
+        yaml_file_path = self._manuscript.save_to_disk()
+        self._manuscript.repo.index.add(yaml_file_path)
+        self._manuscript.repo.index.add(self._scene_path)
+        self._manuscript.repo.index.commit(f"Created new scene \"{self.title}\"")
+
     def delete(self):
         """Delete the scene."""
-        found, position = self.manuscript.scenes.find(self)
+        found, position = self._manuscript.scenes.find(self)
         if not found:
             raise ValueError("The scene is already deleted")
 
         # Remove the scene from the list of scenes
-        self.manuscript.scenes.remove(position)
+        self._manuscript.scenes.remove(position)
 
         # Remove all references in chapters
-        for chapter in self.manuscript.chapters:
+        # there should be only one but we test them all to be sure
+        for chapter in self._manuscript.chapters:
             in_chapter, chapter_position = chapter.scenes.find(self)
             if in_chapter:
                 chapter.scenes.remove(chapter_position)
@@ -80,6 +102,12 @@ class Scene(GObject.Object):
         # Delete the file on disk
         if self._scene_path.exists():
             self._scene_path.unlink()
+
+        # Keep track of the deletion of this scene in the history
+        yaml_file_path = self._manuscript.save_to_disk()
+        self._manuscript.repo.index.add(yaml_file_path)
+        self._manuscript.repo.index.remove(self._scene_path)
+        self._manuscript.repo.index.commit(f"Deleted scene \"{self.title}\"")
 
     def set_chapter(self, chapter):
         self._chapter = chapter
@@ -172,6 +200,8 @@ class Chapter(GObject.Object):
 
 
 class Manuscript(GObject.Object):
+    """A manuscript is a collection of scenes and chapters."""
+
     # Properties of the manuscript
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
@@ -187,6 +217,7 @@ class Manuscript(GObject.Object):
     scenes: Gio.ListStore
 
     def __init__(self, manuscript_path, **kwargs):
+        """Create a new manuscript."""
         super().__init__(**kwargs)
 
         # Keep track of the attributes
@@ -198,8 +229,16 @@ class Manuscript(GObject.Object):
         # Create the list of scenes
         self.scenes = Gio.ListStore.new(item_type=Scene)
 
+        # Initialise the interface for tracking versions of the manuscript
+        self._repo = git.Repo(self._base_directory)
+
         # Load the description file from disk
         self.load_from_disk()
+
+    @property
+    def repo(self):
+        """Return a pointer to the Git repository of the manuscript."""
+        return self._repo
 
     def get_cover_path(self):
         if self.cover is None:
@@ -240,6 +279,8 @@ class Manuscript(GObject.Object):
         with yaml_file.open(mode="w") as file:
             yaml.safe_dump(data, file, indent=2, sort_keys=True)
 
+        return yaml_file.resolve()
+
     def load_from_disk(self):
         """Load the content of the manuscript from a file."""
         # Load the YAML data
@@ -275,6 +316,7 @@ class Manuscript(GObject.Object):
                 chapter_entry.add_scene(scene)
 
     def get_scene(self, identifier):
+        """Return one of the scene of the manuscript."""
         for scene in self.scenes:
             if scene.identifier == identifier:
                 return scene
@@ -296,12 +338,16 @@ class Manuscript(GObject.Object):
 
     def create_scene(self, title: str, synopsis: str = ""):
         """Create a new scene."""
-        identifier = uuid.uuid4()
+        # Create the scene and add it to the list
+        identifier = str(uuid.uuid4())
         new_scene = Scene(self, identifier,
                           self._base_directory / Path("scenes"))
         new_scene.title = title
         new_scene.synopsis = synopsis
         self.scenes.append(new_scene)
+
+        # Finish the creation of the scene
+        new_scene.create()
 
     def splice_chapters(self, source_chapter, target_chapter):
         """Move the source chapter to the position target chapter is at."""
@@ -309,7 +355,7 @@ class Manuscript(GObject.Object):
         found_source, source_position = self.chapters.find(source_chapter)
         found_target, target_position = self.chapters.find(target_chapter)
         if not found_source or not found_target:
-            raise KeyError(f"Could not find the chapters to swap")
+            raise KeyError("Could not find the chapters to swap")
 
         # Now move the source where the target used to be located
         self.chapters.remove(source_position)
