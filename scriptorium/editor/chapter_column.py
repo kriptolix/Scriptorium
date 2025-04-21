@@ -1,9 +1,28 @@
+# chapter_column.py
+#
+# Copyright 2025 Christophe Gueret
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Adw, Gtk, GObject, Gdk
 
 from .model import Chapter
 from .scene import SceneCard
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,15 +62,6 @@ class ChapterColumn(Adw.Bin):
         drop_target.connect("drop", self.on_drop_chapter_into_chapter)
         self.column.add_controller(drop_target)
 
-
-
-
-    def on_enter_scene_list(self, _target, _x, _y):
-        """Highlight the row currently being dragged over."""
-        row = self.scenes_list.get_row_at_y(_y)
-        self.scenes_list.drag_highlight_row(row)
-        return True
-
     def connect_to_chapter(self, chapter: Chapter):
         """Connect the column to a chapter."""
         self._chapter = chapter
@@ -59,14 +69,31 @@ class ChapterColumn(Adw.Bin):
         # Set the title of the column
         self.column.set_title(chapter.title)
 
+        # Set the column header text
+        text = chapter.synopsis
+        if len(chapter.synopsis) > 128:
+            text = chapter.synopsis[:128] + "..."
+        self.column.set_description(text)
+
         # Connect the model for the scenes
         self.scenes_list.bind_model(chapter.scenes, self.bind_card)
 
         drop_controller = Gtk.DropControllerMotion()
-        drop_controller.connect("enter", self.on_enter_scene_list)
-        drop_controller.connect("motion", self.on_enter_scene_list)
-        drop_controller.connect("leave", lambda _target: self.scenes_list.drag_unhighlight_row())
+        drop_controller.connect("enter", self.on_over_scene_list_row)
+        drop_controller.connect("motion", self.on_over_scene_list_row)
+        drop_controller.connect("leave", self.on_leave_scene_list_row)
         self.scenes_list.add_controller(drop_controller)
+
+    def on_over_scene_list_row(self, _target, _x, _y):
+        """Highlight the row currently being moved over."""
+        row = self.scenes_list.get_row_at_y(_y)
+        self.scenes_list.drag_highlight_row(row)
+        return True
+
+    def on_leave_scene_list_row(self, _target):
+        """Remove the highlight."""
+        self.scenes_list.drag_unhighlight_row()
+        return True
 
     def bind_card(self, scene):
         """Bind a scene card to a scene."""
@@ -149,6 +176,5 @@ class ChapterColumn(Adw.Bin):
         """Drop a chapter where another chapter is located."""
         # Move the chapter
         logger.info(f"Move {chapter.title} where {self._chapter.title} is")
-        manuscript = chapter.get_manuscript()
-        manuscript.splice_chapters(chapter, self._chapter)
+        chapter.manuscript.splice_chapters(chapter, self._chapter)
 

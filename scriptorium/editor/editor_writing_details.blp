@@ -23,6 +23,11 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
           Adw.PreferencesGroup {
             title: "Summary";
 
+            Adw.ActionRow identifier {
+              title: "Identifier";
+              subtitle: "fdfdfdf";
+            }
+
             Adw.EntryRow edit_title {
               title: "Title";
             }
@@ -30,18 +35,26 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
             $MultiLineEntryRow edit_synopsis {
               title: "Synopsis";
             }
-          }
-
-          Adw.PreferencesGroup {
-            title: "Content";
-
             Adw.ButtonRow open_editor {
               title: "Open text editor";
               end-icon-name: "go-next-symbolic";
               styles [
                 "suggested-action"
               ]
-              activated => $on_buttonrow_activated();
+              activated => $on_open_editor_activated();
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: "Actions";
+
+            Adw.ButtonRow delete_scene {
+              title: "Delete scene";
+              end-icon-name: "edit-delete-symbolic";
+              styles [
+                "destructive-action"
+              ]
+              activated => $on_delete_scene_activated();
             }
           }
         }

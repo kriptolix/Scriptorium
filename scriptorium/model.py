@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 class Scene(GObject.Object):
     """A scene is a basic building block of manuscripts."""
 
-    identifier = GObject.Property(type=str)
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
 
@@ -39,9 +38,11 @@ class Scene(GObject.Object):
 
     _scene_path = None
 
-    def __init__(self, identifier: str, base_path: Path, **kwargs):
-        super().__init__(**kwargs)
-        self.identifier = identifier
+    def __init__(self, manuscript, identifier: str, base_path: Path):
+        """Create a scene."""
+        super().__init__()
+        self._identifier = identifier
+        self._manuscript = manuscript
 
         # The content of the scene
         scene_path = base_path / Path(f"{self.identifier}.html")
@@ -50,6 +51,35 @@ class Scene(GObject.Object):
         # If the content file does not exist we create it
         if not self._scene_path.exists():
             self._scene_path.touch()
+
+    @GObject.Property(type=GObject.Object)
+    def manuscript(self):
+        """Return the manuscript the scene is associated to."""
+        return self._manuscript
+
+    @GObject.Property(type=str)
+    def identifier(self):
+        """Return the identifier of the scene."""
+        return self._identifier
+
+    def delete(self):
+        """Delete the scene."""
+        found, position = self.manuscript.scenes.find(self)
+        if not found:
+            raise ValueError("The scene is already deleted")
+
+        # Remove the scene from the list of scenes
+        self.manuscript.scenes.remove(position)
+
+        # Remove all references in chapters
+        for chapter in self.manuscript.chapters:
+            in_chapter, chapter_position = chapter.scenes.find(self)
+            if in_chapter:
+                chapter.scenes.remove(chapter_position)
+
+        # Delete the file on disk
+        if self._scene_path.exists():
+            self._scene_path.unlink()
 
     def set_chapter(self, chapter):
         self._chapter = chapter
@@ -66,6 +96,7 @@ class Scene(GObject.Object):
         chapter.add_scene(self, position)
 
     def load_into_buffer(self, buffer: Gtk.TextBuffer):
+        """Load the content of a text buffer from disk."""
         logger.info(f"Loading info buffer from {self._scene_path}")
 
         # Load the content of the file and push to the buffer
@@ -73,6 +104,7 @@ class Scene(GObject.Object):
         html_to_buffer(html_content, buffer)
 
     def save_from_buffer(self, buffer: Gtk.TextBuffer):
+        """Save the content of a text buffer to disk."""
         logger.info(f"Saving buffer to {self._scene_path}")
 
         # Write the content of the buffer
@@ -92,26 +124,33 @@ class Scene(GObject.Object):
 
 
 class Chapter(GObject.Object):
+    """A chapter is a list of scenes."""
+
     # Properties of the chapter
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
 
-    # The scenes contained in this chapter
-    scenes: Gio.ListStore
-
-    _manuscript = None
-
-    def __init__(self, **kwargs):
+    def __init__(self, manuscript, **kwargs):
+        """Create a new instance of Chapter."""
         super().__init__(**kwargs)
-        self.scenes = Gio.ListStore.new(item_type=Scene)
+        self._manuscript = manuscript
+        self._scenes = Gio.ListStore.new(item_type=Scene)
 
-    def remove_scene(self, scene):
-        """
-        Remove a scene from the chapter
-        """
+    @GObject.Property(type=GObject.Object)
+    def manuscript(self):
+        """Return the manuscript the scene is associated to."""
+        return self._manuscript
+
+    @GObject.Property(type=Gio.ListStore)
+    def scenes(self):
+        """Return the list of scenes."""
+        return self._scenes
+
+    def remove_scene(self, scene: Scene):
+        """Remove a scene from the chapter."""
         found, position = self.scenes.find(scene)
         if found:
-            self.scenes.remove(position)
+            self._scenes.remove(position)
             scene.set_chapter(None)
         else:
             logger.warning(f"Could not find {scene}")
@@ -119,23 +158,17 @@ class Chapter(GObject.Object):
     def add_scene(self, scene: Scene, position: int = None):
         """Add an existing scene to the chapter."""
         if position is not None and position >= 0:
-            self.scenes.insert(position, scene)
+            self._scenes.insert(position, scene)
         else:
-            self.scenes.append(scene)
+            self._scenes.append(scene)
         scene.set_chapter(self)
 
     def to_html(self):
-        """ReturnGet the HTML payload for the chapter."""
+        """Return the HTML payload for the chapter."""
         content = []
         for scene in self.scenes:
             content.append(scene.to_html())
         return "\n".join(content)
-
-    def set_manuscript(self, manuscript):
-        self._manuscript = manuscript
-
-    def get_manuscript(self):
-        return self._manuscript
 
 
 class Manuscript(GObject.Object):
@@ -223,7 +256,9 @@ class Manuscript(GObject.Object):
         scenes_dir = self._base_directory / Path("scenes")
         for scene in data["scenes"]:
             logger.debug(f"Loading scene: {scene['title']}")
-            scene_entry = Scene(identifier=scene["identifier"], base_path=scenes_dir)
+            scene_entry = Scene(manuscript=self,
+                                identifier=scene["identifier"],
+                                base_path=scenes_dir)
             scene_entry.title = scene["title"]
             scene_entry.synopsis = scene["synopsis"].replace("\n", " ")
             self.add_scene(scene_entry)
@@ -231,7 +266,7 @@ class Manuscript(GObject.Object):
         # Load all the chapters
         for chapter in data["chapters"]:
             logger.debug(f"Loading chapter: {chapter['title']}")
-            chapter_entry = Chapter()
+            chapter_entry = Chapter(manuscript=self)
             chapter_entry.title = chapter["title"]
             chapter_entry.synopsis = chapter["synopsis"].replace("\n", " ")
             self.add_chapter(chapter_entry)
@@ -251,7 +286,6 @@ class Manuscript(GObject.Object):
             self.chapters.insert(position, chapter)
         else:
             self.chapters.append(chapter)
-        chapter.set_manuscript(self)
 
     def add_scene(self, scene: Scene, position: int = None):
         """Add an existing scene to the manuscript."""
@@ -263,7 +297,8 @@ class Manuscript(GObject.Object):
     def create_scene(self, title: str, synopsis: str = ""):
         """Create a new scene."""
         identifier = uuid.uuid4()
-        new_scene = Scene(identifier, self._base_directory / Path("scenes"))
+        new_scene = Scene(self, identifier,
+                          self._base_directory / Path("scenes"))
         new_scene.title = title
         new_scene.synopsis = synopsis
         self.scenes.append(new_scene)

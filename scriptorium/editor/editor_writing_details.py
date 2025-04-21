@@ -20,7 +20,7 @@
 
 import logging
 
-from gi.repository import Adw, Gtk, Pango, GObject
+from gi.repository import Adw, Gtk, Pango, GObject, GLib
 
 from .globals import BASE
 from .writer import Writer
@@ -34,6 +34,8 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
 
     edit_title = Gtk.Template.Child()
     edit_synopsis = Gtk.Template.Child()
+    open_editor = Gtk.Template.Child()
+    identifier = Gtk.Template.Child()
 
     def __init__(self, scene, **kwargs):
         """Create an instance of the panel."""
@@ -42,7 +44,14 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         self._scene = scene
         self.set_title(scene.title)
 
-        # Bind the title and synopsis
+        # Bind the identifier, title and synopsis
+        scene.bind_property(
+            "identifier",
+            self.identifier,
+            "subtitle",
+            GObject.BindingFlags.BIDIRECTIONAL |
+            GObject.BindingFlags.SYNC_CREATE
+        )
         scene.bind_property(
             "title",
             self.edit_title,
@@ -59,9 +68,37 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         )
 
     @Gtk.Template.Callback()
-    def on_buttonrow_activated(self, _button):
+    def on_open_editor_activated(self, _button):
         logger.info(f"Open text editor for {self._scene.title}")
         writer = Writer()
         writer.load_scene(self._scene)
         writer.present(self)
+
+    @Gtk.Template.Callback()
+    def on_delete_scene_activated(self, _button):
+        """Handle a request to delete the scene."""
+        logger.info(f"Delete {self._scene.title}")
+        dialog = Adw.AlertDialog(
+            heading="Delete scene?",
+            body=f"This action can not be undone. Are you sure you want to delete the scene \"{self._scene.title}\"",
+            close_response="cancel",
+        )
+        dialog.add_response("cancel", "Cancel")
+        dialog.add_response("delete", "Delete")
+
+        dialog.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
+
+        dialog.choose(self, None, self.on_delete_response_selected)
+
+    def on_delete_response_selected(self, _dialog, task):
+        """Handle the response to the confirmation dialog."""
+        response = _dialog.choose_finish(task)
+        if response == "delete":
+            # Delete the scene
+            self._scene.delete()
+
+            # Return to listing the scenes
+            self.get_parent().pop()
+
+
 

@@ -77,6 +77,10 @@ class ScrptEditorView(Adw.NavigationPage):
         for panel_id, panel in PANELS:
             # Create a menu entry
             box = Gtk.Box.new(spacing=12, orientation=Gtk.Orientation.HORIZONTAL)
+            box.set_margin_top(6)
+            box.set_margin_bottom(6)
+            box.set_margin_start(6)
+            box.set_margin_end(6)
             image = Gtk.Image.new_from_icon_name(icon_name=panel.icon_name)
             box.append(image)
             label = Gtk.Label.new(panel.get_title())

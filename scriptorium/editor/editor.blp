@@ -28,13 +28,13 @@ template $ScrptEditorView: Adw.NavigationPage {
             }
           }
 
-          content: Gtk.ListBox panels_navigation {
+          content: ListBox panels_navigation {
             vexpand: true;
             selection-mode: single;
             activate-on-single-click: true;
 
             styles [
-              "navigation-sidebar",
+              "navigation-sidebar"
             ]
           };
       };
