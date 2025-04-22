@@ -23,29 +23,28 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
           Adw.PreferencesGroup {
             title: "Summary";
 
-            Adw.ActionRow identifier {
-              title: "Identifier";
-              subtitle: "uuid";
+            ListBox {
+              selection-mode: none;
+
               styles [
-                "property",
+                "boxed-list",
               ]
-            }
 
-            Adw.EntryRow edit_title {
-              title: "Title";
-            }
+              Adw.ActionRow identifier {
+                title: "Identifier";
+                subtitle: "uuid";
+                styles [
+                  "property",
+                ]
+              }
 
-            $MultiLineEntryRow edit_synopsis {
-              title: "Synopsis";
-            }
+              Adw.EntryRow edit_title {
+                title: "Title";
+              }
 
-            Adw.ButtonRow open_editor {
-              title: "Open text editor";
-              end-icon-name: "go-next-symbolic";
-              styles [
-                "suggested-action"
-              ]
-              activated => $on_open_editor_activated();
+              $MultiLineEntryRow edit_synopsis {
+                title: "Synopsis";
+              }
             }
           }
 
@@ -64,13 +63,30 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
           Adw.PreferencesGroup {
             title: "Actions";
 
-            Adw.ButtonRow delete_scene {
-              title: "Delete scene";
-              end-icon-name: "edit-delete-symbolic";
+            ListBox {
+              selection-mode: none;
+
               styles [
-                "destructive-action"
+                "boxed-list-separate",
               ]
-              activated => $on_delete_scene_activated();
+
+              Adw.ButtonRow open_editor {
+                title: "Open text editor";
+                end-icon-name: "go-next-symbolic";
+                styles [
+                  "suggested-action"
+                ]
+                activated => $on_open_editor_activated();
+              }
+
+              Adw.ButtonRow delete_scene {
+                title: "Delete scene";
+                end-icon-name: "edit-delete-symbolic";
+                styles [
+                  "destructive-action"
+                ]
+                activated => $on_delete_scene_activated();
+              }
             }
           }
         }

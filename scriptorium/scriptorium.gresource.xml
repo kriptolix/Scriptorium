@@ -22,7 +22,7 @@
     <file preprocess="xml-stripblanks">editor/writer.ui</file>
     <file preprocess="xml-stripblanks">editor/editor_writing_details.ui</file>
     <file preprocess="xml-stripblanks">editor/multiline_entry_row.ui</file>
-    <file preprocess="xml-stripblanks">editor/dialog_add_scene.ui</file>
+    <file preprocess="xml-stripblanks">dialog/dialog_add.ui</file>
 
     <!-- Gtk help overlay -->
     <!-- <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file> -->

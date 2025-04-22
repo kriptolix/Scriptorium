@@ -10,8 +10,9 @@ template $ScrptLibraryView: Adw.NavigationPage {
     Adw.HeaderBar {
 
       [start]
-      Button {
+      Button add_manuscript {
         icon-name: "plus-large-symbolic";
+        clicked => $on_add_manuscript_clicked();
       }
 
       [end]

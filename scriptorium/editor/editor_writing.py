@@ -26,7 +26,7 @@ from .globals import BASE
 from .scene import SceneCard
 from .writer import Writer
 from .editor_writing_details import ScrptWritingDetailsPanel
-from .dialog_add_scene import ScrptAddSceneDialog
+from .dialog_add import ScrptAddDialog
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +105,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def on_add_scene_clicked(self, _button):
         logger.info("Open dialog to add scene")
-        dialog = ScrptAddSceneDialog()
+        dialog = ScrptAddDialog("scene")
         response = dialog.choose(self, None, self.on_add_scene)
         logger.info(response)

@@ -1,11 +1,11 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptAddSceneDialog: Adw.AlertDialog {
-  default-response: _("Add scene");
+template $ScrptAddDialog: Adw.AlertDialog {
+  default-response: _("Add");
   close-response: _("Cancel");
-  body: "Please provide a title for the new scene. The synopsis is optional.";
-  heading: "Add a new scene";
+  body: "Please provide a title. The synopsis is optional.";
+  heading: "Add a new entry";
   prefer_wide_layout: true;
 
   extra_child: Adw.PreferencesGroup {
@@ -33,6 +33,6 @@ template $ScrptAddSceneDialog: Adw.AlertDialog {
 
   responses [
     cancel: _("Cancel"),
-    add: _("Add scene") suggested disabled,
+    add: _("Add") suggested disabled,
   ]
 }

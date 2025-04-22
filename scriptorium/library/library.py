@@ -21,6 +21,7 @@ from gi.repository import Adw, GObject
 from gi.repository import Gtk
 from .model import Library
 from .manuscript import ManuscriptItem
+from .dialog_add import ScrptAddDialog
 
 import logging
 logger = logging.getLogger(__name__)
@@ -49,6 +50,20 @@ class ScrptLibraryView(Adw.NavigationPage):
         self.item_factory.connect("setup", self.on_setup_item)
         self.item_factory.connect("bind", self.on_bind_item)
 
+    @Gtk.Template.Callback()
+    def on_add_manuscript_clicked(self, _button):
+        """Handle a click on the button to add a manuscript."""
+        logger.info("Open dialog to add manuscript")
+        dialog = ScrptAddDialog("manuscript")
+        dialog.choose(self, None, self.on_add_manuscript)
+
+    def on_add_manuscript(self, dialog, task):
+        """Add a new manuscript."""
+        response = dialog.choose_finish(task)
+        if response == "add":
+            logger.info(f"Add manuscript {dialog.title}: {dialog.synopsis}")
+            self.library.create_manuscript(dialog.title, dialog.synopsis)
+
     def on_setup_item(self, _, list_item):
         list_item.set_child(ManuscriptItem())
 
@@ -70,7 +85,7 @@ class ScrptLibraryView(Adw.NavigationPage):
         self.library = Library(self.manuscripts_base_path)
 
         # Connect the model to the grid, don't select anything by default
-        selection_model = Gtk.SingleSelection(model = self.library.manuscripts)
+        selection_model = Gtk.SingleSelection(model=self.library.manuscripts)
         selection_model.set_autoselect(False)
         selection_model.set_can_unselect(True)
         selection_model.set_selected(Gtk.INVALID_LIST_POSITION)

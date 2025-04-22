@@ -26,12 +26,14 @@ import logging
 import uuid
 import git
 
-
 logger = logging.getLogger(__name__)
 
 
 class CommitMessage(GObject.Object):
+    """A commit message is a message with a date."""
+
     def __init__(self, datetime, message):
+        """Create a new message."""
         super().__init__()
 
         self._datetime = datetime
@@ -45,21 +47,19 @@ class CommitMessage(GObject.Object):
     def message(self) -> str:
         return self._message
 
+
 class Scene(GObject.Object):
     """A scene is a basic building block of manuscripts."""
 
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
 
-    _chapter = None
-
-    _scene_path = None
-
     def __init__(self, manuscript, identifier: str, base_path: Path):
         """Create a scene."""
         super().__init__()
         self._identifier = identifier
         self._manuscript = manuscript
+        self._chapter = None
 
         # The content of the scene
         scene_path = base_path / Path(f"{self.identifier}.html")
@@ -73,7 +73,7 @@ class Scene(GObject.Object):
                                                      paths=self._scene_path)
         for commit in commits:
             datetime = commit.committed_datetime
-            message_datetime = datetime.strftime("%A %d %B %Y, %H:%M")
+            message_datetime = datetime.strftime("%A %d %B %Y, %H:%M:%S")
             message = commit.message.strip()
             msg = CommitMessage(message_datetime, message)
             messages_list.append(msg)
@@ -94,6 +94,18 @@ class Scene(GObject.Object):
     def identifier(self):
         """Return the identifier of the scene."""
         return self._identifier
+
+    @GObject.Property(type=GObject.Object)
+    def chapter(self):
+        """Return the chapter the scene is associated to."""
+        return self._chapter
+
+    @chapter.setter
+    def chapter(self, value):
+        """Set the chapter the scene is associated to."""
+        if self._chapter is not None:
+            raise Exception("The scene is already associated")
+        self._chapter = value
 
     def create(self):
         """Create the scene."""
@@ -135,16 +147,12 @@ class Scene(GObject.Object):
         self._manuscript.repo.index.remove(self._scene_path)
         self._manuscript.repo.index.commit(f"Deleted scene \"{self.title}\"")
 
-    def set_chapter(self, chapter):
-        self._chapter = chapter
-
-    def get_chapter(self):
-        return self._chapter
-
     def move_to_chapter(self, chapter, position: int = 0):
+        """Move the scene to a different chapter."""
         # Remove the scene from its current chapter
-        current_chapter = self.get_chapter()
-        current_chapter.remove_scene(self)
+        if self._chapter is not None:
+            current_chapter = self._chapter
+            current_chapter.remove_scene(self)
 
         # Insert into the new chapter
         chapter.add_scene(self, position)
@@ -164,6 +172,13 @@ class Scene(GObject.Object):
         # Write the content of the buffer
         html_content = buffer_to_html(buffer)
         Path(self._scene_path).write_text(html_content)
+
+        # Check if the file has been changed
+        repo = self._manuscript.repo
+        for d in repo.index.diff(None):
+            if str(self._scene_path.resolve()).endswith(d.a_path):
+                repo.index.add(self._scene_path)
+                repo.index.commit(f"Modified scene \"{self._identifier}\"")
 
     def to_html(self):
         """Return the HTML payload for the scene."""
@@ -204,18 +219,18 @@ class Chapter(GObject.Object):
         """Remove a scene from the chapter."""
         found, position = self.scenes.find(scene)
         if found:
-            self._scenes.remove(position)
-            scene.set_chapter(None)
+            self.scenes.remove(position)
+            scene.chapter = None
         else:
             logger.warning(f"Could not find {scene}")
 
     def add_scene(self, scene: Scene, position: int = None):
         """Add an existing scene to the chapter."""
         if position is not None and position >= 0:
-            self._scenes.insert(position, scene)
+            self.scenes.insert(position, scene)
         else:
-            self._scenes.append(scene)
-        scene.set_chapter(self)
+            self.scenes.append(scene)
+        scene.chapter = self
 
     def to_html(self):
         """Return the HTML payload for the chapter."""
@@ -391,25 +406,26 @@ class Manuscript(GObject.Object):
 class Library(GObject.Object):
     """The library is the collection of manuscripts."""
 
-    # The base directory where all the manuscripts are located
-    _base_directory: Path = None
-
     # Map of manuscripts
     manuscripts: Gio.ListStore = Gio.ListStore.new(item_type=Manuscript)
 
     def __init__(self, base_directory: str):
+        """Create an instance of the library for the target folder."""
         # Keep track of attributes
         self._base_directory = Path(base_directory)
 
-        # Perform a scan of the data directory
-        self._scan_datadir()
-
-    def _scan_datadir(self):
-        logger.info(f"Scanning content of {self._base_directory}")
-
         # Create one manuscript entry per directory
+        logger.info(f"Scanning content of {self._base_directory}")
         for directory in self._base_directory.iterdir():
             logger.info(f"Adding manuscript {directory.name}")
             manuscript = Manuscript(directory)
             self.manuscripts.append(manuscript)
+
+    @property
+    def base_directory(self) -> Path:
+        """The base directory where all the manuscripts are located."""
+        return self._base_directory
+
+    def create_manuscript(self, title: str, synopsis: str = None):
+        logger.info("Create manuscript")
 
