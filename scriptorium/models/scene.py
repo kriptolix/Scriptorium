@@ -92,8 +92,8 @@ class Scene(GObject.Object):
         """Set the chapter the scene is associated to."""
         self._chapter = value
 
-    def create(self):
-        """Create the scene."""
+    def init(self):
+        """Initialise a new scene."""
         if self._scene_path.exists():
             raise ValueError("The scene is already on disk.")
 

@@ -1,11 +1,9 @@
-from pathlib import Path
-from gi.repository import Gtk, Pango
-import re
+from gi.repository import Gtk
 from bs4 import BeautifulSoup
-
-
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 def html_to_buffer(html_content: str, buffer: Gtk.TextBuffer):
     """
@@ -30,6 +28,7 @@ def html_to_buffer(html_content: str, buffer: Gtk.TextBuffer):
     # Place the cursor at the start of the buffer
     start = buffer.get_start_iter()
     buffer.place_cursor(start)
+
 
 def buffer_to_html(buffer: Gtk.TextBuffer):
     """

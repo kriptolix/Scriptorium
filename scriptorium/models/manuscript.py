@@ -19,9 +19,8 @@
 """Model for storing information about manuscripts and their content."""
 
 from pathlib import Path
-from gi.repository import Gtk, GObject, Gio
+from gi.repository import GObject, Gio
 import yaml
-from scriptorium.utils import html_to_buffer, buffer_to_html
 import logging
 import uuid
 import git
@@ -29,6 +28,7 @@ from .chapter import Chapter
 from .scene import Scene
 
 logger = logging.getLogger(__name__)
+
 
 class Manuscript(GObject.Object):
     """A manuscript is a collection of scenes and chapters."""
@@ -40,6 +40,8 @@ class Manuscript(GObject.Object):
 
     # The base directory of the manuscript
     _base_directory = None
+    _base_directory_img = None
+    _base_directory_scenes = None
 
     # The chapters contained in the manuscript
     chapters: Gio.ListStore
@@ -53,6 +55,8 @@ class Manuscript(GObject.Object):
 
         # Keep track of the attributes
         self._base_directory = manuscript_path
+        self._base_directory_images = manuscript_path / Path("images")
+        self._base_directory_scenes = manuscript_path / Path("scenes")
 
         # Create the list of chapters
         self.chapters = Gio.ListStore.new(item_type=Chapter)
@@ -60,22 +64,44 @@ class Manuscript(GObject.Object):
         # Create the list of scenes
         self.scenes = Gio.ListStore.new(item_type=Scene)
 
-        # Initialise the interface for tracking versions of the manuscript
-        self._repo = git.Repo(self._base_directory)
+        # If the manuscript has been initialised, load the content
+        if self._base_directory.exists():
+            # Initialise the interface for tracking versions of the manuscript
+            self._repo = git.Repo(self._base_directory)
 
-        # Load the description file from disk
-        self.load_from_disk()
+            # Load the description file from disk
+            self.load_from_disk()
 
     @property
     def repo(self):
         """Return a pointer to the Git repository of the manuscript."""
         return self._repo
 
+    def init(self):
+        """Initialise a freshly created manuscript."""
+        if self._base_directory.exists():
+            raise Exception("The directory is already initialised.")
+
+        # Create the directories and init the repo
+        self._base_directory.mkdir()
+        self._repo = git.Repo.init(self._base_directory)
+        self._base_directory_images.mkdir()
+        self._base_directory_scenes.mkdir()
+
+        # Save the empty project
+        yaml_file_path = self.save_to_disk()
+
+        # Create a commit
+        self.repo.index.add(yaml_file_path)
+        self.repo.index.add(self._base_directory_images)
+        self.repo.index.add(self._base_directory_scenes)
+        self.repo.index.commit(f"Created manuscript \"{self.title}\"")
+
     def get_cover_path(self):
-        if self.cover is None:
+        if self.cover is None or self.cover == '':
             return None
 
-        img_path = self._base_directory / Path("img") / Path(self.cover)
+        img_path = self._base_directory_images / Path(self.cover)
         return img_path.resolve()
 
     def save_to_disk(self):
@@ -125,12 +151,11 @@ class Manuscript(GObject.Object):
         self.cover = data["manuscript"].get("cover", None)
 
         # Load all the scenes
-        scenes_dir = self._base_directory / Path("scenes")
         for scene in data["scenes"]:
             logger.debug(f"Loading scene: {scene['title']}")
             scene_entry = Scene(manuscript=self,
                                 identifier=scene["identifier"],
-                                base_path=scenes_dir)
+                                base_path=self._base_directory_scenes)
             scene_entry.title = scene["title"]
             scene_entry.synopsis = scene["synopsis"].replace("\n", " ")
             self.add_scene(scene_entry)
@@ -178,7 +203,7 @@ class Manuscript(GObject.Object):
         self.scenes.append(new_scene)
 
         # Finish the creation of the scene
-        new_scene.create()
+        new_scene.init()
 
     def splice_chapters(self, source_chapter, target_chapter):
         """Move the source chapter to the position target chapter is at."""
@@ -191,6 +216,4 @@ class Manuscript(GObject.Object):
         # Now move the source where the target used to be located
         self.chapters.remove(source_position)
         self.chapters.insert(target_position, source_chapter)
-
-
 

@@ -25,4 +25,3 @@ from .scene import Scene
 from .commit_message import CommitMessage
 
 __all__ = ['Library', 'Manuscript', 'Chapter', 'Scene', 'CommitMessage']
-

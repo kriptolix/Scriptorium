@@ -19,12 +19,9 @@
 """Model for storing information about manuscripts and their content."""
 
 from pathlib import Path
-from gi.repository import Gtk, GObject, Gio
-import yaml
-from scriptorium.utils import html_to_buffer, buffer_to_html
+from gi.repository import GObject, Gio
 import logging
 import uuid
-import git
 
 from .manuscript import Manuscript
 
@@ -56,4 +53,19 @@ class Library(GObject.Object):
 
     def create_manuscript(self, title: str, synopsis: str = None):
         logger.info("Create manuscript")
+
+        # Create a new identifier, we use a UUID so that several manuscripts
+        # may share the same name
+        identifier = str(uuid.uuid4())
+
+        # Create the manuscript
+        path = self._base_directory / Path(identifier)
+        manuscript = Manuscript(path)
+        manuscript.title = title
+        manuscript.synopsis = synopsis
+        manuscript.init()
+
+        # Add it to the list
+        self.manuscripts.append(manuscript)
+
 
