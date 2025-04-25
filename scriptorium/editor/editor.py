@@ -21,7 +21,7 @@ from gi.repository import Adw, Gtk, GObject
 
 
 # The editor interface is using the model for a manuscript
-from .model import Manuscript
+from scriptorium.models import Manuscript
 from .editor_writing import ScrptWritingPanel
 from .editor_entity import ScrptEntityPanel
 from .editor_overview import ScrptOverviewPanel

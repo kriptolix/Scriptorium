@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Adw, Gtk, GObject, Gdk
 
-from .model import Chapter
+from scriptorium.models import Chapter
 from .scene import SceneCard
 
 import logging

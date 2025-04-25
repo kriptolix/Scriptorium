@@ -1,5 +1,5 @@
 from gi.repository import Adw, Gtk, GObject
-from .model import Scene
+from scriptorium.models import Scene
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,4 +42,3 @@ class SceneCard(Adw.PreferencesRow):
 
     def hide_suffix(self):
         self.suffixes.set_visible(False)
-

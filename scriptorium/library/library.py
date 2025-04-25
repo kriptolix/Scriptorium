@@ -19,7 +19,7 @@
 
 from gi.repository import Adw, GObject
 from gi.repository import Gtk
-from .model import Library
+from scriptorium.models import Library
 from .manuscript import ManuscriptItem
 from .dialog_add import ScrptAddDialog
 

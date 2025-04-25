@@ -22,7 +22,6 @@ scriptorium_sources = [
 	'__init__.py',
 	'main.py',
 	'window.py',
-	'model.py',
 	'utils.py',
 	'globals.py',
 	'editor/editor.py',
@@ -37,29 +36,30 @@ scriptorium_sources = [
 	'library/manuscript.py',
 	'editor/writer.py',
 	'editor/editor_writing_details.py',
-	'editor/multiline_entry_row.py',
+	'widgets/multiline_entry_row.py',
 	'dialog/dialog_add.py',
-
 ]
+install_data(scriptorium_sources, install_dir: moduledir)
+
 
 blueprints = custom_target(
 	'blueprints',
 	input: files(
+		'dialog/dialog_add.blp',
 		'editor/chapter_column.blp',
 		'editor/editor.blp',
 		'editor/editor_entity.blp',
 		'editor/editor_formatting.blp',
 		'editor/editor_overview.blp',
 		'editor/editor_writing.blp',
+		'editor/editor_writing_details.blp',
 		'editor/plotting.blp',
 		'editor/scene.blp',
+		'editor/writer.blp',
 		'library/library.blp',
 		'library/manuscript.blp',
+		'widgets/multiline_entry_row.blp',
 		'window.blp',
-		'editor/writer.blp',
-		'editor/editor_writing_details.blp',
-		'editor/multiline_entry_row.blp',
-		'dialog/dialog_add.blp',
 	),
 	output: '.',
 	command: [
@@ -80,4 +80,4 @@ gnome.compile_resources(
 	dependencies: blueprints,
 )
 
-install_data(scriptorium_sources, install_dir: moduledir)
+subdir('models')

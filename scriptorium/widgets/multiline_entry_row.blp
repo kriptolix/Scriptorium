@@ -45,12 +45,15 @@ template $MultiLineEntryRow: Adw.PreferencesRow {
           "title"
         ]
 
+
         Label title {
           ellipsize: none;
           wrap: true;
           wrap-mode: word;
           xalign: 0;
-          label: bind template.title;
+          label: bind template.header;
+          can-target: false;
+          opacity: 1;
 
           styles [
             "subtitle"
@@ -67,6 +70,11 @@ template $MultiLineEntryRow: Adw.PreferencesRow {
               "multiline_content"
             ]
             state-flags-changed => $on_state_flags_changed();
+            /*
+            buffer: TextBuffer text_buffer {
+              changed => $on_textbuffer_changed();
+            };
+            */
           }
         }
       }

@@ -1,5 +1,5 @@
 from gi.repository import Adw, Gtk, GObject, Pango, Gdk
-from .model import Scene
+from scriptorium.models import Scene
 import logging
 
 logger = logging.getLogger(__name__)

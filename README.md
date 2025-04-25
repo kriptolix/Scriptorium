@@ -32,3 +32,8 @@ https://github.com/natorsc/py-gtk/blob/main/src/libadwaita-widgets/navigation-sp
 
 
 
+
+https://github.com/Nokse22/mini-text/tree/master/src
+
+https://github.com/getting-things-gnome/gtg/
+
