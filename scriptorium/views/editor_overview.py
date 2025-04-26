@@ -18,13 +18,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import Adw, Gtk, GObject
-from .chapter_column import ChapterColumn
+from scriptorium.widgets import ChapterColumn
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_overview.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/views/editor_overview.ui")
 class ScrptOverviewPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptOverviewPanel"
     __icon_name__ = "view-columns-symbolic"

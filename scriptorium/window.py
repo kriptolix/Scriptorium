@@ -18,15 +18,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import scriptorium.library
-import scriptorium.editor
 from gi.repository import Adw
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from pathlib import Path
-from .editor import ScrptEditorView
+from scriptorium.views import ScrptEditorView, ScrptLibraryView
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class ScrptWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'ScrptWindow'
 
     navigation = Gtk.Template.Child()
-    library = Gtk.Template.Child()
+    #library = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -65,8 +63,8 @@ class ScrptWindow(Adw.ApplicationWindow):
 
         # TODO Implement the setting for data folder
 
-        self.library.connect('notify::selected-manuscript',
-            self.on_selected_manuscript_changed)
+        #self.library.connect('notify::selected-manuscript',
+        #    self.on_selected_manuscript_changed)
 
         # Connect to the settings the name of the last opened manuscript
         #self.settings.bind("last-manuscript-name", self.library,
@@ -84,26 +82,30 @@ class ScrptWindow(Adw.ApplicationWindow):
     # TODO Turn that into a call back for when the data folder is changed
     def _open_library(self):
         # Get a reference to the library panel
-        library_panel = self.navigation.find_page('library')
+        #library_panel = self.navigation.find_page('library')
+        self._library_panel = ScrptLibraryView()
+        self.navigation.replace([self._library_panel])
+        self._library_panel.connect('notify::selected-manuscript',
+            self.on_selected_manuscript_changed)
 
         # Set the data folder
         manuscript_path = Path(GLib.get_user_data_dir()) / Path('manuscripts')
         if not manuscript_path.exists():
             manuscript_path.mkdir()
         logger.info(f'Data location: {manuscript_path}')
-        library_panel.set_property('manuscripts_base_path',
+        self._library_panel.set_property('manuscripts_base_path',
                                     manuscript_path.resolve())
 
         if self.settings.get_boolean("open-last-project"):
-            manuscripts_model = library_panel.manuscripts_grid.get_model()
+            manuscripts_model = self._library_panel.manuscripts_grid.get_model()
             manuscripts_model.select_item(0, True)
 
     @Gtk.Template.Callback()
     def on_navigationview_popped(self, _navigation, _page):
         logger.info('Pop')
 
-    def on_selected_manuscript_changed(self, _value, _a):
-        manuscript = self.library.selected_manuscript
+    def on_selected_manuscript_changed(self, _navigation, _a):
+        manuscript = self._library_panel.selected_manuscript
         logger.info(f"Create and open editor for {manuscript.title}")
 
         editor_view = ScrptEditorView(manuscript)

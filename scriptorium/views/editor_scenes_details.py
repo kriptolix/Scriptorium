@@ -22,13 +22,13 @@ import logging
 
 from gi.repository import Adw, Gtk, Pango, GObject, GLib
 
-from .globals import BASE
-from .writer import Writer
+from scriptorium.globals import BASE
+from scriptorium.dialogs import Writer
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/editor/editor_writing_details.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/editor_scenes_details.ui")
 class ScrptWritingDetailsPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptWritingDetailsPanel"
 

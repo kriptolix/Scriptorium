@@ -16,23 +16,30 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Dialog to add a new scene."""
+"""Dialog to add a new entity in Scriptorium."""
 import logging
 
 from gi.repository import Adw, Gtk, GObject
 
-from .globals import BASE
+from scriptorium.globals import BASE
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/editor/dialog_add_scene.ui")
-class ScrptAddSceneDialog(Adw.AlertDialog):
+@Gtk.Template(resource_path=f"{BASE}/dialogs/dialog_add.ui")
+class ScrptAddDialog(Adw.AlertDialog):
     """Dialog to add a new scene."""
 
-    __gtype_name__ = "ScrptAddSceneDialog"
+    __gtype_name__ = "ScrptAddDialog"
+
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
+
+    def __init__(self, name, **kwargs):
+        """Create a new instance of the class."""
+        super().__init__(**kwargs)
+
+        self.set_heading(f"Add a new {name}")
 
     @Gtk.Template.Callback()
     def on_title_changed(self, entry_row):

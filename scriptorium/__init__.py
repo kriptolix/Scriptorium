@@ -10,7 +10,7 @@ from gi.repository import Adw
 Adw.init()
 
 # Load the custom widget
-from .multiline_entry_row import MultiLineEntryRow
+from scriptorium.widgets.multiline_entry_row import MultiLineEntryRow
 
 
 

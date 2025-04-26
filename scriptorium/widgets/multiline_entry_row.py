@@ -1,7 +1,7 @@
 import logging
 
 from gi.repository import Adw, Gtk, GObject
-from .globals import BASE
+from scriptorium.globals import BASE
 
 logger = logging.getLogger(__name__)
 

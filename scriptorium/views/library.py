@@ -20,15 +20,15 @@
 from gi.repository import Adw, GObject
 from gi.repository import Gtk
 from scriptorium.models import Library
-from .manuscript import ManuscriptItem
-from .dialog_add import ScrptAddDialog
+from scriptorium.widgets import ManuscriptItem
+from scriptorium.dialogs import ScrptAddDialog
 
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/library/library.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/views/library.ui")
 class ScrptLibraryView(Adw.NavigationPage):
     __gtype_name__ = "ScrptLibraryView"
 

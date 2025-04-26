@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/scene.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/widgets/scene.ui")
 class SceneCard(Adw.PreferencesRow):
     __gtype_name__ = "SceneCard"
 

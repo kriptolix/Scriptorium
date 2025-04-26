@@ -22,8 +22,8 @@ from gi.repository import Adw, Gtk, GObject
 
 # The editor interface is using the model for a manuscript
 from scriptorium.models import Manuscript
-from .editor_writing import ScrptWritingPanel
-from .editor_entity import ScrptEntityPanel
+from .editor_scenes import ScrptWritingPanel
+#from .editor_entity import ScrptEntityPanel
 from .editor_overview import ScrptOverviewPanel
 
 import logging
@@ -38,7 +38,7 @@ PANELS = [
 
 DEFAULT = "scenes"
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/views/editor.ui")
 class ScrptEditorView(Adw.NavigationPage):
     """The editor is the main view to modify a manuscript."""
 

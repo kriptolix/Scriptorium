@@ -1,12 +1,15 @@
 from gi.repository import Adw, Gtk, GObject, Pango, Gdk
 from scriptorium.models import Scene
+from scriptorium.globals import BASE
 import logging
 
 logger = logging.getLogger(__name__)
 
 # make font selectable like in https://gitlab.gnome.org/GNOME/gnome-text-editor/-/blob/main/src/editor-preferences-dialog.c
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/writer.ui")
+
+
+@Gtk.Template(resource_path=f"{BASE}/dialogs/writer.ui")
 class Writer(Adw.Dialog):
     __gtype_name__ = "Writer"
 

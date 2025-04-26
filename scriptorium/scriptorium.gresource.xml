@@ -3,15 +3,28 @@
   <gresource prefix="/com/github/cgueret/Scriptorium">
     <!-- Main application UI -->
     <file>style.css</file>
-
-    <!-- Library mode -->
     <file preprocess="xml-stripblanks">window.ui</file>
-    <file preprocess="xml-stripblanks">library/library.ui</file>
-    <file preprocess="xml-stripblanks">library/manuscript.ui</file>
+
+    <!-- Views -->
+    <file preprocess="xml-stripblanks">views/library.ui</file>
+    <file preprocess="xml-stripblanks">views/editor.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_overview.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_scenes.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_scenes_details.ui</file>
+
+    <!-- Custom widgets -->
+    <file preprocess="xml-stripblanks">widgets/scene.ui</file>
+    <file preprocess="xml-stripblanks">widgets/chapter_column.ui</file>
+    <file preprocess="xml-stripblanks">widgets/manuscript.ui</file>
+    <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
+
+    <!-- Dialogs -->
+    <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>
+    <file preprocess="xml-stripblanks">dialogs/writer.ui</file>
 
     <!-- Editor mode -->
+    <!--
     <file>editor/emulator.html</file>
-    <file preprocess="xml-stripblanks">editor/editor.ui</file>
     <file preprocess="xml-stripblanks">editor/plotting.ui</file>
     <file preprocess="xml-stripblanks">editor/editor_entity.ui</file>
     <file preprocess="xml-stripblanks">editor/editor_overview.ui</file>
@@ -19,10 +32,8 @@
     <file preprocess="xml-stripblanks">editor/editor_writing.ui</file>
     <file preprocess="xml-stripblanks">editor/scene.ui</file>
     <file preprocess="xml-stripblanks">editor/chapter_column.ui</file>
-    <file preprocess="xml-stripblanks">editor/writer.ui</file>
-    <file preprocess="xml-stripblanks">editor/editor_writing_details.ui</file>
     <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
-    <file preprocess="xml-stripblanks">dialog/dialog_add.ui</file>
+    -->
 
     <!-- Gtk help overlay -->
     <!-- <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file> -->
@@ -31,7 +42,7 @@
   <!-- Assets -->
   <gresource prefix="/com/github/cgueret/Scriptorium/assets">
     <file>style.css</file>
-    <file>editor/emulator.html</file>
+    <!--<file>editor/emulator.html</file>-->
   </gresource>
 
   <!-- Icons -->

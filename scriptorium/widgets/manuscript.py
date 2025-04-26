@@ -23,7 +23,7 @@ from gi.repository import GObject
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/library/manuscript.ui")
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/widgets/manuscript.ui")
 class ManuscriptItem(Gtk.Box):
     __gtype_name__ = "ManuscriptItem"
 

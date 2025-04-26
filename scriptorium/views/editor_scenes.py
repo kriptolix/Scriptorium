@@ -22,16 +22,15 @@ import logging
 
 from gi.repository import Adw, Gtk, GObject
 
-from .globals import BASE
-from .scene import SceneCard
-from .writer import Writer
-from .editor_writing_details import ScrptWritingDetailsPanel
-from .dialog_add import ScrptAddDialog
+from scriptorium.globals import BASE
+from scriptorium.widgets import SceneCard
+from scriptorium.dialogs import Writer, ScrptAddDialog
+from .editor_scenes_details import ScrptWritingDetailsPanel
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/editor/editor_writing.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/editor_scenes.ui")
 class ScrptWritingPanel(Adw.NavigationPage):
     """Panel to list all the scenes and edit their content."""
 
