@@ -77,6 +77,11 @@ class Manuscript(GObject.Object):
         """Return a pointer to the Git repository of the manuscript."""
         return self._repo
 
+    @property
+    def identifier(self):
+        """The unique identifier of the manuscript."""
+        return self._base_directory.name
+
     def init(self):
         """Initialise a freshly created manuscript."""
         if self._base_directory.exists():

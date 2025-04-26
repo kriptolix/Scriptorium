@@ -63,13 +63,6 @@ class ScrptWindow(Adw.ApplicationWindow):
 
         # TODO Implement the setting for data folder
 
-        #self.library.connect('notify::selected-manuscript',
-        #    self.on_selected_manuscript_changed)
-
-        # Connect to the settings the name of the last opened manuscript
-        #self.settings.bind("last-manuscript-name", self.library,
-        #    "selected_manuscript", Gio.SettingsBindFlags.DEFAULT)
-
         # Connect to save the name of the last edited project
         self.connect("close-request", self.on_close_request)
 
@@ -79,10 +72,8 @@ class ScrptWindow(Adw.ApplicationWindow):
         logger.info("Window close requested")
         # TODO Remember the name of the project currently open in library
 
-    # TODO Turn that into a call back for when the data folder is changed
     def _open_library(self):
         # Get a reference to the library panel
-        #library_panel = self.navigation.find_page('library')
         self._library_panel = ScrptLibraryView()
         self.navigation.replace([self._library_panel])
         self._library_panel.connect('notify::selected-manuscript',
@@ -96,9 +87,17 @@ class ScrptWindow(Adw.ApplicationWindow):
         self._library_panel.set_property('manuscripts_base_path',
                                     manuscript_path.resolve())
 
+        last_opened = self.settings.get_string("last-manuscript-name")
+        logger.info(f"Last opened: {last_opened}")
+
+        manuscripts_model = self._library_panel.manuscripts_grid.get_model()
         if self.settings.get_boolean("open-last-project"):
-            manuscripts_model = self._library_panel.manuscripts_grid.get_model()
-            manuscripts_model.select_item(0, True)
+            if len(manuscripts_model) > 0:
+                index = 0
+                for i in range(len(manuscripts_model)):
+                    if manuscripts_model[i].identifier == last_opened:
+                        index = i
+                manuscripts_model.select_item(index, True)
 
     @Gtk.Template.Callback()
     def on_navigationview_popped(self, _navigation, _page):
@@ -106,6 +105,7 @@ class ScrptWindow(Adw.ApplicationWindow):
 
     def on_selected_manuscript_changed(self, _navigation, _a):
         manuscript = self._library_panel.selected_manuscript
+        self.settings.set_string("last-manuscript-name", manuscript.identifier)
         logger.info(f"Create and open editor for {manuscript.title}")
 
         editor_view = ScrptEditorView(manuscript)
