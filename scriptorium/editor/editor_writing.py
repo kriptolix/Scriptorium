@@ -36,6 +36,9 @@ class ScrptWritingPanel(Adw.NavigationPage):
     """Panel to list all the scenes and edit their content."""
 
     __gtype_name__ = "ScrptWritingPanel"
+    __title__ = "Scenes"
+    __icon_name__ = "edit-symbolic"
+    __description__ = "Edit the content of the scenes"
 
     scenes_list = Gtk.Template.Child()
     navigation: Adw.NavigationView = Gtk.Template.Child()
@@ -50,16 +53,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
 
         # Let users switch to edit mode when clicking anywhere on the scene
         self.scenes_list.connect("row-activated", self.on_row_activated)
-
-    @GObject.Property
-    def icon_name(self):
-        """Return the name of the icon for this panel."""
-        return "edit-symbolic"
-
-    @GObject.Property
-    def description(self):
-        """Return the description for this panel."""
-        return "Edit the content of the scenes"
 
     def bind_side_bar_button(self, split_view):
         """Connect the button to collapse the sidebar."""

@@ -27,20 +27,14 @@ logger = logging.getLogger(__name__)
 @Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_overview.ui")
 class ScrptOverviewPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptOverviewPanel"
+    __icon_name__ = "view-columns-symbolic"
+    __description__ = "Overview of all the content"
+    __title__ = "Overview"
 
     chapter_columns = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
     chapter_column_factory = Gtk.Template.Child()
 
-    @GObject.Property
-    def icon_name(self):
-        """Return the name of the icon for this panel."""
-        return "view-columns-symbolic"
-
-    @GObject.Property
-    def description(self):
-        """Return the description for this panel."""
-        return "Overview of all the content"
 
     def bind_side_bar_button(self, split_view):
         """Connect the button to collapse the sidebar."""

@@ -31,8 +31,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 PANELS = [
-    ("overview", ScrptOverviewPanel()),
-    ("scenes", ScrptWritingPanel()),
+    ("overview", ScrptOverviewPanel),
+    ("scenes", ScrptWritingPanel),
     # ("people", ScrptEntityPanel()),
 ]
 
@@ -49,21 +49,23 @@ class ScrptEditorView(Adw.NavigationPage):
     split_view = Gtk.Template.Child()
     panels_sidebar = Gtk.Template.Child()
 
-    # The manuscript the editor is connected to
-    manuscript = GObject.Property(type=Manuscript)
+    @GObject.Property(type=Manuscript)
+    def manuscript(self):
+        """The manuscript the editor is connected to."""
+        return self._manuscript
 
-    def __init__(self, **kwargs):
+    def __init__(self, manuscript: Manuscript, **kwargs):
         """Create a new instance of the editor."""
         super().__init__(**kwargs)
+
+        # Keep track of the manuscript the editor is associated to
+        self._manuscript = manuscript
 
         # Setup all the panels
         self.initialise_panels()
 
         # Connect the signal for navigation
         self.panels_navigation.connect("row-selected", self.on_selected_item)
-
-        # Keep an eye for changes to the manuscript base path
-        self.connect("notify::manuscript", self.on_manuscript_changed)
 
         # Open the default panel
         row = None
@@ -74,44 +76,35 @@ class ScrptEditorView(Adw.NavigationPage):
 
     def initialise_panels(self):
         """Add all the panels to the menu."""
+        self.panels_sidebar.set_title(self.manuscript.title)
+
         for panel_id, panel in PANELS:
             # Create a menu entry
             box = Gtk.Box.new(spacing=12, orientation=Gtk.Orientation.HORIZONTAL)
-            box.set_margin_top(6)
-            box.set_margin_bottom(6)
+            box.set_margin_top(12)
+            box.set_margin_bottom(12)
             box.set_margin_start(6)
             box.set_margin_end(6)
-            image = Gtk.Image.new_from_icon_name(icon_name=panel.icon_name)
+            image = Gtk.Image.new_from_icon_name(icon_name=panel.__icon_name__)
             box.append(image)
-            label = Gtk.Label.new(panel.get_title())
+            label = Gtk.Label.new(panel.__title__)
             box.append(label)
             self.panels_navigation.append(box)
 
             # Add the id and title to the box for easy retrieval later
             box.panel_id = panel_id
 
-            # Add the panel to the stack
-            self.panels.add(panel)
-
-            # Connect the side bar button(s)
-            panel.bind_side_bar_button(self.split_view)
-
     def on_selected_item(self, _list_box, _selected_item):
         """Change the panel currently displayed."""
         selection = _selected_item.get_child()
         logger.info(f"Switching to panel {selection.panel_id}")
-        self.panels.replace_with_tags([selection.panel_id])
-
-    def on_manuscript_changed(self, _manuscript, _other):
-        """Connect the editor to a manuscript."""
-        logger.info(f"Connect editor to {self.manuscript.title}")
-
-        # Set the title of the window
-        self.panels_sidebar.set_title(self.manuscript.title)
-
-        # Connect all the panels
+        p = None
         for panel_id, panel in PANELS:
-            panel.bind_to_manuscript(self.manuscript)
+            if panel_id == selection.panel_id:
+                p = panel()
+                p.bind_to_manuscript(self.manuscript)
+                p.bind_side_bar_button(self.split_view)
+        self.panels.replace([p])
 
     @Gtk.Template.Callback()
     def on_editorview_closed(self, _editorview):

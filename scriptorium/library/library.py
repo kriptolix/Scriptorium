@@ -23,6 +23,7 @@ from scriptorium.models import Library
 from .manuscript import ManuscriptItem
 from .dialog_add import ScrptAddDialog
 
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,16 @@ class ScrptLibraryView(Adw.NavigationPage):
 
         self.item_factory.connect("setup", self.on_setup_item)
         self.item_factory.connect("bind", self.on_bind_item)
+
+        self._selected_manuscript = None
+
+    @GObject.Property
+    def selected_manuscript(self):
+        return self._selected_manuscript
+
+    @selected_manuscript.setter
+    def selected_manuscript(self, value):
+        self._selected_manuscript = value
 
     @Gtk.Template.Callback()
     def on_add_manuscript_clicked(self, _button):
@@ -97,14 +108,9 @@ class ScrptLibraryView(Adw.NavigationPage):
         Called when a manuscript is selected
         """
         # Get the select manuscript and unselect it
-        selected_manuscript = selection.get_selected_item()
-        if selected_manuscript is not None:
-            logger.info(f'Selected manuscript {selected_manuscript.title}')
+        selected_item = selection.get_selected_item()
+        if selected_item is not None:
+            self.selected_manuscript = selection.get_selected_item()
+            logger.info(f'Selected manuscript {self.selected_manuscript.title}')
             selection.set_selected(Gtk.INVALID_LIST_POSITION)
-
-            # Set which Manuscript to load in the editor
-            self.get_parent().find_page('editor').set_property('manuscript', selected_manuscript)
-
-            # Switch to the editor navigation page
-            self.get_parent().push_by_tag('editor')
 

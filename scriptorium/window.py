@@ -26,9 +26,9 @@ from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import GLib
 from pathlib import Path
+from .editor import ScrptEditorView
 
 logger = logging.getLogger(__name__)
-
 
 
 @Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/window.ui')
@@ -36,6 +36,7 @@ class ScrptWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'ScrptWindow'
 
     navigation = Gtk.Template.Child()
+    library = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -44,8 +45,8 @@ class ScrptWindow(Adw.ApplicationWindow):
         css_provider = Gtk.CssProvider()
         css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/style.css"))
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(),
-                                                    css_provider,
-                                                    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # Load custom icons
         theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
@@ -63,6 +64,13 @@ class ScrptWindow(Adw.ApplicationWindow):
             Gio.SettingsBindFlags.DEFAULT)
 
         # TODO Implement the setting for data folder
+
+        self.library.connect('notify::selected-manuscript',
+            self.on_selected_manuscript_changed)
+
+        # Connect to the settings the name of the last opened manuscript
+        #self.settings.bind("last-manuscript-name", self.library,
+        #    "selected_manuscript", Gio.SettingsBindFlags.DEFAULT)
 
         # Connect to save the name of the last edited project
         self.connect("close-request", self.on_close_request)
@@ -89,4 +97,15 @@ class ScrptWindow(Adw.ApplicationWindow):
         if self.settings.get_boolean("open-last-project"):
             manuscripts_model = library_panel.manuscripts_grid.get_model()
             manuscripts_model.select_item(0, True)
+
+    @Gtk.Template.Callback()
+    def on_navigationview_popped(self, _navigation, _page):
+        logger.info('Pop')
+
+    def on_selected_manuscript_changed(self, _value, _a):
+        manuscript = self.library.selected_manuscript
+        logger.info(f"Create and open editor for {manuscript.title}")
+
+        editor_view = ScrptEditorView(manuscript)
+        self.navigation.push(editor_view)
 

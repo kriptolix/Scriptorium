@@ -1,5 +1,5 @@
 [flake8]
-extend-ignore = E203, E501, I001, D102, D017, I003, BLK100
+extend-ignore = E203, E501, I001, D102, D017, I003, BLK100, E128, E127
 exclude =
     # No need to traverse our git directory
     .git,

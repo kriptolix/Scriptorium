@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Model for storing information about manuscripts and their content."""
+"""A Library is a collection of manuscripts."""
 
 from pathlib import Path
 from gi.repository import GObject, Gio
@@ -31,13 +31,13 @@ logger = logging.getLogger(__name__)
 class Library(GObject.Object):
     """The library is the collection of manuscripts."""
 
-    # Map of manuscripts
-    manuscripts: Gio.ListStore = Gio.ListStore.new(item_type=Manuscript)
-
     def __init__(self, base_directory: str):
         """Create an instance of the library for the target folder."""
         # Keep track of attributes
         self._base_directory = Path(base_directory)
+
+        # List of manuscripts
+        self._manuscripts = Gio.ListStore.new(item_type=Manuscript)
 
         # Create one manuscript entry per directory
         logger.info(f"Scanning content of {self._base_directory}")
@@ -46,12 +46,18 @@ class Library(GObject.Object):
             manuscript = Manuscript(directory)
             self.manuscripts.append(manuscript)
 
+    @GObject.Property(type=Gio.ListStore)
+    def manuscripts(self) -> Gio.ListStore:
+        """List of manuscripts."""
+        return self._manuscripts
+
     @property
     def base_directory(self) -> Path:
         """The base directory where all the manuscripts are located."""
         return self._base_directory
 
     def create_manuscript(self, title: str, synopsis: str = None):
+        """Create a new manuscript."""
         logger.info("Create manuscript")
 
         # Create a new identifier, we use a UUID so that several manuscripts
@@ -59,7 +65,7 @@ class Library(GObject.Object):
         identifier = str(uuid.uuid4())
 
         # Create the manuscript
-        path = self._base_directory / Path(identifier)
+        path = self.base_directory / Path(identifier)
         manuscript = Manuscript(path)
         manuscript.title = title
         manuscript.synopsis = synopsis

@@ -37,3 +37,5 @@ https://github.com/Nokse22/mini-text/tree/master/src
 
 https://github.com/getting-things-gnome/gtg/
 
+https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_gtk4_sgskip.html
+

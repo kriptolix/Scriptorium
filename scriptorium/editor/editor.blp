@@ -4,7 +4,7 @@ using Adw 1;
 template $ScrptEditorView: Adw.NavigationPage {
   title: _("Editor");
   tag: "editor";
-  hidden => $on_editorview_closed();
+  //hidden => $on_editorview_closed();
   unrealize => $on_editorview_closed();
 
   child: Adw.OverlaySplitView split_view {
