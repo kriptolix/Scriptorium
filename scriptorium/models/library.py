@@ -43,7 +43,7 @@ class Library(GObject.Object):
         logger.info(f"Scanning content of {self._base_directory}")
         for directory in self._base_directory.iterdir():
             logger.info(f"Adding manuscript {directory.name}")
-            manuscript = Manuscript(directory)
+            manuscript = Manuscript(self, directory)
             self.manuscripts.append(manuscript)
 
     @GObject.Property(type=Gio.ListStore)
@@ -66,7 +66,7 @@ class Library(GObject.Object):
 
         # Create the manuscript
         path = self.base_directory / Path(identifier)
-        manuscript = Manuscript(path)
+        manuscript = Manuscript(self, path)
         manuscript.title = title
         manuscript.synopsis = synopsis
         manuscript.init()
@@ -74,4 +74,5 @@ class Library(GObject.Object):
         # Add it to the list
         self.manuscripts.append(manuscript)
 
-
+    def delete_manuscript(self, manuscript):
+        logger.warning("Not implemented yet")

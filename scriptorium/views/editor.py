@@ -18,27 +18,34 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import Adw, Gtk, GObject
-
+from scriptorium.globals import BASE
 
 # The editor interface is using the model for a manuscript
 from scriptorium.models import Manuscript
 from .editor_scenes import ScrptWritingPanel
 #from .editor_entity import ScrptEntityPanel
 from .editor_overview import ScrptOverviewPanel
+from .editor_manuscript import ScrptManuscriptPanel
+from .editor_chapters import ScrptChaptersPanel
+from .editor_formatting import ScrptFormattingPanel
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 PANELS = [
+    ("manuscript", ScrptManuscriptPanel),
     ("overview", ScrptOverviewPanel),
     ("scenes", ScrptWritingPanel),
+    ("chapters", ScrptChaptersPanel),
+    ("formatting", ScrptFormattingPanel),
     # ("people", ScrptEntityPanel()),
 ]
 
-DEFAULT = "scenes"
+DEFAULT = "formatting"
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/views/editor.ui")
+
+@Gtk.Template(resource_path=f"{BASE}/views/editor.ui")
 class ScrptEditorView(Adw.NavigationPage):
     """The editor is the main view to modify a manuscript."""
 
@@ -101,8 +108,7 @@ class ScrptEditorView(Adw.NavigationPage):
         p = None
         for panel_id, panel in PANELS:
             if panel_id == selection.panel_id:
-                p = panel()
-                p.bind_to_manuscript(self.manuscript)
+                p = panel(self.manuscript)
                 p.bind_side_bar_button(self.split_view)
         self.panels.replace([p])
 

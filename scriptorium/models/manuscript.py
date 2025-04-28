@@ -49,11 +49,12 @@ class Manuscript(GObject.Object):
     # The scenes contained in the manuscript
     scenes: Gio.ListStore
 
-    def __init__(self, manuscript_path, **kwargs):
+    def __init__(self, library, manuscript_path, **kwargs):
         """Create a new manuscript."""
         super().__init__(**kwargs)
 
         # Keep track of the attributes
+        self._library = library
         self._base_directory = manuscript_path
         self._base_directory_images = manuscript_path / Path("images")
         self._base_directory_scenes = manuscript_path / Path("scenes")
@@ -77,10 +78,15 @@ class Manuscript(GObject.Object):
         """Return a pointer to the Git repository of the manuscript."""
         return self._repo
 
-    @property
+    @GObject.Property(type=str)
     def identifier(self):
         """The unique identifier of the manuscript."""
         return self._base_directory.name
+
+    @property
+    def library(self):
+        """The library associated to this manuscript."""
+        return self._library
 
     def init(self):
         """Initialise a freshly created manuscript."""

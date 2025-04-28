@@ -36,6 +36,18 @@ class ScrptOverviewPanel(Adw.NavigationPage):
     chapter_column_factory = Gtk.Template.Child()
 
 
+    def __init__(self, manuscript, **kwargs):
+        """Create an instance of the panel."""
+        super().__init__(**kwargs)
+
+        self._manuscript = manuscript
+
+        self.chapter_column_factory.connect("setup", self.on_setup_item)
+        self.chapter_column_factory.connect("bind", self.on_bind_item)
+
+        selection_model = Gtk.NoSelection(model=manuscript.chapters)
+        self.chapter_columns.set_model(selection_model)
+
     def bind_side_bar_button(self, split_view):
         """Connect the button to collapse the sidebar."""
         split_view.bind_property(
@@ -45,15 +57,6 @@ class ScrptOverviewPanel(Adw.NavigationPage):
             GObject.BindingFlags.BIDIRECTIONAL
             | GObject.BindingFlags.SYNC_CREATE
         )
-
-    def bind_to_manuscript(self, manuscript):
-        self._manuscript = manuscript
-
-        self.chapter_column_factory.connect("setup", self.on_setup_item)
-        self.chapter_column_factory.connect("bind", self.on_bind_item)
-
-        selection_model = Gtk.NoSelection(model=manuscript.chapters)
-        self.chapter_columns.set_model(selection_model)
 
     def bind_chapter(self, chapter):
         """Bind a scene card to a scene."""

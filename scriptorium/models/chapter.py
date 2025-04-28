@@ -26,6 +26,7 @@ import logging
 import uuid
 import git
 from .scene import Scene
+from .commit_message import CommitMessage
 
 logger = logging.getLogger(__name__)
 

@@ -1,14 +1,20 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptWritingDetailsPanel: Adw.NavigationPage {
-  title: "Scene details";
+template $ScrptManuscriptPanel: Adw.NavigationPage {
+  title: "Manuscript details";
 
   child: Adw.ToolbarView {
     [top]
     Adw.HeaderBar {
       show-title: true;
-      show-back-button: true;
+      show-back-button: false;
+
+      [start]
+      ToggleButton show_sidebar_button {
+        icon-name: "sidebar-show-symbolic";
+        tooltip-text: _("Toggle Sidebar");
+      }
     }
 
     content: ScrolledWindow {
@@ -49,18 +55,6 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
           }
 
           Adw.PreferencesGroup {
-            title: "History";
-
-            ListBox history_list {
-              selection-mode: none;
-
-              styles [
-                "boxed-list",
-              ]
-            }
-          }
-
-          Adw.PreferencesGroup {
             title: "Actions";
 
             ListBox {
@@ -70,22 +64,13 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
                 "boxed-list-separate",
               ]
 
-              Adw.ButtonRow open_editor {
-                title: "Open text editor";
-                end-icon-name: "go-next-symbolic";
-                styles [
-                  "suggested-action"
-                ]
-                activated => $on_open_editor_activated();
-              }
-
-              Adw.ButtonRow delete_scene {
-                title: "Delete scene";
+              Adw.ButtonRow delete_manuscript {
+                title: "Delete manuscript";
                 end-icon-name: "edit-delete-symbolic";
                 styles [
                   "destructive-action"
                 ]
-                activated => $on_delete_scene_activated();
+                activated => $on_delete_manuscript_activated();
               }
             }
           }

@@ -16,29 +16,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-
-# Set the target version of the libraries
-import gi
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-gi.require_version("WebKit", "6.0")
-gi.require_version("Tsparql", "3.0")
-
-# Manually init Adw to be sure it's recognized
-from gi.repository import Adw
-Adw.init()
-
-
 import sys
-
+from scriptorium.widgets.multiline_entry_row import MultiLineEntryRow
 from gi.repository import Gio, Adw, WebKit
 from .window import ScrptWindow
-
-
 import logging
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(name)-20s: %(levelname)-8s %(message)s'
+    format='%(name)-40s: %(levelname)-8s %(message)s'
 )
 logger = logging.getLogger(__name__)
 
@@ -57,6 +43,10 @@ class ScriptoriumApplication(Adw.Application):
         dummy = WebKit.WebView()
         del dummy
 
+        # Same for MultiLineEntryRow
+        dummy = MultiLineEntryRow()
+        del dummy
+
     def do_activate(self):
         """Called when the application is activated.
 
@@ -70,7 +60,7 @@ class ScriptoriumApplication(Adw.Application):
 
     def on_about_action(self, *args):
         """Callback for the app.about action."""
-        about = Adw.AboutDialog(application_name='scriptorium',
+        about = Adw.AboutDialog(application_name='Scriptorium',
                                 application_icon='com.github.cgueret.Scriptorium',
                                 developer_name='Christophe Guéret',
                                 version='0.1.0',

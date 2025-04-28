@@ -16,9 +16,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-import logging
 from gi.repository import Gtk
 from gi.repository import GObject
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,6 @@ class ManuscriptItem(Gtk.Box):
         self.connect('notify::cover', self.on_cover_changed)
 
     def on_cover_changed(self, _cover, _other):
-        logger.info(self.cover)
         if self.cover is not None:
             # Load the image
             self.cover_picture.set_filename(self.cover)

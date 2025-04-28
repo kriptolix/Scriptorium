@@ -20,7 +20,6 @@ template $ScrptWritingPanel: Adw.NavigationPage {
           ToggleButton show_sidebar_button {
             icon-name: "sidebar-show-symbolic";
             tooltip-text: _("Toggle Sidebar");
-            // active: bind split_view.show-sidebar;
           }
         }
 
@@ -34,6 +33,8 @@ template $ScrptWritingPanel: Adw.NavigationPage {
               spacing: 12;
 
               Adw.PreferencesGroup {
+                title: "Scenes";
+                description: "This is the list of scenes in the manuscript";
                 header-suffix: Button {
                   clicked => $on_add_scene_clicked();
 

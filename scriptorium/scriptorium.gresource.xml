@@ -9,8 +9,12 @@
     <file preprocess="xml-stripblanks">views/library.ui</file>
     <file preprocess="xml-stripblanks">views/editor.ui</file>
     <file preprocess="xml-stripblanks">views/editor_overview.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_chapters.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes_details.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_formatting.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_manuscript.ui</file>
+    <file>views/editor_formatting.html</file>
 
     <!-- Custom widgets -->
     <file preprocess="xml-stripblanks">widgets/scene.ui</file>
@@ -42,11 +46,11 @@
   <!-- Assets -->
   <gresource prefix="/com/github/cgueret/Scriptorium/assets">
     <file>style.css</file>
-    <!--<file>editor/emulator.html</file>-->
   </gresource>
 
   <!-- Icons -->
   <gresource prefix="/com/github/cgueret/Scriptorium/icons/actions">
+    <file preprocess="xml-stripblanks" alias="dictionary-symbolic.svg">icons/dictionary-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="library-symbolic.svg">icons/library-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="plus-large-symbolic.svg">icons/plus-large-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="edit-symbolic.svg">icons/edit-symbolic.svg</file>

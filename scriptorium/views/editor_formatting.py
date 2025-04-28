@@ -1,4 +1,4 @@
-# formatting.py
+# views/editor_formatting.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -17,34 +17,36 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-
-
-from gi.repository import Adw, Gtk, WebKit, Gio
-from .model import Chapter
-
+from gi.repository import Adw, Gtk, Gio, GObject
+from scriptorium.models import Chapter
+from scriptorium.globals import BASE
 import logging
+
 logger = logging.getLogger(__name__)
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_formatting.ui")
-class ScrptFormattingPanel(Adw.Bin):
+
+@Gtk.Template(resource_path=f"{BASE}/views/editor_formatting.ui")
+class ScrptFormattingPanel(Adw.NavigationPage):
+
     __gtype_name__ = "ScrptFormattingPanel"
+    __title__ = "Formatting"
+    __icon_name__ = "open-book-symbolic"
+    __description__ = "Preview and modify the formatting"
 
     web_view = Gtk.Template.Child()
     button_next_page = Gtk.Template.Child()
     button_previous_page = Gtk.Template.Child()
-
     chapters_drop_down = Gtk.Template.Child()
+    show_sidebar_button = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
+    def __init__(self, manuscript, **kwargs):
         super().__init__(**kwargs)
+        self._manuscript = manuscript
 
         self.button_next_page.connect('clicked', self.on_click_next_page)
         self.button_previous_page.connect('clicked', self.on_click_previous_page)
 
         self.chapters_drop_down.connect("notify::selected-item", self.on_selected_item)
-
-    def bind_to_manuscript(self, manuscript):
-        self.manuscript = manuscript
 
         list_store_expression = Gtk.PropertyExpression.new(
             Chapter,
@@ -54,6 +56,16 @@ class ScrptFormattingPanel(Adw.Bin):
         self.chapters_drop_down.set_expression(list_store_expression)
         self.chapters_drop_down.set_model(manuscript.chapters)
 
+    def bind_side_bar_button(self, split_view):
+        """Connect the button to collapse the sidebar."""
+        split_view.bind_property(
+            "show_sidebar",
+            self.show_sidebar_button,
+            "active",
+            GObject.BindingFlags.BIDIRECTIONAL
+            | GObject.BindingFlags.SYNC_CREATE
+        )
+
     def on_selected_item(self, _drop_down, _selected_item):
         selected_chapter = _drop_down.get_selected_item()
         logger.info(f"Chapter selected: {selected_chapter.title}")
@@ -62,7 +74,7 @@ class ScrptFormattingPanel(Adw.Bin):
         content = selected_chapter.to_html()
 
         # Instantiate the template for the rendering
-        emulator_html = Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/ui/emulator.html")
+        emulator_html = Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/views/editor_formatting.html")
         html_content = emulator_html.load_contents()[1].decode()
         html_content = html_content.replace('{content}', content)
 

@@ -20,13 +20,9 @@
 
 from pathlib import Path
 from gi.repository import Gtk, GObject, Gio
-import yaml
 from scriptorium.utils import html_to_buffer, buffer_to_html
-import logging
-import uuid
-import git
-
 from .commit_message import CommitMessage
+import logging
 
 logger = logging.getLogger(__name__)
 

@@ -39,3 +39,6 @@ https://github.com/getting-things-gnome/gtg/
 
 https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_gtk4_sgskip.html
 
+To consider 
+
+https://www.svgrepo.com/collection/grommet-interface-icons/

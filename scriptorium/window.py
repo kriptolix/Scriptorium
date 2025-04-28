@@ -70,7 +70,6 @@ class ScrptWindow(Adw.ApplicationWindow):
 
     def on_close_request(self, event):
         logger.info("Window close requested")
-        # TODO Remember the name of the project currently open in library
 
     def _open_library(self):
         # Get a reference to the library panel
@@ -98,10 +97,6 @@ class ScrptWindow(Adw.ApplicationWindow):
                     if manuscripts_model[i].identifier == last_opened:
                         index = i
                 manuscripts_model.select_item(index, True)
-
-    @Gtk.Template.Callback()
-    def on_navigationview_popped(self, _navigation, _page):
-        logger.info('Pop')
 
     def on_selected_manuscript_changed(self, _navigation, _a):
         manuscript = self._library_panel.selected_manuscript
