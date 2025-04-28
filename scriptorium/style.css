@@ -5,6 +5,10 @@ textview {
 }
 */
 
+web-view {
+  padding: 6px;
+}
+
 gridview {
   background-color: transparent;
 }
