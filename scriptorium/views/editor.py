@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject
+from gi.repository import Adw, Gtk, GObject, Gio
 from scriptorium.globals import BASE
 
 # The editor interface is using the model for a manuscript
@@ -34,12 +34,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 PANELS = [
+    ("header", "Plot"),
     ("manuscript", ScrptManuscriptPanel),
-    ("overview", ScrptOverviewPanel),
-    ("scenes", ScrptWritingPanel),
-    ("chapters", ScrptChaptersPanel),
-    ("formatting", ScrptFormattingPanel),
     # ("people", ScrptEntityPanel()),
+    ("header", "Write"),
+    ("scenes", ScrptWritingPanel),
+    ("header", "Organize"),
+    ("overview", ScrptOverviewPanel),
+    ("chapters", ScrptChaptersPanel),
+    ("header", "Export"),
+    ("formatting", ScrptFormattingPanel),
 ]
 
 DEFAULT = "formatting"
@@ -88,18 +92,37 @@ class ScrptEditorView(Adw.NavigationPage):
         for panel_id, panel in PANELS:
             # Create a menu entry
             box = Gtk.Box.new(spacing=12, orientation=Gtk.Orientation.HORIZONTAL)
-            box.set_margin_top(12)
-            box.set_margin_bottom(12)
             box.set_margin_start(6)
             box.set_margin_end(6)
-            image = Gtk.Image.new_from_icon_name(icon_name=panel.__icon_name__)
-            box.append(image)
-            label = Gtk.Label.new(panel.__title__)
-            box.append(label)
+
+            if panel_id == "header":
+                label = Gtk.Label(label=panel)
+                label.add_css_class("dim-label")
+                box.append(label)
+                box.set_margin_top(12)
+                box.set_margin_bottom(6)
+            else:
+                box.set_margin_top(12)
+                box.set_margin_bottom(12)
+                image = Gtk.Image.new_from_icon_name(icon_name=panel.__icon_name__)
+                box.append(image)
+                label = Gtk.Label.new(panel.__title__)
+                box.append(label)
+
             self.panels_navigation.append(box)
 
             # Add the id and title to the box for easy retrieval later
             box.panel_id = panel_id
+
+        # Deactivate all the headers
+        index = 0
+        row = self.panels_navigation.get_row_at_index(index)
+        while row is not None:
+            if row.get_child().panel_id == 'header':
+                row.set_activatable(False)
+                row.set_selectable(False)
+            index += 1
+            row = self.panels_navigation.get_row_at_index(index)
 
     def on_selected_item(self, _list_box, _selected_item):
         """Change the panel currently displayed."""
