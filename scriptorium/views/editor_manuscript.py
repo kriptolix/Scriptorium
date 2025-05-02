@@ -40,29 +40,30 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
     edit_synopsis = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
 
-    def __init__(self, manuscript, **kwargs):
+    def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
 
-        self._manuscript = manuscript
+        self._editor = editor
+        self._manuscript = editor.manuscript
         self.set_title(self.__title__)
 
         # Bind the identifier, title and synopsis
-        manuscript.bind_property(
+        editor.manuscript.bind_property(
             "identifier",
             self.identifier,
             "subtitle",
             GObject.BindingFlags.BIDIRECTIONAL |
             GObject.BindingFlags.SYNC_CREATE
         )
-        manuscript.bind_property(
+        editor.manuscript.bind_property(
             "title",
             self.edit_title,
             "text",
             GObject.BindingFlags.BIDIRECTIONAL |
             GObject.BindingFlags.SYNC_CREATE
         )
-        manuscript.bind_property(
+        editor.manuscript.bind_property(
             "synopsis",
             self.edit_synopsis,
             "text",
@@ -113,7 +114,7 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
             library.delete_manuscript(self._manuscript)
 
             # Trigger a close on the editor
-            # self.get_parent().pop()
+            self._editor.close_on_delete()
 
 
 

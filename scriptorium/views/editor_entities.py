@@ -19,29 +19,33 @@
 
 
 from gi.repository import Adw, Gtk, GObject
-
+from scriptorium.globals import BASE
 import logging
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/editor/editor_entity.ui")
-class ScrptEntityPanel(Adw.Bin):
+@Gtk.Template(resource_path=f"{BASE}/views/editor_entities.ui")
+class ScrptEntityPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptEntityPanel"
 
-    @GObject.Property
-    def icon_name(self):
-        """Return the name of the icon for this panel."""
-        return "system-users-symbolic"
+    __title__ = "Entities"
+    __icon_name__ = "find-location-symbolic"
+    __description__ = "Set the key entities of the story"
 
-    @GObject.Property
-    def title(self):
-        """Return the title for this panel."""
-        return "People"
+    show_sidebar_button = Gtk.Template.Child()
 
-    @GObject.Property
-    def description(self):
-        """Return the description for this panel."""
-        return ""
+    def __init__(self, editor, **kwargs):
+        """Create an instance of the panel."""
+        super().__init__(**kwargs)
+        self._manuscript = editor.manuscript
 
-    def bind_to_manuscript(self, manuscript):
-        self._manuscript = manuscript
+    def bind_side_bar_button(self, split_view):
+        """Connect the button to collapse the sidebar."""
+        split_view.bind_property(
+            "show_sidebar",
+            self.show_sidebar_button,
+            "active",
+            GObject.BindingFlags.BIDIRECTIONAL
+            | GObject.BindingFlags.SYNC_CREATE
+        )
+

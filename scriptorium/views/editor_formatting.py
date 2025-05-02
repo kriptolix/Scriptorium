@@ -39,9 +39,9 @@ class ScrptFormattingPanel(Adw.NavigationPage):
     chapters_drop_down = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
 
-    def __init__(self, manuscript, **kwargs):
+    def __init__(self, editor, **kwargs):
         super().__init__(**kwargs)
-        self._manuscript = manuscript
+        self._manuscript = editor.manuscript
 
         self.button_next_page.connect('clicked', self.on_click_next_page)
         self.button_previous_page.connect('clicked', self.on_click_previous_page)
@@ -54,7 +54,7 @@ class ScrptFormattingPanel(Adw.NavigationPage):
             "title",
         )
         self.chapters_drop_down.set_expression(list_store_expression)
-        self.chapters_drop_down.set_model(manuscript.chapters)
+        self.chapters_drop_down.set_model(editor.manuscript.chapters)
 
     def bind_side_bar_button(self, split_view):
         """Connect the button to collapse the sidebar."""

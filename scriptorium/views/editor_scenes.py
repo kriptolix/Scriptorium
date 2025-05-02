@@ -43,12 +43,12 @@ class ScrptWritingPanel(Adw.NavigationPage):
     navigation: Adw.NavigationView = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
 
-    def __init__(self, manuscript, **kwargs):
+    def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
 
-        self._manuscript = manuscript
-        self.scenes_list.bind_model(manuscript.scenes, self.bind_card)
+        self._manuscript = editor.manuscript
+        self.scenes_list.bind_model(editor.manuscript.scenes, self.bind_card)
 
         # Create an instance of the writer dialog
         self.writer_dialog = Writer()

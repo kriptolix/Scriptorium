@@ -44,6 +44,7 @@ blueprints = custom_target(
 		'views/editor_scenes_details.blp',
 		'views/editor_formatting.blp',
 		'views/editor_manuscript.blp',
+		'views/editor_entities.blp',
 
 		'widgets/chapter_column.blp',
 		'widgets/scene.blp',

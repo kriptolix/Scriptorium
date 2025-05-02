@@ -22,6 +22,7 @@ from pathlib import Path
 from gi.repository import GObject, Gio
 import logging
 import uuid
+import shutil
 
 from .manuscript import Manuscript
 
@@ -75,4 +76,13 @@ class Library(GObject.Object):
         self.manuscripts.append(manuscript)
 
     def delete_manuscript(self, manuscript):
-        logger.warning("Not implemented yet")
+        """Delete the manuscript from disk."""
+
+        found, position = self.manuscripts.find(manuscript)
+        if found:
+            # Remove from the library
+            self.manuscripts.remove(position)
+
+            # Delete all the content on disk
+            path = self.base_directory / Path(manuscript.identifier)
+            shutil.rmtree(path)

@@ -17,13 +17,13 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject, Gio
+from gi.repository import Adw, Gtk, GObject
 from scriptorium.globals import BASE
 
 # The editor interface is using the model for a manuscript
 from scriptorium.models import Manuscript
 from .editor_scenes import ScrptWritingPanel
-#from .editor_entity import ScrptEntityPanel
+from .editor_entities import ScrptEntityPanel
 from .editor_overview import ScrptOverviewPanel
 from .editor_manuscript import ScrptManuscriptPanel
 from .editor_chapters import ScrptChaptersPanel
@@ -34,19 +34,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 PANELS = [
-    ("header", "Plot"),
+    ("header", "Manuscript"),
     ("manuscript", ScrptManuscriptPanel),
-    # ("people", ScrptEntityPanel()),
+    ("formatting", ScrptFormattingPanel),
+    ("overview", ScrptOverviewPanel),
+    # Targets
+    ("header", "Plot"),
+    ("entities", ScrptEntityPanel),
+    # Plot lines
+    # Characters
     ("header", "Write"),
     ("scenes", ScrptWritingPanel),
     ("header", "Organize"),
-    ("overview", ScrptOverviewPanel),
     ("chapters", ScrptChaptersPanel),
-    ("header", "Export"),
-    ("formatting", ScrptFormattingPanel),
 ]
 
-DEFAULT = "formatting"
+DEFAULT = "manuscript"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/editor.ui")
@@ -131,12 +134,17 @@ class ScrptEditorView(Adw.NavigationPage):
         p = None
         for panel_id, panel in PANELS:
             if panel_id == selection.panel_id:
-                p = panel(self.manuscript)
+                p = panel(self)
                 p.bind_side_bar_button(self.split_view)
         self.panels.replace([p])
+
+    def close_on_delete(self):
+        self._manuscript = None
+        self.get_parent().pop()
 
     @Gtk.Template.Callback()
     def on_editorview_closed(self, _editorview):
         """Handle a request to close the editor."""
         logger.info("Editor is closed, saving the manuscript")
-        self.manuscript.save_to_disk()
+        if self.manuscript is not None:
+            self.manuscript.save_to_disk()

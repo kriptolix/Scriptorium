@@ -41,12 +41,12 @@ class ScrptChaptersPanel(Adw.NavigationPage):
     chapters_list = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
 
-    def __init__(self, manuscript, **kwargs):
+    def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
-        self._manuscript = manuscript
+        self._manuscript = editor.manuscript
 
-        self.chapters_list.bind_model(manuscript.chapters,
+        self.chapters_list.bind_model(editor.manuscript.chapters,
                                     self.on_add_scene_to_list)
 
     @Gtk.Template.Callback()
