@@ -84,10 +84,11 @@ class ChapterColumn(Adw.Bin):
         drop_controller.connect("leave", self.on_leave_scene_list_row)
         self.scenes_list.add_controller(drop_controller)
 
-    def on_over_scene_list_row(self, _target, _x, _y):
+    def on_over_scene_list_row(self, _target, _x, y):
         """Highlight the row currently being moved over."""
-        row = self.scenes_list.get_row_at_y(_y)
-        self.scenes_list.drag_highlight_row(row)
+        row = self.scenes_list.get_row_at_y(y)
+        if row is not None:
+            self.scenes_list.drag_highlight_row(row)
         return True
 
     def on_leave_scene_list_row(self, _target):
@@ -155,7 +156,7 @@ class ChapterColumn(Adw.Bin):
     def on_drop_scene_into_scene(self, _drop, scene_card, _x, y):
         """Insert a scene into a chapter at an indicated location."""
         # Get the scene and target position
-        scene = scene_card.get_scene()
+        scene = scene_card.scene
         row = self.scenes_list.get_row_at_y(y)
         target_position = row.get_index()
 
@@ -166,7 +167,7 @@ class ChapterColumn(Adw.Bin):
     def on_drop_scene_into_chapter(self, _drop, scene_card, _x, _y):
         """Drop a scene into a chapter."""
         # Get the scene
-        scene = scene_card.get_scene()
+        scene = scene_card.scene
 
         # Move the scene card
         logger.info(f"Drop {scene} into {self._chapter}")

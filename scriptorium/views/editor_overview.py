@@ -29,12 +29,11 @@ class ScrptOverviewPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptOverviewPanel"
     __icon_name__ = "view-columns-symbolic"
     __description__ = "Overview of all the content"
-    __title__ = "Overview"
+    __title__ = "Outline"
 
     chapter_columns = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
     chapter_column_factory = Gtk.Template.Child()
-
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""

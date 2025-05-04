@@ -1,0 +1,34 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptSelectScenesDialog: Adw.AlertDialog {
+  default-response: _("Done");
+  close-response: _("Cancel");
+  body: "Select the scene you would like to use and validate when done";
+  heading: "Select scenes";
+  prefer_wide_layout: false;
+
+  extra_child: Adw.PreferencesGroup {
+    title: "Available scenes";
+
+    ListBox scenes_list {
+      selection-mode: single;
+      activate-on-single-click: true;
+
+      styles [
+        "boxed-list-separate",
+      ]
+
+      [placeholder]
+      Adw.StatusPage {
+        icon-name: "item-missing-symbolic";
+        description: "No scene available";
+      }
+    }
+  };
+
+  responses [
+    cancel: _("Cancel"),
+    done: _("Done") suggested disabled,
+  ]
+}

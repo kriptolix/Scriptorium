@@ -40,9 +40,15 @@ template $ChapterColumn: Adw.Bin {
           selection-mode: none;
 
           styles [
-            "boxed-list",
+            "boxed-list-separate",
           ]
           hexpand: true;
+
+          [placeholder]
+          Adw.StatusPage {
+            icon-name: "item-missing-symbolic";
+            description: "No scenes in this chapter";
+          }
         }
       }
     }

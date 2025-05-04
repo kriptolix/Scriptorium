@@ -10,6 +10,7 @@
     <file preprocess="xml-stripblanks">views/editor.ui</file>
     <file preprocess="xml-stripblanks">views/editor_overview.ui</file>
     <file preprocess="xml-stripblanks">views/editor_chapters.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_chapters_details.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes_details.ui</file>
     <file preprocess="xml-stripblanks">views/editor_formatting.ui</file>
@@ -19,6 +20,7 @@
 
     <!-- Custom widgets -->
     <file preprocess="xml-stripblanks">widgets/scene.ui</file>
+    <file preprocess="xml-stripblanks">widgets/chapter.ui</file>
     <file preprocess="xml-stripblanks">widgets/chapter_column.ui</file>
     <file preprocess="xml-stripblanks">widgets/manuscript.ui</file>
     <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
@@ -26,6 +28,7 @@
     <!-- Dialogs -->
     <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>
     <file preprocess="xml-stripblanks">dialogs/writer.ui</file>
+    <file preprocess="xml-stripblanks">dialogs/select_scenes.ui</file>
 
     <!-- Editor mode -->
     <!--
@@ -60,5 +63,6 @@
     <file preprocess="xml-stripblanks" alias="open-book-symbolic.svg">icons/open-book-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="info-outline-symbolic.svg">icons/info-outline-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="right-symbolic.svg">icons/right-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="item-missing-symbolic.svg">icons/item-missing-symbolic.svg</file>
   </gresource>
 </gresources>

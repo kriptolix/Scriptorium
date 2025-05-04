@@ -23,7 +23,10 @@ import logging
 from gi.repository import Adw, Gtk, GObject
 
 from scriptorium.globals import BASE
-from scriptorium.widgets import SceneCard
+from scriptorium.widgets import ChapterCard
+from scriptorium.dialogs import ScrptAddDialog
+
+from .editor_chapters_details import ScrptChaptersDetailsPanel
 
 logger = logging.getLogger(__name__)
 
@@ -47,15 +50,26 @@ class ScrptChaptersPanel(Adw.NavigationPage):
         self._manuscript = editor.manuscript
 
         self.chapters_list.bind_model(editor.manuscript.chapters,
-                                    self.on_add_scene_to_list)
+                                    self.on_add_chapter_to_list)
 
     @Gtk.Template.Callback()
-    def on_listbox_row_activated(self, _selected_row, scene_card):
-        logger.info("Click")
+    def on_listbox_row_activated(self, _widget, selected_row):
+        chapter = selected_row.get_child().chapter
+        logger.info(f"Clicked on chapter \"{chapter.title}\"")
+        chapter_details_panel = ScrptChaptersDetailsPanel(chapter)
+        self.navigation.push(chapter_details_panel)
 
     @Gtk.Template.Callback()
     def on_add_chapter_clicked(self, _button):
-        logger.info("Add chapter")
+        logger.info("Open dialog to add a new chapter")
+        dialog = ScrptAddDialog("chapter")
+        dialog.choose(self, None, self.on_add_chapter)
+
+    def on_add_chapter(self, dialog, _task):
+        response = dialog.choose_finish(_task)
+        if response == "add":
+            logger.info(f"Add chapter {dialog.title}: {dialog.synopsis}")
+            self._manuscript.create_chapter(dialog.title, dialog.synopsis)
 
     def bind_side_bar_button(self, split_view):
         """Connect the button to collapse the sidebar."""
@@ -67,8 +81,8 @@ class ScrptChaptersPanel(Adw.NavigationPage):
             | GObject.BindingFlags.SYNC_CREATE
         )
 
-    def on_add_scene_to_list(self, scene):
-        """Add the new scene to the list."""
-        scene_card = SceneCard(scene)
-        return scene_card
+    def on_add_chapter_to_list(self, chapter):
+        """Add the new chapter to the list."""
+        card = ChapterCard(chapter)
+        return card
 

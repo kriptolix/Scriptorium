@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class ScrptEntityPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptEntityPanel"
 
-    __title__ = "Entities"
+    __title__ = "Elements"
     __icon_name__ = "find-location-symbolic"
     __description__ = "Set the key entities of the story"
 

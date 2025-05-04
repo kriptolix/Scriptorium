@@ -216,6 +216,14 @@ class Manuscript(GObject.Object):
         # Finish the creation of the scene
         new_scene.init()
 
+    def create_chapter(self, title: str, synopsis: str = ""):
+        """Create a new chapter."""
+        # Create the chapter and add it to the list
+        new_chapter = Chapter(self)
+        new_chapter.title = title
+        new_chapter.synopsis = synopsis
+        self.chapters.append(new_chapter)
+
     def splice_chapters(self, source_chapter, target_chapter):
         """Move the source chapter to the position target chapter is at."""
         # Start by finding the positions of each chapter

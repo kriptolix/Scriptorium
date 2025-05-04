@@ -1,0 +1,118 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptChaptersDetailsPanel: Adw.NavigationPage {
+  title: "Chapter details";
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: true;
+      show-back-button: true;
+    }
+
+    content: ScrolledWindow {
+      child: Adw.Clamp {
+        maximum-size: 600;
+        margin-top: 12;
+
+        Box {
+          orientation: vertical;
+          spacing: 24;
+
+          Adw.PreferencesGroup {
+            title: "Overview";
+
+            ListBox {
+              selection-mode: none;
+
+              styles [
+                "boxed-list",
+              ]
+
+              Adw.EntryRow edit_title {
+                title: "Title";
+              }
+
+              $MultiLineEntryRow edit_synopsis {
+                header: "Synopsis";
+              }
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: "Scenes";
+            description: "All the scenes associated to this chapter";
+
+            header-suffix: Button {
+              clicked => $on_assign_scene_clicked();
+
+              Adw.ButtonContent {
+                icon-name: "object-select-symbolic";
+                label: "Assign scenes ...";
+                use-underline: true;
+              }
+            };
+
+            ListBox scenes_list {
+              selection-mode: none;
+
+              styles [
+                "boxed-list-separate",
+              ]
+
+              [placeholder]
+              Adw.StatusPage {
+                icon-name: "item-missing-symbolic";
+                description: "Nothing here. Click on the button to add some scenes";
+              }
+            }
+          }
+
+          Adw.PreferencesGroup remove_scene_grp {
+            visible: false;
+
+            ListBox {
+              selection-mode: none;
+              styles [
+                "boxed-list",
+              ]
+              ListBoxRow remove_scene {
+                Adw.ButtonRow {
+                    title: "Remove scene from chapter";
+                    end-icon-name: "edit-delete-symbolic";
+                    styles [
+                      "destructive-action"
+                    ]
+                    activatable: false;
+                }
+              }
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: "Actions";
+
+            ListBox {
+              selection-mode: none;
+
+              styles [
+                "boxed-list-separate",
+              ]
+
+              Adw.ButtonRow delete_scene {
+                title: "Delete chapter";
+                end-icon-name: "edit-delete-symbolic";
+                styles [
+                  "destructive-action"
+                ]
+                activated => $on_delete_chapter_activated();
+              }
+            }
+          }
+        }
+      };
+    };
+  };
+}
+

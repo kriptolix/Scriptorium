@@ -82,9 +82,14 @@ class ScrptWritingPanel(Adw.NavigationPage):
         writing_details = ScrptWritingDetailsPanel(scene)
         self.navigation.push(writing_details)
 
-    def on_row_activated(self, _selected_row, scene_card):
+    def on_row_activated(self, _list_box, row):
         """Switch to the editing mode if a row is clicked."""
-        scene_card.edit_button.emit("clicked")
+        #scene_card.edit_button.emit("clicked")
+        scene = row.get_child().scene
+        logger.info(f"Open editor for {scene.title}")
+
+        writing_details = ScrptWritingDetailsPanel(scene)
+        self.navigation.push(writing_details)
 
     def on_add_scene(self, dialog, _task):
         response = dialog.choose_finish(_task)

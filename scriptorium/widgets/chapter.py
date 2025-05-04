@@ -1,13 +1,13 @@
 from gi.repository import Adw, Gtk, GObject
-from scriptorium.models import Scene
+from scriptorium.models import Chapter
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/widgets/scene.ui")
-class SceneCard(Adw.Bin):
-    __gtype_name__ = "SceneCard"
+@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/widgets/chapter.ui")
+class ChapterCard(Adw.Bin):
+    __gtype_name__ = "ChapterCard"
 
     _scene = None
     title = GObject.Property(type=str)
@@ -16,39 +16,30 @@ class SceneCard(Adw.Bin):
     edit_button = Gtk.Template.Child()
     suffixes = Gtk.Template.Child()
 
-    def __init__(self, scene: Scene, **kwargs):
-        super().__init__(**kwargs)
-        self._scene = scene
+    def __init__(self, chapter: Chapter):
+        super().__init__()
+        self._chapter = chapter
 
         # Configure the information for the scene
-        self.set_property('title', scene.title)
-        self.set_property('synopsis', scene.synopsis)
+        self.set_property('title', chapter.title)
+        self.set_property('synopsis', chapter.synopsis)
 
         self.bind_property(
             "title",
-            scene,
+            chapter,
             "title",
             GObject.BindingFlags.BIDIRECTIONAL
         )
         self.bind_property(
             "synopsis",
-            scene,
+            chapter,
             "synopsis",
             GObject.BindingFlags.BIDIRECTIONAL
         )
 
-    @GObject.Property(type=Scene)
-    def scene(self):
-        return self._scene
+    @GObject.Property(type=Chapter)
+    def chapter(self):
+        return self._chapter
 
     def hide_suffix(self):
         self.suffixes.set_visible(False)
-
-#drag_row.add_prefix(
-#    Gtk.Image(
-#        icon_name="list-drag-handle-symbolic",
-#        css_classes=["dim-label"],
-#    ),
-#)
-
-

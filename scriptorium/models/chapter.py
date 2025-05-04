@@ -18,15 +18,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 
-from pathlib import Path
-from gi.repository import Gtk, GObject, Gio
-import yaml
-
 import logging
 import uuid
+from pathlib import Path
+
 import git
-from .scene import Scene
+import yaml
+from gi.repository import Gio, GObject, Gtk
+
 from .commit_message import CommitMessage
+from .scene import Scene
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,19 @@ class Chapter(GObject.Object):
     def scenes(self):
         """Return the list of scenes."""
         return self._scenes
+
+    def delete(self):
+        """Delete the chapter."""
+        found, position = self._manuscript.chapters.find(self)
+        if not found:
+            raise ValueError("The chapter is already deleted")
+
+        # Remove the chapter from the list of chapters
+        self._manuscript.chapters.remove(position)
+
+        # Set all the scenes assigned to this chapter as being unassigned
+        for scene in self._scenes:
+            scene.chapter = None
 
     def remove_scene(self, scene: Scene):
         """Remove a scene from the chapter."""

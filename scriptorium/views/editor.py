@@ -34,22 +34,24 @@ import logging
 logger = logging.getLogger(__name__)
 
 PANELS = [
-    ("header", "Manuscript"),
+    ("header", "Plan"),
     ("manuscript", ScrptManuscriptPanel),
-    ("formatting", ScrptFormattingPanel),
-    ("overview", ScrptOverviewPanel),
-    # Targets
+    # TODO: Goals
     ("header", "Plot"),
+    ("overview", ScrptOverviewPanel),
+    # TODO: Timeline
     ("entities", ScrptEntityPanel),
-    # Plot lines
-    # Characters
+    ("chapters", ScrptChaptersPanel),
+    # TODO: Plot lines
     ("header", "Write"),
     ("scenes", ScrptWritingPanel),
-    ("header", "Organize"),
-    ("chapters", ScrptChaptersPanel),
+    # TODO: Special pages
+    ("header", "Export"),
+    ("formatting", ScrptFormattingPanel),
+    # TODO: Export
 ]
 
-DEFAULT = "manuscript"
+DEFAULT = "chapters"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/editor.ui")

@@ -1,5 +1,4 @@
-from gi.repository import Adw, Gtk, GObject, Pango, Gdk
-from scriptorium.models import Scene
+from gi.repository import Adw, Gtk, Pango, Gdk
 from scriptorium.globals import BASE
 import logging
 
