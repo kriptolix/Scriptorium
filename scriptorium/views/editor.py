@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 PANELS = [
     ("header", "Plan"),
     ("manuscript", ScrptManuscriptPanel),
+    # TODO: Research
     # TODO: Goals
     ("header", "Plot"),
     ("overview", ScrptOverviewPanel),
@@ -46,7 +47,7 @@ PANELS = [
     ("header", "Write"),
     ("scenes", ScrptWritingPanel),
     # TODO: Special pages
-    ("header", "Export"),
+    ("header", "Edit"),
     ("formatting", ScrptFormattingPanel),
     # TODO: Export
 ]

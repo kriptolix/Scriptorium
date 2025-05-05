@@ -26,6 +26,7 @@ import uuid
 import git
 from .chapter import Chapter
 from .scene import Scene
+from .entity import Entity
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +44,6 @@ class Manuscript(GObject.Object):
     _base_directory_img = None
     _base_directory_scenes = None
 
-    # The chapters contained in the manuscript
-    chapters: Gio.ListStore
-
     # The scenes contained in the manuscript
     scenes: Gio.ListStore
 
@@ -59,10 +57,9 @@ class Manuscript(GObject.Object):
         self._base_directory_images = manuscript_path / Path("images")
         self._base_directory_scenes = manuscript_path / Path("scenes")
 
-        # Create the list of chapters
-        self.chapters = Gio.ListStore.new(item_type=Chapter)
-
-        # Create the list of scenes
+        # Create the containers for all the main concepts
+        self._entities = Gio.ListStore.new(item_type=Entity)
+        self._chapters = Gio.ListStore.new(item_type=Chapter)
         self.scenes = Gio.ListStore.new(item_type=Scene)
 
         # If the manuscript has been initialised, load the content
@@ -82,6 +79,16 @@ class Manuscript(GObject.Object):
     def identifier(self):
         """The unique identifier of the manuscript."""
         return self._base_directory.name
+
+    @GObject.Property(type=Gio.ListStore)
+    def entities(self):
+        """The entities of the manuscript."""
+        return self._entities
+
+    @GObject.Property(type=Gio.ListStore)
+    def chapters(self):
+        """The chapters contained in the manuscript."""
+        return self._chapters
 
     @property
     def library(self):

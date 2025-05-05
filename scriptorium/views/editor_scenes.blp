@@ -49,8 +49,14 @@ template $ScrptWritingPanel: Adw.NavigationPage {
                   selection-mode: none;
 
                   styles [
-                    "boxed-list",
+                    "boxed-list-separate",
                   ]
+
+                  [placeholder]
+                  Adw.StatusPage {
+                    icon-name: "item-missing-symbolic";
+                    description: "Add a first scene and start writing";
+                  }
                 }
               }
             }

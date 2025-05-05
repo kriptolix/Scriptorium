@@ -28,13 +28,15 @@ template $ScrptEntityPanel: Adw.NavigationPage {
 
             Adw.PreferencesPage {
               Adw.PreferencesGroup {
-                title: "People";
+                title: "Elements";
+                description: "The character, places, and props of the story";
+
                 header-suffix: Button {
                   clicked => $on_add_clicked();
 
                   Adw.ButtonContent {
                     icon-name: "list-add-symbolic";
-                    label: "Add a person ...";
+                    label: "Add something ...";
                     use-underline: true;
                   }
                 };
@@ -42,47 +44,7 @@ template $ScrptEntityPanel: Adw.NavigationPage {
                 ListBox people_list {
                   selection-mode: none;
                   styles [
-                    "boxed-list",
-                  ]
-                }
-              }
-
-              Adw.PreferencesGroup {
-                title: "Places";
-                header-suffix: Button {
-                  clicked => $on_add_clicked();
-
-                  Adw.ButtonContent {
-                    icon-name: "list-add-symbolic";
-                    label: "Add a place ...";
-                    use-underline: true;
-                  }
-                };
-
-                ListBox place_list {
-                  selection-mode: none;
-                  styles [
-                    "boxed-list",
-                  ]
-                }
-              }
-
-              Adw.PreferencesGroup {
-                title: "Props";
-                header-suffix: Button {
-                  clicked => $on_add_clicked();
-
-                  Adw.ButtonContent {
-                    icon-name: "list-add-symbolic";
-                    label: "Add a prop ...";
-                    use-underline: true;
-                  }
-                };
-
-                ListBox prop_list {
-                  selection-mode: none;
-                  styles [
-                    "boxed-list",
+                    "boxed-list-separate",
                   ]
                 }
               }

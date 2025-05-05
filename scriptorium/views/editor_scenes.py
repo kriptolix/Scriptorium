@@ -84,7 +84,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
 
     def on_row_activated(self, _list_box, row):
         """Switch to the editing mode if a row is clicked."""
-        #scene_card.edit_button.emit("clicked")
         scene = row.get_child().scene
         logger.info(f"Open editor for {scene.title}")
 

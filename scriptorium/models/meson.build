@@ -4,6 +4,7 @@ scriptorium_models_sources = [
 	'manuscript.py',
 	'chapter.py',
 	'scene.py',
+	'entity.py',
 	'commit_message.py',
 ]
 install_data(scriptorium_models_sources, install_dir: moduledir / 'models')
