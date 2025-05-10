@@ -1,0 +1,9 @@
+using Gtk 4.0;
+
+
+template $CardsList: Gtk.Box {
+    orientation: vertical;
+    spacing: 12;
+
+    state-flags-changed => $on_state_flags_changed();
+}

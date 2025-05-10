@@ -151,6 +151,7 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
         icon = Gtk.DragIcon.get_for_drag(drag)
         icon.set_child(drag_widget)
 
+        # TODO: Instead, change the group button to show the option to remove
         self.remove_scene_grp.show()
 
     def on_drag_end(self, _source, _drag, _x, _y):

@@ -28,9 +28,18 @@ template $ScrptWritingPanel: Adw.NavigationPage {
             maximum-size: 600;
             margin-top: 12;
 
-            Box {
+            Box box {
               orientation: vertical;
               spacing: 12;
+
+              /*
+              Adw.WrapBox wrap_box {
+                orientation: vertical;
+                line-spacing: 12;
+                line-homogeneous: true;
+                child-spacing: 12;
+              }
+              */
 
               Adw.PreferencesGroup {
                 title: "Scenes";
