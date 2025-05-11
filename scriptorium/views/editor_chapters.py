@@ -43,7 +43,6 @@ class ScrptChaptersPanel(Adw.NavigationPage):
     navigation = Gtk.Template.Child()
     chapters_list = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
-    box = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
@@ -53,13 +52,6 @@ class ScrptChaptersPanel(Adw.NavigationPage):
         self.chapters_list.bind_model(editor.manuscript.chapters,
                                     self.on_add_chapter_to_list)
 
-        cards_list = CardsList()
-        cards_list.bind_model(editor.manuscript.chapters[0].scenes, SceneCard)
-        self.box.append(cards_list)
-
-        cards_list = CardsList()
-        cards_list.bind_model(editor.manuscript.chapters[1].scenes, SceneCard)
-        self.box.append(cards_list)
 
     @Gtk.Template.Callback()
     def on_listbox_row_activated(self, _widget, selected_row):
