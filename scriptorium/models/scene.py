@@ -102,6 +102,9 @@ class Scene(GObject.Object):
         self._manuscript.repo.index.add(self._scene_path)
         self._manuscript.repo.index.commit(f"Created new scene \"{self.title}\"")
 
+        # Refresh the history of the scene to reflect the change
+        self._refresh_history()
+
     def delete(self):
         """Delete the scene."""
         found, position = self._manuscript.scenes.find(self)

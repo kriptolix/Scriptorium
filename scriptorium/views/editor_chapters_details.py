@@ -65,97 +65,12 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
 
         self.scenes_list.bind_model(chapter.scenes, self.create_scene_entry)
 
-        drop_target_move = Gtk.DropTarget.new(SceneCard, Gdk.DragAction.MOVE)
-        drop_target_move.connect("drop", self.on_drop_move)
-        self.scenes_list.add_controller(drop_target_move)
-
-        # Set the entry to remove scene as an additional drop target
-        drop_target_remove = Gtk.DropTarget.new(SceneCard, Gdk.DragAction.MOVE)
-        drop_target_remove.connect("drop", self.on_drop_remove)
-        self.remove_scene.add_controller(drop_target_remove)
-
     def create_scene_entry(self, scene):
         """Bind a scene card to a scene."""
         # Create the scene card entry
-        row = Gtk.ListBoxRow()
-        row.scene = scene
         entry = SceneCard(scene)
         entry.hide_suffix()
-        row.set_child(entry)
-
-        # Configure it as a drag source
-        drag_source = Gtk.DragSource(actions=Gdk.DragAction.MOVE)
-        drag_source.connect("prepare", self.on_drag_prepare, row)
-        drag_source.connect("drag-begin", self.on_drag_begin, row)
-        drag_source.connect("drag-end", self.on_drag_end, row)
-        row.add_controller(drag_source)
-
-        # Update row visuals during DnD operation
-        drop_controller = Gtk.DropControllerMotion()
-        drop_controller.connect("enter",
-            lambda _target, _x, y, row: self.scenes_list.drag_highlight_row(row)
-            , row
-        )
-        drop_controller.connect("leave",
-            lambda _target: self.scenes_list.drag_unhighlight_row()
-        )
-        row.add_controller(drop_controller)
-
-        return row
-
-    def on_drop_move(self, _drop, value, _x, y):
-        target_row = self.scenes_list.get_row_at_y(y)
-        target_index = target_row.get_index()
-
-        # If value or the target row is null, do not accept the drop
-        if not value or not target_row:
-            return False
-
-        logger.info(f"Move \"{value.scene.title}\" into \"{self._chapter.title}\" at {target_index}")
-        value.scene.move_to_chapter(self._chapter, target_index)
-
-    def on_drop_remove(self, _drop, value, _x, _y):
-        # If value is null, do not accept the drop
-        if not value:
-            return False
-
-        logger.info(f"Remove \"{value.scene.title}\" from \"{self._chapter.title}\"")
-        self._chapter.remove_scene(value.scene)
-
-        return True
-
-    def on_drag_prepare(self, _source, x, y, row):
-        value = GObject.Value()
-        value.init(SceneCard)
-        value.set_object(row.get_child())
-
-        return Gdk.ContentProvider.new_for_value(value)
-
-    def on_drag_begin(self, _source, drag, row):
-        _got_bounds, _x, _y, width, height = row.get_bounds()
-
-        # Prepare the row
-        drag_row = Gtk.ListBoxRow()
-        temp_card = SceneCard(row.scene)
-        temp_card.hide_suffix()
-        drag_row.set_child(temp_card)
-
-        # Prepare the widget
-        drag_widget = Gtk.ListBox()
-        drag_widget.set_size_request(width, height)
-        drag_widget.add_css_class("boxed-list")
-        drag_widget.append(drag_row)
-        drag_widget.drag_highlight_row(drag_row)
-
-        # Configure the icon
-        icon = Gtk.DragIcon.get_for_drag(drag)
-        icon.set_child(drag_widget)
-
-        # TODO: Instead, change the group button to show the option to remove
-        self.remove_scene_grp.show()
-
-    def on_drag_end(self, _source, _drag, _x, _y):
-        self.remove_scene_grp.hide()
+        return entry
 
     @Gtk.Template.Callback()
     def on_assign_scene_clicked(self, _button):

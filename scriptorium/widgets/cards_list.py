@@ -18,15 +18,59 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Widget to display a list of cards."""
 
-from gi.repository import Gtk, GObject, Gdk, Gio
+from gi.repository import Gtk, GObject, Gdk, Gio, Adw
 from typing import Callable, Any
 from scriptorium.globals import BASE
 import logging
 
 logger = logging.getLogger(__name__)
 
+# TODO Add a drop area at the end of the list of cards for the cases where the list is empty
+# widgets drop into it would be inserted before it automatically by dropping at the end of the model
 
-class Card(Gtk.Box):
+
+class CardDropZone(Gtk.Box):
+    __gtype_name__ = "CardDropZone"
+
+    def __init__(self, parent):
+        """Create an instance of the drop zone."""
+        super().__init__()
+        self._parent = parent
+
+        self.set_size_request(120, 120)
+        if self._parent.get_orientation() == Gtk.Orientation.VERTICAL:
+            self.set_hexpand(True)
+            self.set_vexpand(False)
+        else:
+            self.set_hexpand(False)
+            self.set_vexpand(True)
+
+        motion_target = Gtk.DropTarget.new(
+            self._parent.model.get_item_type(), Gdk.DragAction.MOVE
+        )
+        motion_target.connect("drop", self.on_drop)
+        self.add_controller(motion_target)
+
+        self.connect("state-flags-changed", self.on_state_flags_changed)
+
+    def on_drop(self, _target, entry, _x, _y):
+        logger.info(f"Drop {entry.title} onto drop zone")
+
+        # Append the entry to the model
+        self._parent.model.append(entry)
+
+        return True
+
+    def on_state_flags_changed(self, widget, _previous_flags):
+        """Manually remove the highlight area."""
+        sc = widget.get_style_context()
+        current = sc.get_state()
+        cleaned = current & ~Gtk.StateFlags.DROP_ACTIVE
+        if cleaned != current:
+            sc.set_state(cleaned)
+
+
+class Card(Adw.Bin):
     __gtype_name__ = "Card"
 
     def __init__(self, parent, create_widget_func, entry):
@@ -40,10 +84,17 @@ class Card(Gtk.Box):
         self._moved_x = None
         self._moved_y = None
 
-        self.set_hexpand(True)
-        self.add_css_class("card")
-        self.add_css_class("activatable")
-        self.append(self._widget)
+        # Adjust the base margins
+        self.margin_bottom = 12
+
+        self.box = Gtk.Box()
+        self.box.set_hexpand(True)
+        self.box.add_css_class("card")
+        self.box.add_css_class("activatable")
+        self.box.set_margin_top(0)
+        self.box.set_margin_bottom(self.margin_bottom)
+        self.box.append(self._widget)
+        self.set_child(self.box)
 
         # Configure it as a drag source
         drag_source = Gtk.DragSource(actions=Gdk.DragAction.MOVE)
@@ -52,9 +103,23 @@ class Card(Gtk.Box):
         drag_source.connect("drag-cancel", self.on_drag_cancel)
         self.add_controller(drag_source)
 
+        motion_target = Gtk.DropTarget.new(
+            self._parent.model.get_item_type(), Gdk.DragAction.MOVE
+        )
+        motion_target.connect("enter", self.on_enter)
+        motion_target.connect("drop", self.on_drop)
+        motion_target.connect("motion", self.on_motion)
+        motion_target.connect("leave", self.on_leave)
+        self.add_controller(motion_target)
+
+        self.connect("state-flags-changed", self.on_state_flags_changed)
+
     @GObject.Property(type=Gtk.Widget)
     def widget(self):
         return self._widget
+
+    def get_title(self):
+        return self._entry.title
 
     def on_drag_prepare(self, _source, x, y):
         logger.info(f"Prepare {x} {y}")
@@ -73,7 +138,7 @@ class Card(Gtk.Box):
         box.add_css_class("card")
         box.set_size_request(width, height)
         box.append(self._create_widget_func(self._entry))
-        box.set_opacity(0.8)
+        box.set_opacity(0.9)
         box.last_parent_list = self._parent
 
         # Set it as the icon
@@ -83,211 +148,139 @@ class Card(Gtk.Box):
         # Set the hotspot to be where we grabbed the card
         drag.set_hotspot(self._moved_x, self._moved_y)
 
-        # Replace the widget with a placeholder at the parent
-        self._parent.emit("picked", self._entry, self)
+        # Remove from the model the entry we just picked
+        found, self._picked_from_index = self._parent.model.find(self._entry)
+        if found:
+            self._parent.model.remove(self._picked_from_index)
 
         return True
 
     def on_drag_cancel(self, _source, drag, _reason):
-        self._parent.emit("cancelled", self._entry)
+        logger.info(f"Cancelled, return entry to {self._picked_from_index}")
+        self._parent.model.insert(self._picked_from_index, self._entry)
         return True
 
-@Gtk.Template(resource_path=f"{BASE}/widgets/cards_list.ui")
+    def on_enter(self, source, enter_x, enter_y):
+        logger.info(f"Enter {self._entry.title} ")
+        self.set_margins(source, enter_y, force_top=True)
+        return Gdk.DragAction.MOVE
+
+    def on_motion(self, source, motion_x, motion_y):
+        self.set_margins(source, motion_y)
+
+        return Gdk.DragAction.MOVE
+
+    def on_leave(self, _source):
+        logger.info(f"Leave {self._entry.title}")
+        self.box.set_margin_top(0)
+        self.box.set_margin_bottom(self.margin_bottom)
+
+    def on_drop(self, _target, entry, _x, y):
+        logger.info(f"Drop {entry.title} onto {self._entry.title}")
+        _got_bounds, _x, _y, width, height = self.box.get_bounds()
+
+        # Find ourselves
+        found, index = self._parent.model.find(self._entry)
+
+        if y < height / 2:
+            # Insert before
+            self._parent.model.insert(index, entry)
+        else:
+            # Insert after
+            self._parent.model.insert(index + 1, entry)
+
+        return True
+
+    def set_margins(self, source, y, force_top=False):
+        drag = source.get_current_drop().get_drag()
+        icon = Gtk.DragIcon.get_for_drag(drag)
+        value = icon.get_child()
+        _got_bounds, _x, _y, width, height = value.get_bounds()
+
+        if y < height / 2 or force_top:
+            self.box.set_margin_top(height)
+            self.box.set_margin_bottom(self.margin_bottom)
+        else:
+            self.box.set_margin_top(0)
+            self.box.set_margin_bottom(height + self.margin_bottom)
+
+    def on_state_flags_changed(self, widget, _previous_flags):
+        """Manually remove the highlight area."""
+        sc = widget.get_style_context()
+        current = sc.get_state()
+        cleaned = current & ~Gtk.StateFlags.DROP_ACTIVE
+        if cleaned != current:
+            sc.set_state(cleaned)
+
+
 class CardsList(Gtk.Box):
     """Widget to display a list of cards"""
 
     __gtype_name__ = "CardsList"
 
-    __gsignals__ = {
-        "picked": (
-            GObject.SignalFlags.RUN_FIRST,
-            None,
-            (GObject.Object, Gtk.Widget, )
-        ),
-        "cancelled": (
-            GObject.SignalFlags.RUN_FIRST,
-            None,
-            (GObject.Object, )
-        ),
-    }
-
     def __init__(self):
         super().__init__()
 
-        # Set basic layout options
-        self.set_spacing(12)
+        # By default the list is vertical
         self.set_orientation(Gtk.Orientation.VERTICAL)
 
-        # Add the placeholder to the list of items
-        self._placeholder = Gtk.Label()
-        self._placeholder.set_label("")
-        self._placeholder.set_size_request(1, 1)
-        self._placeholder.add_css_class("osd")
-        self._placeholder.hide()
-        self._placeholder.set_opacity(0.4)
-        self.append(self._placeholder)
-
-        self.connect("picked", self.on_picked)
-        self.connect("cancelled", self.on_cancelled)
-
-    @Gtk.Template.Callback()
-    def on_state_flags_changed(self, widget, previous_flags):
-        # Get the style context for this widget
-        sc = widget.get_style_context()
-        # Compute new state with DROP_ACTIVE bit cleared
-        current = sc.get_state()
-        cleaned = current & ~Gtk.StateFlags.DROP_ACTIVE
-        # Write it back so GTK will not draw the drop highlight
-        if cleaned != current:
-            sc.set_state(cleaned)
-
-    def bind_model(self, model: Gio.ListModel = None,
-        create_widget_func: Callable[[GObject.Object, Any], Gtk.Widget] = None,
-        user_data: Any = None) -> None:
+    def bind_model(self, model, create_widget_func) -> None:
         """Connect the widget to a model."""
 
+        # Keep track of the attributes
         self._model = model
         self._create_widget_func = create_widget_func
-        self._user_data = user_data
 
-        # Configure ourselves as a drop target
-        drop_target = Gtk.DropTarget.new(self._model.get_item_type(), Gdk.DragAction.MOVE)
-        drop_target.connect("drop", self.on_drop)
-        drop_target.connect("enter", self.on_enter)
-        drop_target.connect("motion", self.on_motion)
-        drop_target.connect("leave", self.on_leave)
-        self.add_controller(drop_target)
+        # Connect the signal to refresh the widgets
+        self._model.connect("items-changed", self.on_items_changed)
 
+        # Initialise the content
         for entry in self._model:
             card = Card(self, self._create_widget_func, entry)
             self.append(card)
+
+        # Add the dropzone
+        self._drop_zone = CardDropZone(self)
+        self.append(self._drop_zone)
+        self._drop_zone.set_visible(self._model.get_n_items() == 0)
 
     @GObject.Property(type=Gio.ListStore)
     def model(self):
         return self._model
 
-    def replace_placeholder_with(self, widget):
-        self.insert_child_after(widget, self._placeholder)
-        self._placeholder.hide()
+    def on_items_changed(self, _liststore, position, removed, added):
+        """Handle a request to update the content of the list."""
 
-    def on_drop(self, _target, entry, _x, _y):
-        logger.info(f"Drop {_target} {entry}")
+        # Remove widgets for removed items
+        for _ in range(removed):
+            child = self.get_child_at(position)
+            self.remove(child)
 
-        # Find the index of the place holder
+        # Add widgets for added items
+        for i in range(added):
+            entry = self._model.get_item(position + i)
+            card = Card(self, self._create_widget_func, entry)
+            child = self.get_child_at(position + i - 1)
+            self.insert_child_after(card, child)
+
+        # Set the visibility of the drop zone
+        self._drop_zone.set_visible(self._model.get_n_items() == 0)
+
+    def get_child_at(self, position):
+        # In the special case we ask for -1 return None
+        if position < 0:
+            return None
+
+        # Iterate until the desired position, or running out of children
         index = 0
         child = self.get_first_child()
-        while child is not None and child != self._placeholder:
+        while index != position and child is not None:
             child = child.get_next_sibling()
             index += 1
 
-        # Insert the entry at the index
-        self.model.insert(index, entry)
+        # We reached the end of the list, return the last child
+        if child is None:
+            self.get_last_child()
 
-        # Update the rendering
-        card = Card(self, self._create_widget_func, entry)
-        self.replace_placeholder_with(card)
-
-        return True
-
-    def move_place_holder(self, target):
-        if self._placeholder is not None:
-            # Move the current placeholder
-            self.reorder_child_after(self._placeholder, target)
-
-    def remove_placeholder(self):
-        self._placeholder.hide()
-
-    def get_widget_at_y(self, target_y):
-        child = self.get_first_child()
-        while child is not None:
-            _got_bounds, x, y, width, height = child.get_bounds()
-            if target_y > y and target_y < y + height:
-                return child
-            child = child.get_next_sibling()
-        return None
-
-    def is_on_first_half_y(self, target_y, widget):
-        _got_bounds, _x, y, _width, height = widget.get_bounds()
-        return y + (height / 2) > target_y
-
-    def on_picked(self, _source, entry, widget: Gtk.Widget):
-        logger.info(f"Picked {widget} for {entry}")
-
-        # Adjust the size of the placeholder
-        _got_bounds, _x, _y, width, height = widget.get_bounds()
-        self._placeholder.set_size_request(width, height)
-        self._placeholder.show()
-
-        # Remove from the model
-        found, index = self.model.find(entry)
-        if found:
-            self._picked_from_index = index
-            self.model.remove(index)
-
-        # Remove the widget
-        self.remove(widget)
-
-    def on_cancelled(self, _source, entry):
-        logger.info(f"Cancelled for {entry}, return at position {self._picked_from_index}")
-
-        # Hide placeholder and place it at the end
-        self.reorder_child_after(self._placeholder, self.get_last_child())
-        self._placeholder.hide()
-
-        # Insert back a widget at the correct location
-        index = 0
-        sibling_widget = None
-        while index != self._picked_from_index:
-            if sibling_widget is None:
-                sibling_widget = self.get_first_child()
-            else:
-                sibling_widget = sibling_widget.get_next_sibling()
-            index += 1
-        card = Card(self, self._create_widget_func, entry)
-        self.insert_child_after(card, sibling_widget)
-
-        # Insert back into the model
-        self.model.insert(self._picked_from_index, entry)
-
-        return True
-
-    def on_enter(self, source, enter_x, enter_y):
-        logger.info(f"Enter {enter_x} {enter_y} {self._placeholder}")
-
-        # Get the widget we are currently dragging
-        drag = source.get_current_drop().get_drag()
-        icon = Gtk.DragIcon.get_for_drag(drag)
-        value = icon.get_child()
-
-        # Use that to adjust the placeholder size
-        _got_bounds, _x, _y, width, height = value.get_bounds()
-        self._placeholder.set_size_request(width, height)
-
-        # If we entered on an empty area, move the place holder at the end
-        widget = self.get_widget_at_y(enter_y)
-        if widget is None:
-            self.reorder_child_after(self._placeholder, self.get_last_child())
-
-        # Show the placeholder
-        self._placeholder.show()
-
-        # Recall that we are here now
-        value.last_parent_list = self
-
-        return Gdk.DragAction.MOVE
-
-    def on_motion(self, _source, motion_x, motion_y):
-        widget = self.get_widget_at_y(motion_y)
-
-        # Move a widget only if we are on one
-        if widget is not None:
-            if self.is_on_first_half_y(motion_y, widget):
-                widget = widget.get_prev_sibling()
-            self.reorder_child_after(self._placeholder, widget)
-
-        return Gdk.DragAction.MOVE
-
-    def on_leave(self, _source):
-        logger.info(f"Leave")
-        self._placeholder.hide()
+        return child
 
