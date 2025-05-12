@@ -18,23 +18,25 @@ template $ScrptOverviewPanel: Adw.NavigationPage {
       }
     }
 
-    content: Adw.Clamp {
-      maximum-size: 1024;
-      width-request: 1024;
+    content: Adw.PreferencesGroup {
+      vexpand: true;
+      hexpand: true;
+      title: "Overview";
+      description: "Drag and drop elements to re-arrange them";
+      margin-start: 12;
+      margin-end: 12;
+      margin-top: 12;
+      margin-bottom: 12;
 
-      Adw.PreferencesGroup {
-        ScrolledWindow {
-          height-request: 800;
+      ScrolledWindow {
+
+        // TODO Replace with https://api.pygobject.gnome.org/Gtk-4.0/class-FlowBox.html
+        ListView chapter_columns {
+          orientation: horizontal;
+          hexpand: true;
           vexpand: true;
 
-          // TODO Replace with https://api.pygobject.gnome.org/Gtk-4.0/class-FlowBox.html
-          ListView chapter_columns {
-            orientation: horizontal;
-            hexpand: true;
-            vexpand: true;
-
-            factory: SignalListItemFactory chapter_column_factory {};
-          }
+          factory: SignalListItemFactory chapter_column_factory {};
         }
       }
     };

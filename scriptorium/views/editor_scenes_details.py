@@ -50,22 +50,19 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
             "identifier",
             self.identifier,
             "subtitle",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
         scene.bind_property(
             "title",
             self.edit_title,
             "text",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
         scene.bind_property(
             "synopsis",
             self.edit_synopsis,
             "text",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
         self.history_list.bind_model(scene.history, self.create_message_entry)
@@ -92,7 +89,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         logger.info(f"Delete {self._scene.title}")
         dialog = Adw.AlertDialog(
             heading="Delete scene?",
-            body=f"This action can not be undone. Are you sure you want to delete the scene \"{self._scene.title}\"",
+            body=f'This action can not be undone. Are you sure you want to delete the scene "{self._scene.title}"',
             close_response="cancel",
         )
         dialog.add_response("cancel", "Cancel")
@@ -111,6 +108,4 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
 
             # Return to listing the scenes
             self.get_parent().pop()
-
-
 

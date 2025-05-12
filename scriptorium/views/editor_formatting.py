@@ -43,8 +43,8 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         super().__init__(**kwargs)
         self._manuscript = editor.manuscript
 
-        self.button_next_page.connect('clicked', self.on_click_next_page)
-        self.button_previous_page.connect('clicked', self.on_click_previous_page)
+        self.button_next_page.connect("clicked", self.on_click_next_page)
+        self.button_previous_page.connect("clicked", self.on_click_previous_page)
 
         self.chapters_drop_down.connect("notify::selected-item", self.on_selected_item)
 
@@ -62,8 +62,7 @@ class ScrptFormattingPanel(Adw.NavigationPage):
             "show_sidebar",
             self.show_sidebar_button,
             "active",
-            GObject.BindingFlags.BIDIRECTIONAL
-            | GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
     def on_selected_item(self, _drop_down, _selected_item):
@@ -74,25 +73,30 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         content = selected_chapter.to_html()
 
         # Instantiate the template for the rendering
-        emulator_html = Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/views/editor_formatting.html")
+        emulator_html = Gio.File.new_for_uri(
+            "resource://com/github/cgueret/Scriptorium/views/editor_formatting.html"
+        )
         html_content = emulator_html.load_contents()[1].decode()
-        html_content = html_content.replace('{content}', content)
+        html_content = html_content.replace("{content}", content)
 
         # Load the content
         self.web_view.load_html(html_content)
 
     def on_click_next_page(self, _button):
-        logger.info('Move to next page')
-        self.web_view.evaluate_javascript('nextPage()', -1, None, None, None, self.on_page_changed, None)
+        logger.info("Move to next page")
+        self.web_view.evaluate_javascript(
+            "nextPage()", -1, None, None, None, self.on_page_changed, None
+        )
 
     def on_click_previous_page(self, _button):
-        logger.info('Move to previous page')
-        self.web_view.evaluate_javascript('prevPage()', -1, None, None, None, self.on_page_changed, None)
+        logger.info("Move to previous page")
+        self.web_view.evaluate_javascript(
+            "prevPage()", -1, None, None, None, self.on_page_changed, None
+        )
 
     def on_page_changed(self, _web_view, _task, _c):
         value = self.web_view.call_async_javascript_function_finish(_task)
         if value.is_number():
             current_page = value.to_int32()
-            logger.info(f'Now showing page {current_page}')
-
+            logger.info(f"Now showing page {current_page}")
 

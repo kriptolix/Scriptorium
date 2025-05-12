@@ -42,7 +42,7 @@ class ScrptWritingPanel(Adw.NavigationPage):
     scenes_list = Gtk.Template.Child()
     navigation: Adw.NavigationView = Gtk.Template.Child()
     show_sidebar_button = Gtk.Template.Child()
-    #wrap_box = Gtk.Template.Child()
+    # wrap_box = Gtk.Template.Child()
     box = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
@@ -62,11 +62,11 @@ class ScrptWritingPanel(Adw.NavigationPage):
         self._moved_x = None
         self._moved_y = None
 
-        #cards_list = CardsList()
-        #cards_list.bind_model(editor.manuscript.scenes, SceneCard)
-        #self.box.prepend(cards_list)
+        # cards_list = CardsList()
+        # cards_list.bind_model(editor.manuscript.scenes, SceneCard)
+        # self.box.prepend(cards_list)
 
-        #for scene in editor.manuscript.scenes:
+        # for scene in editor.manuscript.scenes:
         #    box = Gtk.Box()
         #    box.set_hexpand(True)
         #    box.add_css_class("card")
@@ -75,14 +75,14 @@ class ScrptWritingPanel(Adw.NavigationPage):
         #    box.append(card)
         #    box.card = card
 
-            # Configure it as a drag source
+        # Configure it as a drag source
         #    drag_source = Gtk.DragSource(actions=Gdk.DragAction.MOVE)
         #    drag_source.connect("prepare", self.on_drag_prepare, box)
         #    drag_source.connect("drag-begin", self.on_drag_begin, box)
         #    drag_source.connect("drag-end", self.on_drag_end, box)
         #    box.add_controller(drag_source)
 
-            # Configure it as a drop target
+        # Configure it as a drop target
         #    drop_target = Gtk.DropTarget.new(SceneCard, Gdk.DragAction.MOVE)
         #    drop_target.connect("drop", self.on_drop, box)
         #    drop_target.connect("motion", self.on_drag_motion, box)
@@ -92,7 +92,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
 
     def on_drop(self, _target, value, _x, _y, box):
         logger.info(f"Drop {value} {_y}")
-
 
     def on_drag_prepare(self, _source, x, y, box):
         value = GObject.Value()
@@ -142,8 +141,7 @@ class ScrptWritingPanel(Adw.NavigationPage):
             "show_sidebar",
             self.show_sidebar_button,
             "active",
-            GObject.BindingFlags.BIDIRECTIONAL
-            | GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
     def bind_card(self, scene):
@@ -182,3 +180,4 @@ class ScrptWritingPanel(Adw.NavigationPage):
         dialog = ScrptAddDialog("scene")
         response = dialog.choose(self, None, self.on_add_scene)
         logger.info(response)
+

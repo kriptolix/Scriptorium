@@ -21,6 +21,7 @@
 from gi.repository import Adw, Gtk, GObject
 from scriptorium.globals import BASE
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,7 +46,6 @@ class ScrptEntityPanel(Adw.NavigationPage):
             "show_sidebar",
             self.show_sidebar_button,
             "active",
-            GObject.BindingFlags.BIDIRECTIONAL
-            | GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 

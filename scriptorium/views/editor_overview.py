@@ -21,6 +21,7 @@ from gi.repository import Adw, Gtk, GObject
 from scriptorium.widgets import ChapterColumn
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,8 +54,7 @@ class ScrptOverviewPanel(Adw.NavigationPage):
             "show_sidebar",
             self.show_sidebar_button,
             "active",
-            GObject.BindingFlags.BIDIRECTIONAL
-            | GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
     def bind_chapter(self, chapter):
@@ -73,3 +73,4 @@ class ScrptOverviewPanel(Adw.NavigationPage):
         chapter = list_item.get_item()
         chapter_column = list_item.get_child()
         chapter_column.connect_to_chapter(chapter)
+

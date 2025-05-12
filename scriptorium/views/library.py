@@ -25,6 +25,7 @@ from scriptorium.dialogs import ScrptAddDialog
 
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +47,7 @@ class ScrptLibraryView(Adw.NavigationPage):
         super().__init__(**kwargs)
 
         # Keep an eye for changes to the manuscript base path
-        self.connect('notify::manuscripts-base-path', self.on_base_path_changed)
+        self.connect("notify::manuscripts-base-path", self.on_base_path_changed)
 
         self.item_factory.connect("setup", self.on_setup_item)
         self.item_factory.connect("bind", self.on_bind_item)
@@ -81,16 +82,16 @@ class ScrptLibraryView(Adw.NavigationPage):
     def on_bind_item(self, _, list_item):
         manuscript = list_item.get_item()
         manuscript_item = list_item.get_child()
-        manuscript_item.set_property('title', manuscript.title)
+        manuscript_item.set_property("title", manuscript.title)
 
         # Set the path of the cover image
-        manuscript_item.set_property('cover', manuscript.get_cover_path())
+        manuscript_item.set_property("cover", manuscript.get_cover_path())
 
     def on_base_path_changed(self, _base_path, _other):
         """
         Called when the property of the base path is changed
         """
-        logger.info(f'Loading library from {self.manuscripts_base_path}')
+        logger.info(f"Loading library from {self.manuscripts_base_path}")
 
         # Load up an instance of the library
         self.library = Library(self.manuscripts_base_path)
@@ -111,6 +112,6 @@ class ScrptLibraryView(Adw.NavigationPage):
         selected_item = selection.get_selected_item()
         if selected_item is not None:
             self.selected_manuscript = selection.get_selected_item()
-            logger.info(f'Selected manuscript {self.selected_manuscript.title}')
+            logger.info(f"Selected manuscript {self.selected_manuscript.title}")
             selection.set_selected(Gtk.INVALID_LIST_POSITION)
 

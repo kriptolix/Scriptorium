@@ -21,20 +21,14 @@ class ChapterCard(Adw.Bin):
         self._chapter = chapter
 
         # Configure the information for the scene
-        self.set_property('title', chapter.title)
-        self.set_property('synopsis', chapter.synopsis)
+        self.set_property("title", chapter.title)
+        self.set_property("synopsis", chapter.synopsis)
 
         self.bind_property(
-            "title",
-            chapter,
-            "title",
-            GObject.BindingFlags.BIDIRECTIONAL
+            "title", chapter, "title", GObject.BindingFlags.BIDIRECTIONAL
         )
         self.bind_property(
-            "synopsis",
-            chapter,
-            "synopsis",
-            GObject.BindingFlags.BIDIRECTIONAL
+            "synopsis", chapter, "synopsis", GObject.BindingFlags.BIDIRECTIONAL
         )
 
     @GObject.Property(type=Chapter)
@@ -43,3 +37,4 @@ class ChapterCard(Adw.Bin):
 
     def hide_suffix(self):
         self.suffixes.set_visible(False)
+

@@ -52,15 +52,13 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
             "title",
             self.edit_title,
             "text",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
         chapter.bind_property(
             "synopsis",
             self.edit_synopsis,
             "text",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
         self.scenes_list.bind_model(chapter.scenes, self.create_scene_entry)
@@ -80,7 +78,7 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
 
     def on_assign_scene_replied(self, dialog, task):
         response = dialog.choose_finish(task)
-        if response == 'done':
+        if response == "done":
             scene = dialog.get_selected_scene()
             logger.info(f"Adding {scene.title}")
             self._chapter.add_scene(scene)
@@ -91,7 +89,7 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
         logger.info(f"Delete {self._chapter.title}")
         dialog = Adw.AlertDialog(
             heading="Delete chapter?",
-            body=f"This action can not be undone! Are you sure you want to delete the chapter \"{self._chapter.title}\" ? All the scenes associated to it will be left unassigned.",
+            body=f'This action can not be undone! Are you sure you want to delete the chapter "{self._chapter.title}" ? All the scenes associated to it will be left unassigned.',
             close_response="cancel",
         )
         dialog.add_response("cancel", "Cancel")

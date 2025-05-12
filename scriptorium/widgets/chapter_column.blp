@@ -22,36 +22,27 @@ using Gtk 4.0;
 using Adw 1;
 
 template $ChapterColumn: Adw.Bin {
-
   child: Adw.Clamp {
-    maximum-size: 400;
     width-request: 300;
+    maximum-size: 600;
 
     Box {
       margin-start: 6;
       margin-end: 6;
       margin-top: 0;
       margin-bottom: 0;
+      hexpand: true;
+      vexpand: true;
+      homogeneous: true;
+
       Adw.PreferencesGroup column {
         title: "Chapter title";
         description: "description";
 
-        ListBox scenes_list {
-          selection-mode: none;
-
-          styles [
-            "boxed-list-separate",
-          ]
+        $CardsList scenes_list {
           hexpand: true;
-
-          [placeholder]
-          Adw.StatusPage {
-            icon-name: "item-missing-symbolic";
-            description: "No scenes in this chapter";
-          }
         }
       }
     }
   };
 }
-

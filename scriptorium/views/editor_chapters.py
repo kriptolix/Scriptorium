@@ -49,14 +49,14 @@ class ScrptChaptersPanel(Adw.NavigationPage):
         super().__init__(**kwargs)
         self._manuscript = editor.manuscript
 
-        self.chapters_list.bind_model(editor.manuscript.chapters,
-                                    self.on_add_chapter_to_list)
-
+        self.chapters_list.bind_model(
+            editor.manuscript.chapters, self.on_add_chapter_to_list
+        )
 
     @Gtk.Template.Callback()
     def on_listbox_row_activated(self, _widget, selected_row):
         chapter = selected_row.get_child().chapter
-        logger.info(f"Clicked on chapter \"{chapter.title}\"")
+        logger.info(f'Clicked on chapter "{chapter.title}"')
         chapter_details_panel = ScrptChaptersDetailsPanel(chapter)
         self.navigation.push(chapter_details_panel)
 
@@ -78,8 +78,7 @@ class ScrptChaptersPanel(Adw.NavigationPage):
             "show_sidebar",
             self.show_sidebar_button,
             "active",
-            GObject.BindingFlags.BIDIRECTIONAL
-            | GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
     def on_add_chapter_to_list(self, chapter):

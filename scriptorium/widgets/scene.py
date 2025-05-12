@@ -21,20 +21,12 @@ class SceneCard(Adw.Bin):
         self._scene = scene
 
         # Configure the information for the scene
-        self.set_property('title', scene.title)
-        self.set_property('synopsis', scene.synopsis)
+        self.set_property("title", scene.title)
+        self.set_property("synopsis", scene.synopsis)
 
+        self.bind_property("title", scene, "title", GObject.BindingFlags.BIDIRECTIONAL)
         self.bind_property(
-            "title",
-            scene,
-            "title",
-            GObject.BindingFlags.BIDIRECTIONAL
-        )
-        self.bind_property(
-            "synopsis",
-            scene,
-            "synopsis",
-            GObject.BindingFlags.BIDIRECTIONAL
+            "synopsis", scene, "synopsis", GObject.BindingFlags.BIDIRECTIONAL
         )
 
     @GObject.Property(type=Scene)
@@ -44,11 +36,11 @@ class SceneCard(Adw.Bin):
     def hide_suffix(self):
         self.suffixes.set_visible(False)
 
-#drag_row.add_prefix(
+
+# drag_row.add_prefix(
 #    Gtk.Image(
 #        icon_name="list-drag-handle-symbolic",
 #        css_classes=["dim-label"],
 #    ),
-#)
-
+# )
 

@@ -53,22 +53,19 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
             "identifier",
             self.identifier,
             "subtitle",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
         editor.manuscript.bind_property(
             "title",
             self.edit_title,
             "text",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
         editor.manuscript.bind_property(
             "synopsis",
             self.edit_synopsis,
             "text",
-            GObject.BindingFlags.BIDIRECTIONAL |
-            GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
     def create_message_entry(self, message):
@@ -85,8 +82,7 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
             "show_sidebar",
             self.show_sidebar_button,
             "active",
-            GObject.BindingFlags.BIDIRECTIONAL
-            | GObject.BindingFlags.SYNC_CREATE
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
     @Gtk.Template.Callback()
@@ -95,7 +91,7 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         logger.info(f"Delete {self._manuscript.title}")
         dialog = Adw.AlertDialog(
             heading="Delete manuscript?",
-            body=f"This action can not be undone. Are you sure you want to delete the whole manuscript \"{self._manuscript.title}\"",
+            body=f'This action can not be undone. Are you sure you want to delete the whole manuscript "{self._manuscript.title}"',
             close_response="cancel",
         )
         dialog.add_response("cancel", "Cancel")
@@ -115,6 +111,4 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
 
             # Trigger a close on the editor
             self._editor.close_on_delete()
-
-
 

@@ -37,15 +37,15 @@ class ManuscriptItem(Gtk.Box):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.connect('notify::cover', self.on_cover_changed)
+        self.connect("notify::cover", self.on_cover_changed)
 
     def on_cover_changed(self, _cover, _other):
         if self.cover is not None:
             # Load the image
             self.cover_picture.set_filename(self.cover)
-            self.stack.set_visible_child_name('cover')
+            self.stack.set_visible_child_name("cover")
         else:
             # Add a place holder
             self.cover_label.set_label(self.title)
-            self.stack.set_visible_child_name('label')
+            self.stack.set_visible_child_name("label")
 
