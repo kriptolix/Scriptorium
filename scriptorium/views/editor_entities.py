@@ -33,19 +33,19 @@ class ScrptEntityPanel(Adw.NavigationPage):
     __icon_name__ = "find-location-symbolic"
     __description__ = "Set the key entities of the story"
 
-    show_sidebar_button = Gtk.Template.Child()
+    entities_list = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
         self._manuscript = editor.manuscript
 
-    def bind_side_bar_button(self, split_view):
-        """Connect the button to collapse the sidebar."""
-        split_view.bind_property(
-            "show_sidebar",
-            self.show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
+        self.entities_list.bind_model(
+            editor.manuscript.entities, self.create_entity_card
         )
+
+    def create_entity_card(self, entity):
+        """Create an instance of the entity card."""
+        card = EntityCard(entity)
+        return card
 

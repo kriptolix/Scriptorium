@@ -134,12 +134,45 @@ class ScrptEditorView(Adw.NavigationPage):
         """Change the panel currently displayed."""
         selection = _selected_item.get_child()
         logger.info(f"Switching to panel {selection.panel_id}")
+
         p = None
         for panel_id, panel in PANELS:
             if panel_id == selection.panel_id:
+                # Instantiate the panel
                 p = panel(self)
-                p.bind_side_bar_button(self.split_view)
+
+                # Add a button to close the side bar
+                header_bars = self.find_header_bars(p)
+                self.add_close_sidebar_widget(header_bars[0])
+
         self.panels.replace([p])
+
+    def find_header_bars(self, root):
+        header_bars = []
+        child = root.get_first_child()
+        while child:
+            if isinstance(child, Adw.HeaderBar):
+                header_bars.append(child)
+            # Correct: merge returned lists into the parent list
+            header_bars.extend(self.find_header_bars(child))
+            child = child.get_next_sibling()
+        return header_bars
+
+    def add_close_sidebar_widget(self, header_bar):
+        show_sidebar_button = Gtk.ToggleButton(
+            icon_name = "sidebar-show-symbolic"
+        )
+        header_bar.pack_start(show_sidebar_button)
+
+        self.split_view.bind_property(
+            "show_sidebar",
+            show_sidebar_button,
+            "active",
+            GObject.BindingFlags.BIDIRECTIONAL |
+            GObject.BindingFlags.SYNC_CREATE,
+        )
+
+
 
     def close_on_delete(self):
         self._manuscript = None

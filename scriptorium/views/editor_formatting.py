@@ -37,7 +37,6 @@ class ScrptFormattingPanel(Adw.NavigationPage):
     button_next_page = Gtk.Template.Child()
     button_previous_page = Gtk.Template.Child()
     chapters_drop_down = Gtk.Template.Child()
-    show_sidebar_button = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         super().__init__(**kwargs)
@@ -55,15 +54,6 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         )
         self.chapters_drop_down.set_expression(list_store_expression)
         self.chapters_drop_down.set_model(editor.manuscript.chapters)
-
-    def bind_side_bar_button(self, split_view):
-        """Connect the button to collapse the sidebar."""
-        split_view.bind_property(
-            "show_sidebar",
-            self.show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
-        )
 
     def on_selected_item(self, _drop_down, _selected_item):
         selected_chapter = _drop_down.get_selected_item()

@@ -19,7 +19,6 @@ template $ScrptFormattingPanel: Adw.NavigationPage {
       content: Adw.PreferencesPage {
         Adw.PreferencesGroup {
           title: "Formatting options";
-
         }
       };
     };
@@ -29,12 +28,6 @@ template $ScrptFormattingPanel: Adw.NavigationPage {
       Adw.HeaderBar {
         show-title: true;
         show-back-button: false;
-
-        [start]
-        ToggleButton show_sidebar_button {
-          icon-name: "sidebar-show-symbolic";
-          tooltip-text: _("Toggle Sidebar");
-        }
 
         [end]
         ToggleButton show_settings_sidebar_button {

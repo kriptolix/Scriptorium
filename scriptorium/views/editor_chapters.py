@@ -42,7 +42,6 @@ class ScrptChaptersPanel(Adw.NavigationPage):
 
     navigation = Gtk.Template.Child()
     chapters_list = Gtk.Template.Child()
-    show_sidebar_button = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
@@ -71,15 +70,6 @@ class ScrptChaptersPanel(Adw.NavigationPage):
         if response == "add":
             logger.info(f"Add chapter {dialog.title}: {dialog.synopsis}")
             self._manuscript.create_chapter(dialog.title, dialog.synopsis)
-
-    def bind_side_bar_button(self, split_view):
-        """Connect the button to collapse the sidebar."""
-        split_view.bind_property(
-            "show_sidebar",
-            self.show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
-        )
 
     def on_add_chapter_to_list(self, chapter):
         """Add the new chapter to the list."""

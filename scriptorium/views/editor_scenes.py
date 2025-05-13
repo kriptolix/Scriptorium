@@ -41,7 +41,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
 
     scenes_list = Gtk.Template.Child()
     navigation: Adw.NavigationView = Gtk.Template.Child()
-    show_sidebar_button = Gtk.Template.Child()
     # wrap_box = Gtk.Template.Child()
     box = Gtk.Template.Child()
 
@@ -134,15 +133,6 @@ class ScrptWritingPanel(Adw.NavigationPage):
         prev_box = box if y > height / 2 else box.get_prev_sibling()
         self.wrap_box.reorder_child_after(self._moved, prev_box)
         return Gdk.DragAction.MOVE
-
-    def bind_side_bar_button(self, split_view):
-        """Connect the button to collapse the sidebar."""
-        split_view.bind_property(
-            "show_sidebar",
-            self.show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
-        )
 
     def bind_card(self, scene):
         """Bind a scene card to a scene."""

@@ -38,7 +38,6 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
     identifier = Gtk.Template.Child()
     edit_title = Gtk.Template.Child()
     edit_synopsis = Gtk.Template.Child()
-    show_sidebar_button = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
@@ -75,15 +74,6 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         message_entry.set_title(message.datetime)
         message_entry.set_subtitle(message.message)
         return message_entry
-
-    def bind_side_bar_button(self, split_view):
-        """Connect the button to collapse the sidebar."""
-        split_view.bind_property(
-            "show_sidebar",
-            self.show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
-        )
 
     @Gtk.Template.Callback()
     def on_delete_manuscript_activated(self, _button):

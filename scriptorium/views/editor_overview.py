@@ -33,7 +33,6 @@ class ScrptOverviewPanel(Adw.NavigationPage):
     __title__ = "Outline"
 
     chapter_columns = Gtk.Template.Child()
-    show_sidebar_button = Gtk.Template.Child()
     chapter_column_factory = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
@@ -47,15 +46,6 @@ class ScrptOverviewPanel(Adw.NavigationPage):
 
         selection_model = Gtk.NoSelection(model=editor.manuscript.chapters)
         self.chapter_columns.set_model(selection_model)
-
-    def bind_side_bar_button(self, split_view):
-        """Connect the button to collapse the sidebar."""
-        split_view.bind_property(
-            "show_sidebar",
-            self.show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
-        )
 
     def bind_chapter(self, chapter):
         """Bind a scene card to a scene."""
