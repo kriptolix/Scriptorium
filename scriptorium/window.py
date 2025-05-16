@@ -103,6 +103,6 @@ class ScrptWindow(Adw.ApplicationWindow):
         self.settings.set_string("last-manuscript-name", manuscript.identifier)
         logger.info(f"Create and open editor for {manuscript.title}")
 
-        editor_view = ScrptEditorView(manuscript)
+        editor_view = ScrptEditorView(self, manuscript)
         self.navigation.push(editor_view)
 

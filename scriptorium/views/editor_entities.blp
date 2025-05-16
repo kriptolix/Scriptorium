@@ -25,14 +25,12 @@ template $ScrptEntityPanel: Adw.NavigationPage {
                 title: "Elements";
                 description: "The character, places, and props of the story";
 
-                header-suffix: Button {
-                  clicked => $on_add_clicked();
-
-                  Adw.ButtonContent {
-                    icon-name: "list-add-symbolic";
-                    label: "Add something ...";
-                    use-underline: true;
-                  }
+                header-suffix: MenuButton add_button {
+                  label: "Add";
+                  margin-top: 18;
+                  icon-name: "list-add-symbolic";
+                  always-show-arrow: true;
+                  menu-model: entity_type_menu;
                 };
 
                 ListBox entities_list {
@@ -48,4 +46,24 @@ template $ScrptEntityPanel: Adw.NavigationPage {
       };
     }
   };
+}
+
+menu entity_type_menu {
+  item {
+    label: _("Character");
+    action: "win.add_entity";
+    target: "1";
+  }
+
+  item {
+    label: _("Location");
+    action: "win.add_entity";
+    target: "2";
+  }
+
+  item {
+    label: _("Prop");
+    action: "win.add_entity";
+    target: "3";
+  }
 }

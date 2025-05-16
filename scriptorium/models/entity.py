@@ -20,15 +20,15 @@
 
 from pathlib import Path
 from gi.repository import Gtk, GObject, Gio
-from enum import Enum
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class EntityType(Enum):
+class EntityType(GObject.GEnum):
     """The type of the entity."""
+    __gtype_name__ = "EntityType"
     CHARACTER = 1
     LOCATION = 2
     PROP = 3
@@ -61,6 +61,7 @@ class Entity(GObject.Object):
     def links(self):
         """Return the links from this entity."""
         return self._links
+
 
 class EntityLink(GObject.Object):
     """A directed link from one entity to another"""
