@@ -22,6 +22,8 @@ from pathlib import Path
 from gi.repository import Gtk, GObject, Gio
 from scriptorium.utils import html_to_buffer, buffer_to_html
 from .commit_message import CommitMessage
+from .entity import Entity
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,6 +42,7 @@ class Scene(GObject.Object):
         self._manuscript = manuscript
         self._chapter = None
         self._history = Gio.ListStore.new(item_type=CommitMessage)
+        self._entities = Gio.ListStore.new(item_type=Entity)
 
         # The content of the scene
         scene_path = base_path / Path(f"{self.identifier}.html")
@@ -51,6 +54,11 @@ class Scene(GObject.Object):
     def history(self):
         """Return the history of commits about that scene."""
         return self._history
+
+    @GObject.Property(type=Gio.ListStore)
+    def entities(self):
+        """Return the entities connected to that scene."""
+        return self._entities
 
     def _refresh_history(self):
         self._history.remove_all()
@@ -87,6 +95,11 @@ class Scene(GObject.Object):
     def chapter(self, value):
         """Set the chapter the scene is associated to."""
         self._chapter = value
+
+    def connect_to(self, entity):
+        """Connect this scene to an entity."""
+        if entity not in self.entities:
+            self.entities.append(entity)
 
     def init(self):
         """Initialise a new scene."""

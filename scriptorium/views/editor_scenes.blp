@@ -18,49 +18,34 @@ template $ScrptWritingPanel: Adw.NavigationPage {
         }
 
         content: ScrolledWindow {
-          child: Adw.Clamp {
-            maximum-size: 600;
-            margin-top: 12;
+          child: Adw.PreferencesPage {
+            Adw.PreferencesGroup {
+              title: "Scenes";
+              description: "This is the list of scenes in the manuscript";
+              header-suffix: Button {
+                clicked => $on_add_scene_clicked();
 
-            Box box {
-              orientation: vertical;
-              spacing: 12;
-
-              /*
-              Adw.WrapBox wrap_box {
-                orientation: vertical;
-                line-spacing: 12;
-                line-homogeneous: true;
-                child-spacing: 12;
-              }
-              */
-
-              Adw.PreferencesGroup {
-                title: "Scenes";
-                description: "This is the list of scenes in the manuscript";
-                header-suffix: Button {
-                  clicked => $on_add_scene_clicked();
-
-                  Adw.ButtonContent {
-                    icon-name: "list-add-symbolic";
-                    label: "Add a scene ...";
-                    use-underline: true;
-                  }
-                };
-
-                ListBox scenes_list {
-                  selection-mode: none;
-
-                  styles [
-                    "boxed-list-separate",
-                  ]
-
-                  [placeholder]
-                  Adw.StatusPage {
-                    icon-name: "item-missing-symbolic";
-                    description: "Add a first scene and start writing";
-                  }
+                Adw.ButtonContent {
+                  icon-name: "list-add-symbolic";
+                  label: "Add a scene ...";
+                  use-underline: true;
                 }
+              };
+
+              ListBox scenes_list {
+                selection-mode: none;
+
+                styles [
+                  "boxed-list-separate",
+                ]
+
+                [placeholder]
+                Adw.StatusPage {
+                  icon-name: "item-missing-symbolic";
+                  description: "Add a first scene and start writing";
+                }
+
+                row-activated => $on_listbox_row_activated();
               }
             }
           };

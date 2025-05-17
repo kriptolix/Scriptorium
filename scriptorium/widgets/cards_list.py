@@ -25,10 +25,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# TODO Add a drop area at the end of the list of cards for the cases where the list is empty
-# widgets drop into it would be inserted before it automatically by dropping at the end of the model
-
-
 class CardDropZone(Gtk.Box):
     __gtype_name__ = "CardDropZone"
 

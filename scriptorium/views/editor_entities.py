@@ -19,8 +19,8 @@
 
 
 from gi.repository import Adw, Gtk, GObject, Gio
+from scriptorium.widgets import EntityCard
 from scriptorium.globals import BASE
-from scriptorium.models import EntityType
 
 import logging
 
@@ -47,22 +47,6 @@ class ScrptEntityPanel(Adw.NavigationPage):
         self.entities_list.bind_model(
             editor.manuscript.entities, self.create_entity_card
         )
-
-        #menu = Gio.Menu()
-        #for entity_type in EntityType:
-        #    menu.append(
-        #        f"{entity_type.name.capitalize()}",
-        #        f"entities.add_entity('{entity_type.name}')"
-        #    )
-        #self.add_button.set_menu_model(menu)
-
-        #self.action_group = Gio.SimpleActionGroup()
-        #self.insert_action_group("entities", self.action_group)
-
-        #action = Gio.SimpleAction(name="add_entity")
-        #action.connect("activate", self.on_add_entity)
-        #self.action_group.add_action(action)
-
 
     def on_add_entity(self, entity_type):
         logger.info(entity_type)

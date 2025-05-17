@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $SceneCard: Adw.Bin {
+template $EntityCard: Adw.Bin {
   accessibility {
     labelled-by: title;
     described-by: synopsis;
@@ -25,14 +25,6 @@ template $SceneCard: Adw.Bin {
       styles [
         "prefixes",
       ]
-
-      Image {
-        styles [
-          "dim-label",
-        ]
-        icon-name: "list-drag-handle-symbolic";
-        valign: center;
-      }
     }
 
     Box title_box {
@@ -68,25 +60,16 @@ template $SceneCard: Adw.Bin {
           "dim-label",
         ]
       }
-
-      Box entities {
-        orientation: horizontal;
-        halign: end;
-        margin-end: 6;
-      }
     }
 
     Box suffixes {
-      visible: false;
+      visible: true;
 
       styles [
         "suffixes",
       ]
 
-      Image {
-        styles [
-          "dim-label",
-        ]
+      Button edit_button {
         icon-name: "right-symbolic";
         valign: center;
       }

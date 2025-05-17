@@ -16,29 +16,71 @@ template $ScrptEntityPanel: Adw.NavigationPage {
         }
 
         content: ScrolledWindow  {
-          child: Adw.Clamp {
-            maximum-size: 600;
-            margin-top: 12;
+          child: Adw.PreferencesPage {
+            Adw.PreferencesGroup {
+              Overlay {
+                halign: center;
+                sensitive: true;
 
-            Adw.PreferencesPage {
-              Adw.PreferencesGroup {
-                title: "Elements";
-                description: "The character, places, and props of the story";
-
-                header-suffix: MenuButton add_button {
-                  label: "Add";
-                  margin-top: 18;
-                  icon-name: "list-add-symbolic";
-                  always-show-arrow: true;
-                  menu-model: entity_type_menu;
-                };
-
-                ListBox entities_list {
-                  selection-mode: none;
-                  styles [
-                    "boxed-list-separate",
-                  ]
+                Adw.Avatar avatar {
+                  show-initials: true;
+                  size: 120;
+                  text: "Pig 1";
+                  halign: center;
                 }
+
+                [overlay]
+                Adw.Bin {
+                  halign: end;
+                  valign: end;
+                  styles [
+                    "cutout-button",
+                  ]
+                  MenuButton avatar_edit_button {
+                    icon-name: "document-edit-symbolic";
+                    tooltip-text: "Change Avatar";
+                    styles [
+                      "circular",
+                    ]
+                  }
+                }
+
+                [overlay]
+                Adw.Bin {
+                  halign: end;
+                  valign: start;
+                  styles [
+                    "cutout-button",
+                  ]
+                  MenuButton avatar_remove_button {
+                    icon-name: "user-trash-symbolic";
+                    tooltip-text: "Remove Avatar";
+                    sensitive: true;
+                    styles [
+                      "circular",
+                      "destructive-action"
+                    ]
+                  }
+                }
+              }
+            }
+
+            Adw.PreferencesGroup {
+              title: "Elements";
+              description: "The character, places, and props of the story";
+
+              header-suffix: MenuButton add_button {
+                label: "Add";
+                icon-name: "list-add-symbolic";
+                always-show-arrow: true;
+                menu-model: entity_type_menu;
+              };
+
+              ListBox entities_list {
+                selection-mode: none;
+                styles [
+                  "boxed-list-separate",
+                ]
               }
             }
           };
@@ -52,18 +94,18 @@ menu entity_type_menu {
   item {
     label: _("Character");
     action: "win.add_entity";
-    target: "1";
+    target: "character";
   }
 
   item {
     label: _("Location");
     action: "win.add_entity";
-    target: "2";
+    target: "location";
   }
 
   item {
     label: _("Prop");
     action: "win.add_entity";
-    target: "3";
+    target: "prop";
   }
 }

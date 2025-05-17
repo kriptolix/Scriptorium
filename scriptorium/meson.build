@@ -51,6 +51,7 @@ blueprints = custom_target(
 		'widgets/chapter_column.blp',
 		'widgets/scene.blp',
 		'widgets/chapter.blp',
+		'widgets/entity_card.blp',
 		'widgets/manuscript.blp',
 		'widgets/multiline_entry_row.blp',
 		'widgets/cards_list.blp',

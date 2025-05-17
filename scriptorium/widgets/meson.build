@@ -6,5 +6,6 @@ scriptorium_sources_widgets = [
 	'chapter.py',
 	'multiline_entry_row.py',
 	'cards_list.py',
+	'entity_card.py',
 ]
 install_data(scriptorium_sources_widgets, install_dir: moduledir / 'widgets')

@@ -68,7 +68,6 @@ class ChapterColumn(Adw.Bin):
     def bind_card(self, scene):
         """Bind a scene card to a scene."""
         scene_card = SceneCard(scene)
-        scene_card.hide_suffix()
         return scene_card
 
     def on_prepare_chapter(self, _source, _x, _y):

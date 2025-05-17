@@ -26,36 +26,34 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class EntityType(GObject.GEnum):
-    """The type of the entity."""
-    __gtype_name__ = "EntityType"
-    CHARACTER = 1
-    LOCATION = 2
-    PROP = 3
-
-
 class Entity(GObject.Object):
     """An entity is a story element (person, place, prop, ...)"""
 
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
 
-    def __init__(self, manuscript, identifier: str):
+    def __init__(self, manuscript, identifier: str,  entity_type):
         """Create an entity."""
         super().__init__()
         self._identifier = identifier
         self._manuscript = manuscript
         self._links = Gio.ListStore.new(item_type=EntityLink)
+        self._entity_type = entity_type
 
     @GObject.Property(type=GObject.Object)
     def manuscript(self):
-        """Return the manuscript the scene is associated to."""
+        """Return the manuscript the entity is associated to."""
         return self._manuscript
 
     @GObject.Property(type=str)
     def identifier(self):
-        """Return the identifier of the scene."""
+        """Return the identifier of the entity."""
         return self._identifier
+
+    @GObject.Property(type=str)
+    def entity_type(self):
+        """Return the type of the entity."""
+        return self._entity_type
 
     @GObject.Property(type=Gio.ListStore)
     def links(self):

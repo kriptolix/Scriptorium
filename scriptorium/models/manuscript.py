@@ -136,8 +136,18 @@ class Manuscript(GObject.Object):
                     "title": scene.title,
                     "synopsis": scene.synopsis,
                     "identifier": scene.identifier,
+                    "entities": [e.identifier for e in scene.entities],
                 }
                 for scene in self.scenes
+            ],
+            "entities": [
+                {
+                    "title": entity.title,
+                    "synopsis": entity.synopsis,
+                    "identifier": entity.identifier,
+                    "entity_type": entity.entity_type,
+                }
+                for entity in self.entities
             ],
             "chapters": [
                 {
@@ -168,32 +178,58 @@ class Manuscript(GObject.Object):
         self.synopsis = data["manuscript"]["synopsis"]
         self.cover = data["manuscript"].get("cover", None)
 
+        # Load all the entities
+        if "entities" in data:
+            for entity in data["entities"]:
+                logger.debug(f"Loading entity: {entity['title']}")
+                entity_entry = Entity(
+                    manuscript=self,
+                    identifier=entity["identifier"],
+                    entity_type=entity["entity_type"]
+                )
+                entity_entry.title = entity["title"]
+                entity_entry.synopsis = entity["synopsis"].replace("\n", " ")
+                self.add_entity(entity_entry)
+
         # Load all the scenes
-        for scene in data["scenes"]:
-            logger.debug(f"Loading scene: {scene['title']}")
-            scene_entry = Scene(manuscript=self,
-                                identifier=scene["identifier"],
-                                base_path=self._base_directory_scenes)
-            scene_entry.title = scene["title"]
-            scene_entry.synopsis = scene["synopsis"].replace("\n", " ")
-            self.add_scene(scene_entry)
+        if "scenes" in data:
+            for scene in data["scenes"]:
+                logger.debug(f"Loading scene: {scene['title']}")
+                scene_entry = Scene(manuscript=self,
+                                    identifier=scene["identifier"],
+                                    base_path=self._base_directory_scenes)
+                scene_entry.title = scene["title"]
+                scene_entry.synopsis = scene["synopsis"].replace("\n", " ")
+                self.add_scene(scene_entry)
+                if "entities" in scene:
+                    for entity_identifier in scene["entities"]:
+                        entity = self.get_entity(entity_identifier)
+                        scene_entry.connect_to(entity)
 
         # Load all the chapters
-        for chapter in data["chapters"]:
-            logger.debug(f"Loading chapter: {chapter['title']}")
-            chapter_entry = Chapter(manuscript=self)
-            chapter_entry.title = chapter["title"]
-            chapter_entry.synopsis = chapter["synopsis"].replace("\n", " ")
-            self.add_chapter(chapter_entry)
-            for scene_identifier in chapter["scenes"]:
-                scene = self.get_scene(scene_identifier)
-                chapter_entry.add_scene(scene)
+        if "chapters" in data:
+            for chapter in data["chapters"]:
+                logger.debug(f"Loading chapter: {chapter['title']}")
+                chapter_entry = Chapter(manuscript=self)
+                chapter_entry.title = chapter["title"]
+                chapter_entry.synopsis = chapter["synopsis"].replace("\n", " ")
+                self.add_chapter(chapter_entry)
+                for scene_identifier in chapter["scenes"]:
+                    scene = self.get_scene(scene_identifier)
+                    chapter_entry.add_scene(scene)
 
     def get_scene(self, identifier):
         """Return one of the scene of the manuscript."""
         for scene in self.scenes:
             if scene.identifier == identifier:
                 return scene
+        return None
+
+    def get_entity(self, identifier):
+        """Return one of the entity of the manuscript."""
+        for entity in self.entities:
+            if entity.identifier == identifier:
+                return entity
         return None
 
     def add_chapter(self, chapter: Chapter, position: int = None):
@@ -209,6 +245,13 @@ class Manuscript(GObject.Object):
             self.scenes.insert(position, scene)
         else:
             self.scenes.append(scene)
+
+    def add_entity(self, entity: Entity, position: int = None):
+        """Add an existing entity to the manuscript."""
+        if position is not None and position >= 0:
+            self.entities.insert(position, entity)
+        else:
+            self.entities.append(entity)
 
     def create_scene(self, title: str, synopsis: str = ""):
         """Create a new scene."""
@@ -230,6 +273,14 @@ class Manuscript(GObject.Object):
         new_chapter.title = title
         new_chapter.synopsis = synopsis
         self.chapters.append(new_chapter)
+
+    def create_entity(self, e_type: str, title: str, synopsis: str = ""):
+        """Create a new entity."""
+        identifier = str(uuid.uuid4())
+        new_entity = Entity(self, identifier, e_type)
+        new_entity.title = title
+        new_entity.synopsis = synopsis
+        self.entities.append(new_entity)
 
     def splice_chapters(self, source_chapter, target_chapter):
         """Move the source chapter to the position target chapter is at."""

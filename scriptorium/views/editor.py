@@ -19,6 +19,7 @@
 
 from gi.repository import Adw, Gtk, GObject, Gio, GLib
 from scriptorium.globals import BASE
+from scriptorium.dialogs import ScrptAddDialog
 
 # The editor interface is using the model for a manuscript
 from scriptorium.models import Manuscript
@@ -52,7 +53,7 @@ PANELS = [
     # TODO: Export
 ]
 
-DEFAULT = "entities"
+DEFAULT = "scenes"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/editor.ui")
@@ -197,5 +198,16 @@ class ScrptEditorView(Adw.NavigationPage):
             self.manuscript.save_to_disk()
 
     def on_add_entity(self, _action, entity_type):
-        logger.info(f"Add {entity_type}")
+        target_type = entity_type.get_string()
+        logger.info(f"Add {target_type}")
+        dialog = ScrptAddDialog(target_type)
+
+        def handle_response(dialog, task):
+            if dialog.choose_finish(task) == "add":
+                logger.info(f"Add entity {dialog.title}: {dialog.synopsis}")
+                self.manuscript.create_entity(
+                    target_type, dialog.title, dialog.synopsis
+                )
+
+        dialog.choose(self, None, handle_response)
 
