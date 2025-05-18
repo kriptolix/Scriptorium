@@ -25,6 +25,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# TODO: Enhance the widget with a placeholder to show when list is empty
+
 class CardDropZone(Gtk.Box):
     __gtype_name__ = "CardDropZone"
 

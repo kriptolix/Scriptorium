@@ -1,0 +1,34 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptSelectEntitiesDialog: Adw.AlertDialog {
+  default-response: _("Done");
+  close-response: _("Cancel");
+  body: "Select the element you would like to use and validate when done";
+  heading: "Select story element";
+  prefer_wide_layout: false;
+
+  extra_child: Adw.PreferencesGroup {
+    title: "Available elements";
+
+    ListBox list_box {
+      selection-mode: single;
+      activate-on-single-click: true;
+
+      styles [
+        "boxed-list-separate",
+      ]
+
+      [placeholder]
+      Adw.StatusPage {
+        icon-name: "item-missing-symbolic";
+        description: "No more element available";
+      }
+    }
+  };
+
+  responses [
+    cancel: _("Cancel"),
+    done: _("Done") suggested disabled,
+  ]
+}

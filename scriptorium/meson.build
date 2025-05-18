@@ -36,6 +36,7 @@ blueprints = custom_target(
 		'dialogs/dialog_add.blp',
 		'dialogs/writer.blp',
 		'dialogs/select_scenes.blp',
+		'dialogs/select_entities.blp',
 
 		'views/library.blp',
 		'views/editor.blp',

@@ -23,7 +23,7 @@ import logging
 from gi.repository import Adw, Gtk, Pango, GObject, GLib
 
 from scriptorium.globals import BASE
-from scriptorium.dialogs import Writer
+from scriptorium.dialogs import Writer, ScrptSelectEntitiesDialog
 from scriptorium.widgets import EntityCard
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
     identifier = Gtk.Template.Child()
     history_list = Gtk.Template.Child()
     entities_list = Gtk.Template.Child()
+    assign_remove_stack = Gtk.Template.Child()
 
     def __init__(self, scene, **kwargs):
         """Create an instance of the panel."""
@@ -72,6 +73,20 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
             scene.entities,
             lambda entity: EntityCard(entity, can_move=True)
         )
+
+        self.entities_list.connect("start-drag",
+            lambda x:
+            self.assign_remove_stack.set_visible_child_name("remove")
+        )
+        self.entities_list.connect("stop-drag",
+            lambda x:
+            self.assign_remove_stack.set_visible_child_name("assign")
+        )
+
+    @Gtk.Template.Callback()
+    def on_droptarget_drop(self, _target, _entity, _x, _y):
+        # We do not need to do anything special, just accept the drop
+        return True
 
     def create_message_entry(self, message):
         """Bind a scene card to a scene."""
@@ -117,4 +132,18 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_connect_element_clicked(self, _button):
-        logger.info("Not implemented yet!")
+        logger.info("Connect story elements")
+
+        def handle_response(dialog, task):
+            response = dialog.choose_finish(task)
+            if response == "done":
+                entity = dialog.get_selected_entity()
+                logger.info(f"Connectiong {entity.title}")
+                self._scene.connect_to(entity)
+
+        dialog = ScrptSelectEntitiesDialog(
+            self._scene,
+            self._scene.manuscript.entities
+        )
+        dialog.choose(self, None, handle_response)
+

@@ -54,33 +54,42 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
 
         Adw.PreferencesGroup {
           title: "Elements";
-          header-suffix: Button {
-            clicked => $on_connect_element_clicked();
 
-            Adw.ButtonContent {
-              icon-name: "object-select-symbolic";
-              label: "Connect elements ...";
-              use-underline: true;
+          header-suffix: Stack assign_remove_stack {
+            StackPage {
+              name: "assign";
+              child: Button {
+                  clicked => $on_connect_element_clicked();
+
+                  Adw.ButtonContent {
+                    icon-name: "object-select-symbolic";
+                    label: "Connect elements ...";
+                  }
+              };
             }
+
+            StackPage {
+              name: "remove";
+              child: Button {
+                styles [
+                  "destructive-action"
+                ]
+                Adw.ButtonContent  {
+                  icon-name: "edit-delete-symbolic";
+                  label: "Remove from scene";
+                }
+                DropTarget {
+                  drop => $on_droptarget_drop();
+                  actions: move;
+                  formats: "Entity";
+                }
+              };
+            }
+
+            visible-child-name: "assign";
           };
 
           $CardsList entities_list {}
-          /*
-          ListBox entities_list {
-            selection-mode: none;
-
-            styles [
-              "boxed-list-separate",
-            ]
-
-            [placeholder]
-            Adw.StatusPage {
-              icon-name: "item-missing-symbolic";
-              description: "Nothing here";
-              height-request: 280;
-            }
-          }
-          */
         }
 
         Adw.PreferencesGroup {

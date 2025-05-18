@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 class Chapter(GObject.Object):
     """A chapter is a list of scenes."""
+    __gtype_name__ = "Chapter"
 
     # Properties of the chapter
     title = GObject.Property(type=str)

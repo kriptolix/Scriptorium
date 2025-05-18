@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 class Entity(GObject.Object):
     """An entity is a story element (person, place, prop, ...)"""
+    __gtype_name__ = "Entity"
 
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
