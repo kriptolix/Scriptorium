@@ -274,10 +274,10 @@ class Manuscript(GObject.Object):
         new_chapter.synopsis = synopsis
         self.chapters.append(new_chapter)
 
-    def create_entity(self, e_type: str, title: str, synopsis: str = ""):
+    def create_entity(self, title: str, synopsis: str = ""):
         """Create a new entity."""
         identifier = str(uuid.uuid4())
-        new_entity = Entity(self, identifier, e_type)
+        new_entity = Entity(self, identifier, "Thing")
         new_entity.title = title
         new_entity.synopsis = synopsis
         self.entities.append(new_entity)

@@ -13,7 +13,6 @@ class ChapterCard(Adw.Bin):
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
 
-    edit_button = Gtk.Template.Child()
     suffixes = Gtk.Template.Child()
 
     def __init__(self, chapter: Chapter):
@@ -35,6 +34,4 @@ class ChapterCard(Adw.Bin):
     def chapter(self):
         return self._chapter
 
-    def hide_suffix(self):
-        self.suffixes.set_visible(False)
 

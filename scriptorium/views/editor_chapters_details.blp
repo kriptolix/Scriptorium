@@ -1,5 +1,6 @@
 using Gtk 4.0;
 using Adw 1;
+using Gdk 4.0;
 
 template $ScrptChaptersDetailsPanel: Adw.NavigationPage {
   title: "Chapter details";
@@ -44,38 +45,41 @@ template $ScrptChaptersDetailsPanel: Adw.NavigationPage {
             title: "Scenes";
             description: "All the scenes associated to this chapter";
 
-            header-suffix: Button {
-              clicked => $on_assign_scene_clicked();
-
-              Adw.ButtonContent {
-                icon-name: "object-select-symbolic";
-                label: "Assign scenes ...";
-                use-underline: true;
+            header-suffix: Stack assign_remove_stack {
+              StackPage {
+                name: "assign_scene";
+                child: Button {
+                  clicked => $on_assign_scene_clicked();
+                  Adw.ButtonContent {
+                    icon-name: "object-select-symbolic";
+                    label: "Assign scenes ...";
+                  }
+                };
               }
+
+              StackPage {
+                name: "remove_scene";
+                child: Button remove_scene_button {
+                  styles [
+                    "destructive-action"
+                  ]
+                  Adw.ButtonContent  {
+                    icon-name: "edit-delete-symbolic";
+                    label: "Remove from chapter";
+                  }
+                  DropTarget {
+                    drop => $on_droptarget_drop();
+                    actions: move;
+                    formats: "Scene";
+                  }
+                };
+              }
+
+              visible-child-name: "assign_scene";
             };
 
+
             $CardsList scenes_list {}
-          }
-
-          Adw.PreferencesGroup remove_scene_grp {
-            visible: false;
-
-            ListBox {
-              selection-mode: none;
-              styles [
-                "boxed-list",
-              ]
-              ListBoxRow remove_scene {
-                Adw.ButtonRow {
-                    title: "Remove scene from chapter";
-                    end-icon-name: "edit-delete-symbolic";
-                    styles [
-                      "destructive-action"
-                    ]
-                    activatable: false;
-                }
-              }
-            }
           }
 
           Adw.PreferencesGroup {

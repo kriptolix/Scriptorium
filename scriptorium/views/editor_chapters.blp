@@ -16,10 +16,7 @@ template $ScrptChaptersPanel: Adw.NavigationPage {
         }
 
         content: ScrolledWindow  {
-          child: Adw.Clamp {
-            maximum-size: 600;
-            margin-top: 12;
-
+          child: Adw.PreferencesPage {
             Adw.PreferencesGroup {
               title: "Chapters";
               description: "This is the list of chapters in the manuscript";

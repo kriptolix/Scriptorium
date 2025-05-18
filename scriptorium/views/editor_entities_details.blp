@@ -1,0 +1,68 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptEntitiesDetailsPanel: Adw.NavigationPage {
+  title: "Entity details";
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: true;
+      show-back-button: true;
+    }
+
+    content: ScrolledWindow {
+      child: Adw.Clamp {
+        maximum-size: 600;
+        margin-top: 12;
+
+        Box {
+          orientation: vertical;
+          spacing: 24;
+
+          Adw.PreferencesGroup {
+            title: "Overview";
+
+            ListBox {
+              selection-mode: none;
+
+              styles [
+                "boxed-list",
+              ]
+
+              Adw.EntryRow edit_title {
+                title: "Title";
+              }
+
+              $MultiLineEntryRow edit_synopsis {
+                header: "Synopsis";
+              }
+            }
+          }
+
+          Adw.PreferencesGroup {
+            title: "Actions";
+
+            ListBox {
+              selection-mode: none;
+
+              styles [
+                "boxed-list-separate",
+              ]
+
+              Adw.ButtonRow delete_element {
+                title: "Delete story element";
+                end-icon-name: "edit-delete-symbolic";
+                styles [
+                  "destructive-action"
+                ]
+                activated => $on_delete_entity_activated();
+              }
+            }
+          }
+        }
+      };
+    };
+  };
+}
+

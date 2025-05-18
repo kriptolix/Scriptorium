@@ -97,6 +97,7 @@ class Card(Adw.Bin):
         drag_source.connect("prepare", self.on_drag_prepare)
         drag_source.connect("drag-begin", self.on_drag_begin)
         drag_source.connect("drag-cancel", self.on_drag_cancel)
+        drag_source.connect("drag-end", self.on_drag_end)
         self.add_controller(drag_source)
 
         motion_target = Gtk.DropTarget.new(
@@ -149,11 +150,18 @@ class Card(Adw.Bin):
         if found:
             self._parent.model.remove(self._picked_from_index)
 
+        self._parent.emit("start-drag")
+
         return True
 
     def on_drag_cancel(self, _source, drag, _reason):
         logger.info(f"Cancelled, return entry to {self._picked_from_index}")
         self._parent.model.insert(self._picked_from_index, self._entry)
+
+        return True
+
+    def on_drag_end(self, _source, _drag, _):
+        self._parent.emit("stop-drag")
         return True
 
     def on_enter(self, source, enter_x, enter_y):
@@ -185,6 +193,8 @@ class Card(Adw.Bin):
             # Insert after
             self._parent.model.insert(index + 1, entry)
 
+        self._parent.emit("stop-drag")
+
         return True
 
     def set_margins(self, source, y, force_top=False):
@@ -213,6 +223,12 @@ class CardsList(Gtk.Box):
     """Widget to display a list of cards"""
 
     __gtype_name__ = "CardsList"
+
+    __gsignals__ = {
+            # signal_name: (flags, return_type, argument_types)
+            "start-drag": (GObject.SignalFlags.RUN_FIRST, None, ()),
+            "stop-drag": (GObject.SignalFlags.RUN_FIRST, None, ())
+    }
 
     def __init__(self):
         super().__init__()

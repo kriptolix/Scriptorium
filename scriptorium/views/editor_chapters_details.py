@@ -1,4 +1,4 @@
-# editor_writing.py
+# views/editor_chapters_details.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -23,6 +23,7 @@ import logging
 from gi.repository import Adw, Gtk, GObject, Gdk
 from scriptorium.widgets import SceneCard
 from scriptorium.dialogs import ScrptSelectScenesDialog
+from scriptorium.models import Scene
 
 from scriptorium.globals import BASE
 
@@ -36,8 +37,8 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
     edit_title = Gtk.Template.Child()
     edit_synopsis = Gtk.Template.Child()
     scenes_list = Gtk.Template.Child()
-    remove_scene = Gtk.Template.Child()
-    remove_scene_grp = Gtk.Template.Child()
+    assign_remove_stack = Gtk.Template.Child()
+    remove_scene_button = Gtk.Template.Child()
 
     def __init__(self, chapter, **kwargs):
         """Create an instance of the panel."""
@@ -61,27 +62,38 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
-        self.scenes_list.bind_model(chapter.scenes, self.create_scene_entry)
+        self.scenes_list.bind_model(
+            chapter.scenes,
+            lambda scene: SceneCard(scene, can_move=True, can_activate=False)
+        )
 
-    def create_scene_entry(self, scene):
-        """Bind a scene card to a scene."""
-        # Create the scene card entry
-        entry = SceneCard(scene)
-        entry.hide_suffix()
-        return entry
+        self.scenes_list.connect("start-drag",
+            lambda x:
+            self.assign_remove_stack.set_visible_child_name("remove_scene")
+        )
+        self.scenes_list.connect("stop-drag",
+            lambda x:
+            self.assign_remove_stack.set_visible_child_name("assign_scene")
+        )
+
+    @Gtk.Template.Callback()
+    def on_droptarget_drop(self, _target, _scene, _x, _y):
+        # We do not need to do anything special, just accept the drop
+        return True
 
     @Gtk.Template.Callback()
     def on_assign_scene_clicked(self, _button):
         logger.info("Assign")
-        dialog = ScrptSelectScenesDialog(self._chapter.manuscript.scenes)
-        dialog.choose(self, None, self.on_assign_scene_replied)
 
-    def on_assign_scene_replied(self, dialog, task):
-        response = dialog.choose_finish(task)
-        if response == "done":
-            scene = dialog.get_selected_scene()
-            logger.info(f"Adding {scene.title}")
-            self._chapter.add_scene(scene)
+        def handle_response(dialog, task):
+            response = dialog.choose_finish(task)
+            if response == "done":
+                scene = dialog.get_selected_scene()
+                logger.info(f"Adding {scene.title}")
+                self._chapter.add_scene(scene)
+
+        dialog = ScrptSelectScenesDialog(self._chapter.manuscript.scenes)
+        dialog.choose(self, None, handle_response)
 
     @Gtk.Template.Callback()
     def on_delete_chapter_activated(self, _button):

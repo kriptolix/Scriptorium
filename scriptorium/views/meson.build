@@ -8,6 +8,7 @@ scriptorium_sources_views = [
 	'editor_scenes_details.py',
 	'editor_formatting.py',
 	'editor_entities.py',
+	'editor_entities_details.py',
 	'editor_overview.py',
 	'editor_manuscript.py',
 ]

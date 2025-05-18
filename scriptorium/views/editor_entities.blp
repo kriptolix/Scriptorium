@@ -18,62 +18,17 @@ template $ScrptEntityPanel: Adw.NavigationPage {
         content: ScrolledWindow  {
           child: Adw.PreferencesPage {
             Adw.PreferencesGroup {
-              Overlay {
-                halign: center;
-                sensitive: true;
-
-                Adw.Avatar avatar {
-                  show-initials: true;
-                  size: 120;
-                  text: "Pig 1";
-                  halign: center;
-                }
-
-                [overlay]
-                Adw.Bin {
-                  halign: end;
-                  valign: end;
-                  styles [
-                    "cutout-button",
-                  ]
-                  MenuButton avatar_edit_button {
-                    icon-name: "document-edit-symbolic";
-                    tooltip-text: "Change Avatar";
-                    styles [
-                      "circular",
-                    ]
-                  }
-                }
-
-                [overlay]
-                Adw.Bin {
-                  halign: end;
-                  valign: start;
-                  styles [
-                    "cutout-button",
-                  ]
-                  MenuButton avatar_remove_button {
-                    icon-name: "user-trash-symbolic";
-                    tooltip-text: "Remove Avatar";
-                    sensitive: true;
-                    styles [
-                      "circular",
-                      "destructive-action"
-                    ]
-                  }
-                }
-              }
-            }
-
-            Adw.PreferencesGroup {
               title: "Elements";
               description: "The character, places, and props of the story";
 
-              header-suffix: MenuButton add_button {
-                label: "Add";
-                icon-name: "list-add-symbolic";
-                always-show-arrow: true;
-                menu-model: entity_type_menu;
+              header-suffix: Button {
+                clicked => $on_add_entity_clicked();
+
+                Adw.ButtonContent {
+                  icon-name: "list-add-symbolic";
+                  label: "Add a story element ...";
+                  use-underline: true;
+                }
               };
 
               ListBox entities_list {
@@ -81,6 +36,8 @@ template $ScrptEntityPanel: Adw.NavigationPage {
                 styles [
                   "boxed-list-separate",
                 ]
+
+                row-activated => $on_listbox_row_activated();
               }
             }
           };
@@ -90,22 +47,50 @@ template $ScrptEntityPanel: Adw.NavigationPage {
   };
 }
 
-menu entity_type_menu {
-  item {
-    label: _("Character");
-    action: "win.add_entity";
-    target: "character";
+/*
+Overlay {
+  halign: center;
+  sensitive: true;
+
+  Adw.Avatar avatar {
+    show-initials: true;
+    size: 120;
+    text: "First Last";
+    halign: center;
   }
 
-  item {
-    label: _("Location");
-    action: "win.add_entity";
-    target: "location";
+  [overlay]
+  Adw.Bin {
+    halign: end;
+    valign: end;
+    styles [
+      "cutout-button",
+    ]
+    MenuButton avatar_edit_button {
+      icon-name: "document-edit-symbolic";
+      tooltip-text: "Change Avatar";
+      styles [
+        "circular",
+      ]
+    }
   }
 
-  item {
-    label: _("Prop");
-    action: "win.add_entity";
-    target: "prop";
+  [overlay]
+  Adw.Bin {
+    halign: end;
+    valign: start;
+    styles [
+      "cutout-button",
+    ]
+    MenuButton avatar_remove_button {
+      icon-name: "user-trash-symbolic";
+      tooltip-text: "Remove Avatar";
+      sensitive: true;
+      styles [
+        "circular",
+        "destructive-action"
+      ]
+    }
   }
 }
+*/

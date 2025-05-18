@@ -20,12 +20,15 @@
 
 from gi.repository import Adw, Gtk, GObject, Gio
 from scriptorium.widgets import EntityCard
+from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.globals import BASE
+from .editor_entities_details import ScrptEntitiesDetailsPanel
 
 import logging
 
 logger = logging.getLogger(__name__)
 
+# TODO: When adding a new element offer to pick a template to pre-populate attrs
 
 @Gtk.Template(resource_path=f"{BASE}/views/editor_entities.ui")
 class ScrptEntityPanel(Adw.NavigationPage):
@@ -36,7 +39,7 @@ class ScrptEntityPanel(Adw.NavigationPage):
     __description__ = "Set the key entities of the story"
 
     entities_list = Gtk.Template.Child()
-    add_button = Gtk.Template.Child()
+    navigation = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
@@ -45,14 +48,26 @@ class ScrptEntityPanel(Adw.NavigationPage):
 
         # Connect to the entities of the manuscript
         self.entities_list.bind_model(
-            editor.manuscript.entities, self.create_entity_card
+            editor.manuscript.entities,
+            lambda entity: EntityCard(entity)
         )
 
-    def on_add_entity(self, entity_type):
-        logger.info(entity_type)
+    @Gtk.Template.Callback()
+    def on_add_entity_clicked(self, _button):
+        """Handle a request to add a new entity."""
+        def handle_response(dialog, task):
+            response = dialog.choose_finish(task)
+            if response == "add":
+                logger.info(f"Add entity {dialog.title}: {dialog.synopsis}")
+                self._manuscript.create_entity(dialog.title, dialog.synopsis)
 
-    def create_entity_card(self, entity):
-        """Create an instance of the entity card."""
-        card = EntityCard(entity)
-        return card
+        dialog = ScrptAddDialog("story element")
+        dialog.choose(self, None, handle_response)
+
+    @Gtk.Template.Callback()
+    def on_listbox_row_activated(self, _widget, selected_row):
+        entity = selected_row.get_child().entity
+        logger.info(f'Clicked on entity "{entity.title}"')
+        details_panel = ScrptEntitiesDetailsPanel(entity)
+        self.navigation.push(details_panel)
 

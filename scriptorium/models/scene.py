@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class Scene(GObject.Object):
     """A scene is a basic building block of manuscripts."""
+    __gtype_name__ = "Scene"
 
     title = GObject.Property(type=str)
     synopsis = GObject.Property(type=str)
@@ -60,17 +61,6 @@ class Scene(GObject.Object):
         """Return the entities connected to that scene."""
         return self._entities
 
-    def _refresh_history(self):
-        self._history.remove_all()
-        commits = self._manuscript.repo.iter_commits(all=True,
-                                                     paths=self._scene_path)
-        for commit in commits:
-            datetime = commit.committed_datetime
-            message_datetime = datetime.strftime("%A %d %B %Y, %H:%M:%S")
-            message = commit.message.strip()
-            msg = CommitMessage(message_datetime, message)
-            self._history.append(msg)
-
     @property
     def scene_path(self):
         """Return the full path to the HTML content of the scene."""
@@ -88,18 +78,23 @@ class Scene(GObject.Object):
 
     @GObject.Property(type=GObject.Object)
     def chapter(self):
-        """Return the chapter the scene is associated to."""
-        return self._chapter
-
-    @chapter.setter
-    def chapter(self, value):
-        """Set the chapter the scene is associated to."""
-        self._chapter = value
+        """Return the chapter the scene is associated to, if any."""
+        for chapter in self._manuscript.chapters:
+            found, _ = chapter.scenes.find(self)
+            if found:
+                return chapter
+        return None
 
     def connect_to(self, entity):
         """Connect this scene to an entity."""
         if entity not in self.entities:
             self.entities.append(entity)
+
+    def disconnect_from(self, entity):
+        """Disconnect this scene from an entity."""
+        found, position = self.entities.find(entity)
+        if found:
+            self.entities.remove(position)
 
     def init(self):
         """Initialise a new scene."""
@@ -144,16 +139,6 @@ class Scene(GObject.Object):
         self._manuscript.repo.index.remove(self._scene_path)
         self._manuscript.repo.index.commit(f"Deleted scene \"{self.title}\"")
 
-    def move_to_chapter(self, chapter, position: int = 0):
-        """Move the scene to a different chapter."""
-        # Remove the scene from its current chapter
-        if self._chapter is not None:
-            current_chapter = self._chapter
-            current_chapter.remove_scene(self)
-
-        # Insert into the new chapter
-        chapter.add_scene(self, position)
-
     def load_into_buffer(self, buffer: Gtk.TextBuffer):
         """Load the content of a text buffer from disk."""
         logger.info(f"Loading info buffer from {self._scene_path}")
@@ -189,4 +174,16 @@ class Scene(GObject.Object):
 
         html_content = Path(self._scene_path).read_text()
         return html_content
+
+    def _refresh_history(self):
+        self._history.remove_all()
+        commits = self._manuscript.repo.iter_commits(all=True,
+                                                     paths=self._scene_path)
+        for commit in commits:
+            datetime = commit.committed_datetime
+            message_datetime = datetime.strftime("%A %d %B %Y, %H:%M:%S")
+            message = commit.message.strip()
+            msg = CommitMessage(message_datetime, message)
+            self._history.append(msg)
+
 

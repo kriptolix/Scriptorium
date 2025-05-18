@@ -20,11 +20,35 @@ template $EntityCard: Adw.Bin {
     ]
 
     Box prefixes {
-      visible: false;
+      visible: true;
+      margin-end: 12;
 
       styles [
         "prefixes",
       ]
+
+      Image {
+        styles [
+          "dim-label",
+        ]
+        icon-name: "list-drag-handle-symbolic";
+        valign: center;
+      }
+    }
+
+    Box {
+      visible: true;
+      margin-end: 12;
+
+      styles [
+        "prefixes",
+      ]
+
+      Adw.Avatar avatar {
+        show-initials: true;
+        size: 32;
+        halign: center;
+      }
     }
 
     Box title_box {
@@ -69,7 +93,10 @@ template $EntityCard: Adw.Bin {
         "suffixes",
       ]
 
-      Button edit_button {
+      Image {
+        styles [
+          "dim-label",
+        ]
         icon-name: "right-symbolic";
         valign: center;
       }

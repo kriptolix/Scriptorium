@@ -24,6 +24,7 @@ from gi.repository import Adw, Gtk, Pango, GObject, GLib
 
 from scriptorium.globals import BASE
 from scriptorium.dialogs import Writer
+from scriptorium.widgets import EntityCard
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
     open_editor = Gtk.Template.Child()
     identifier = Gtk.Template.Child()
     history_list = Gtk.Template.Child()
+    entities_list = Gtk.Template.Child()
 
     def __init__(self, scene, **kwargs):
         """Create an instance of the panel."""
@@ -66,6 +68,10 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         )
 
         self.history_list.bind_model(scene.history, self.create_message_entry)
+        self.entities_list.bind_model(
+            scene.entities,
+            lambda entity: EntityCard(entity)
+        )
 
     def create_message_entry(self, message):
         """Bind a scene card to a scene."""
@@ -109,3 +115,6 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
             # Return to listing the scenes
             self.get_parent().pop()
 
+    @Gtk.Template.Callback()
+    def on_connect_element_clicked(self, _button):
+        pass

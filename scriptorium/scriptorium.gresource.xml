@@ -16,6 +16,7 @@
     <file preprocess="xml-stripblanks">views/editor_formatting.ui</file>
     <file preprocess="xml-stripblanks">views/editor_manuscript.ui</file>
     <file preprocess="xml-stripblanks">views/editor_entities.ui</file>
+    <file preprocess="xml-stripblanks">views/editor_entities_details.ui</file>
     <file>views/editor_formatting.html</file>
 
     <!-- Custom widgets -->

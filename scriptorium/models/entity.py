@@ -60,6 +60,18 @@ class Entity(GObject.Object):
         """Return the links from this entity."""
         return self._links
 
+    def delete(self):
+        """Delete the entity."""
+        found, position = self._manuscript.entities.find(self)
+        if not found:
+            raise ValueError("The entity is already deleted")
+
+        # Remove the references to this entity from every scene
+        for scene in self._manuscript.scenes:
+            scene.disconnect_from(self)
+
+        # Remove the entity from the manuscript
+        self._manuscript.entities.remove(position)
 
 class EntityLink(GObject.Object):
     """A directed link from one entity to another"""

@@ -12,81 +12,103 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
     }
 
     content: ScrolledWindow {
-      child: Adw.Clamp {
-        maximum-size: 600;
-        margin-top: 12;
+      vexpand: true;
+      child: Adw.PreferencesPage {
 
-        Box {
-          orientation: vertical;
-          spacing: 12;
+        Adw.PreferencesGroup {
+          title: "Summary";
 
-          Adw.PreferencesGroup {
-            title: "Summary";
+          ListBox {
+            selection-mode: none;
 
-            ListBox {
-              selection-mode: none;
+            styles [
+              "boxed-list",
+            ]
 
+            Adw.ActionRow identifier {
+              title: "Identifier";
+              subtitle: "uuid";
               styles [
-                "boxed-list",
-              ]
-
-              Adw.ActionRow identifier {
-                title: "Identifier";
-                subtitle: "uuid";
-                styles [
-                  "property", "dim-label"
-                ]
-              }
-
-              Adw.EntryRow edit_title {
-                title: "Title";
-              }
-
-              $MultiLineEntryRow edit_synopsis {
-                header: "Synopsis";
-              }
-            }
-          }
-
-          Adw.PreferencesGroup {
-            title: "History";
-
-            ListBox history_list {
-              selection-mode: none;
-
-              styles [
-                "boxed-list",
+                "property", "dim-label"
               ]
             }
-          }
 
-          Adw.PreferencesGroup {
-            title: "Actions";
+            Adw.EntryRow edit_title {
+              title: "Title";
+            }
 
-            ListBox {
-              selection-mode: none;
+            $MultiLineEntryRow edit_synopsis {
+              header: "Synopsis";
+            }
 
+            Adw.ButtonRow open_editor {
+              title: "Open text editor";
+              end-icon-name: "go-next-symbolic";
               styles [
-                "boxed-list-separate",
+                "suggested-action"
               ]
+              activated => $on_open_editor_activated();
+            }
+          }
+        }
 
-              Adw.ButtonRow open_editor {
-                title: "Open text editor";
-                end-icon-name: "go-next-symbolic";
-                styles [
-                  "suggested-action"
-                ]
-                activated => $on_open_editor_activated();
-              }
+        Adw.PreferencesGroup {
+          title: "Elements";
+          header-suffix: Button {
+            clicked => $on_connect_element_clicked();
 
-              Adw.ButtonRow delete_scene {
-                title: "Delete scene";
-                end-icon-name: "edit-delete-symbolic";
-                styles [
-                  "destructive-action"
-                ]
-                activated => $on_delete_scene_activated();
-              }
+            Adw.ButtonContent {
+              icon-name: "object-select-symbolic";
+              label: "Connect elements ...";
+              use-underline: true;
+            }
+          };
+
+          ListBox entities_list {
+            selection-mode: none;
+
+            styles [
+              "boxed-list-separate",
+            ]
+
+            [placeholder]
+            Adw.StatusPage {
+              icon-name: "item-missing-symbolic";
+              description: "Nothing here";
+              height-request: 280;
+            }
+          }
+        }
+
+        Adw.PreferencesGroup {
+          title: "History";
+
+          ListBox history_list {
+            selection-mode: none;
+
+            styles [
+              "boxed-list",
+            ]
+          }
+        }
+
+        Adw.PreferencesGroup {
+          title: "Actions";
+
+          ListBox {
+            selection-mode: none;
+
+            styles [
+              "boxed-list-separate",
+            ]
+
+            Adw.ButtonRow delete_scene {
+              title: "Delete scene";
+              end-icon-name: "edit-delete-symbolic";
+              styles [
+                "destructive-action"
+              ]
+              activated => $on_delete_scene_activated();
             }
           }
         }
