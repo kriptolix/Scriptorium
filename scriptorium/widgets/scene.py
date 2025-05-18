@@ -1,5 +1,7 @@
 from gi.repository import Adw, Gtk, GObject
 from scriptorium.models import Scene
+from scriptorium.utils import get_child_at
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -56,12 +58,13 @@ class SceneCard(Adw.Bin):
 
         # Remove widgets for removed items
         for _ in range(removed):
-            child = self.entities.get_child_at(position)
+            child = get_child_at(self.entities, position)
             self.entities.remove(child)
 
         # Add widgets for added items
         for i in range(added):
             entry = liststore.get_item(position + i)
-            child = self.entities.get_child_at(position + i - 1)
-            self.entities.insert_child_after(self._get_avatar(entity), child)
+            child = get_child_at(self.entities, position + i - 1)
+            self.entities.insert_child_after(self._get_avatar(entry), child)
+
 

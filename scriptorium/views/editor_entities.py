@@ -49,7 +49,7 @@ class ScrptEntityPanel(Adw.NavigationPage):
         # Connect to the entities of the manuscript
         self.entities_list.bind_model(
             editor.manuscript.entities,
-            lambda entity: EntityCard(entity)
+            lambda entity: EntityCard(entity, can_activate=True)
         )
 
     @Gtk.Template.Callback()

@@ -67,4 +67,22 @@ def buffer_to_html(buffer: Gtk.TextBuffer):
     html_content = [f'<p>{paragraph}</p>' for paragraph in paragraphs if len(paragraph) > 1]
 
     return '\n'.join(html_content)
-    
+
+def get_child_at(widget, position):
+    # In the special case we ask for -1 return None
+    if position < 0:
+        return None
+
+    # Iterate until the desired position, or running out of children
+    index = 0
+    child = widget.get_first_child()
+    while index != position and child is not None:
+        child = child.get_next_sibling()
+        index += 1
+
+    # We reached the end of the list, return the last child
+    if child is None:
+        widget.get_last_child()
+
+    return child
+

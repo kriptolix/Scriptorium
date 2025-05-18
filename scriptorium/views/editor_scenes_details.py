@@ -70,7 +70,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         self.history_list.bind_model(scene.history, self.create_message_entry)
         self.entities_list.bind_model(
             scene.entities,
-            lambda entity: EntityCard(entity)
+            lambda entity: EntityCard(entity, can_move=True)
         )
 
     def create_message_entry(self, message):
@@ -117,4 +117,4 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_connect_element_clicked(self, _button):
-        pass
+        logger.info("Not implemented yet!")
