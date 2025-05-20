@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject, Gio, GLib
+from gi.repository import Adw, Gtk, GObject, Gio, GLib, Panel
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptAddDialog
 
@@ -66,6 +66,7 @@ class ScrptEditorView(Adw.NavigationPage):
     panels = Gtk.Template.Child()
     split_view = Gtk.Template.Child()
     panels_sidebar = Gtk.Template.Child()
+    win_menu = Gtk.Template.Child()
 
     @GObject.Property(type=Manuscript)
     def manuscript(self):
@@ -82,6 +83,12 @@ class ScrptEditorView(Adw.NavigationPage):
 
         # Keep track of the manuscript the editor is associated to
         self._manuscript = manuscript
+
+        # Connect an instance of the theme button to the menu
+        popover = self.win_menu.get_popover()
+        theme_selector = Panel.ThemeSelector.new()
+        theme_selector.set_action_name("app.style-variant")
+        popover.add_child(theme_selector, "theme")
 
         # Setup all the panels
         self.initialise_panels()

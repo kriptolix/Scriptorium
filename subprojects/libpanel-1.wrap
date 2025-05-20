@@ -1,0 +1,9 @@
+[wrap-git]
+directory = libpanel-1
+url = https://gitlab.gnome.org/GNOME/libpanel.git
+revision = main
+depth = 1
+
+[provide]
+dependency_names = libpanel-1
+libpanel-1 = libpanel_dep

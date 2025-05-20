@@ -17,7 +17,7 @@ template $ScrptEditorView: Adw.NavigationPage {
             show-title: true;
 
             [end]
-            MenuButton {
+            MenuButton win_menu {
               icon-name: "open-menu-symbolic";
               tooltip-text: _("Main Menu");
               primary: true;
@@ -41,13 +41,23 @@ template $ScrptEditorView: Adw.NavigationPage {
     content: Adw.NavigationPage {
       title: "panels";
 
-      child: Adw.NavigationView panels {};
+      child: Adw.NavigationView panels {
+      };
     };
   };
 }
 
 menu window_menu {
   section {
+    item {
+      custom: "theme";
+    }
+  }
+  section {
+    item {
+      label: _("Preferences");
+      action: "app.preferences";
+    }
     item {
       label: _("About App");
       action: "app.about";

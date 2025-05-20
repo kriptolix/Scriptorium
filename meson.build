@@ -9,6 +9,8 @@ project(
   license: 'GPL-3.0-only',
 )
 
+dependency('libpanel-1')
+
 i18n = import('i18n')
 gnome = import('gnome')
 

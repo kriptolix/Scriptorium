@@ -5,6 +5,8 @@ from scriptorium.globals import BASE
 
 logger = logging.getLogger(__name__)
 
+# TODO: check SizeGroup to have the small and big labels overlap
+# https://gnome-team.pages.debian.net/blueprint-compiler/examples.html#widget-specific-items
 
 @Gtk.Template(resource_path=f"{BASE}/widgets/multiline_entry_row.ui")
 class MultiLineEntryRow(Adw.PreferencesRow):
