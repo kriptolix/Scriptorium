@@ -1,0 +1,64 @@
+/*
+Code adapted from libpanel:
+https://gitlab.gnome.org/GNOME/libpanel/-/blob/main/src/panel-theme-selector.ui
+*/
+using Gtk 4.0;
+using Adw 1;
+
+template $ThemeSelector: Adw.Bin {
+  hexpand: true;
+
+  Box box {
+    hexpand: true;
+    orientation: horizontal;
+    spacing: 12;
+    styles [
+      "themeselector"
+    ]
+
+    CheckButton follow {
+      styles [
+        "themeselector",
+        "follow"
+      ]
+      hexpand: true;
+      halign: center;
+      group: light;
+      focus-on-click: false;
+      tooltip-text: _("Follow system style");
+      accessibility {
+        label: _("Follow system style");
+      }
+    }
+
+    CheckButton light {
+      styles [
+        "themeselector",
+        "light"
+      ]
+      hexpand: true;
+      halign: center;
+      focus-on-click: false;
+      tooltip-text: _("Light style");
+      accessibility {
+        label: _("Light style");
+      }
+    }
+
+    CheckButton dark {
+      styles [
+        "themeselector",
+        "dark"
+      ]
+      hexpand: true;
+      halign: center;
+      group: light;
+      focus-on-click: false;
+      tooltip-text: _("Dark style");
+      accessibility {
+        label: _("Dark style");
+      }
+    }
+  }
+
+}

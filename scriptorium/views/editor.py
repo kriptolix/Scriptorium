@@ -17,12 +17,13 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject, Gio, GLib, Panel
+from gi.repository import Adw, Gtk, GObject, Gio, GLib
+
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptAddDialog
-
-# The editor interface is using the model for a manuscript
+from scriptorium.widgets import ThemeSelector
 from scriptorium.models import Manuscript
+
 from .editor_scenes import ScrptWritingPanel
 from .editor_entities import ScrptEntityPanel
 from .editor_overview import ScrptOverviewPanel
@@ -86,8 +87,8 @@ class ScrptEditorView(Adw.NavigationPage):
 
         # Connect an instance of the theme button to the menu
         popover = self.win_menu.get_popover()
-        theme_selector = Panel.ThemeSelector.new()
-        theme_selector.set_action_name("app.style-variant")
+        theme_selector = ThemeSelector()
+        theme_selector.action_name = "app.style-variant"
         popover.add_child(theme_selector, "theme")
 
         # Setup all the panels

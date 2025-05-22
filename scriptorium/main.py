@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import sys
 from scriptorium.widgets.multiline_entry_row import MultiLineEntryRow
-from gi.repository import Gio, Adw, WebKit, GLib
+from gi.repository import Gio, Adw, WebKit, GLib, GObject
 from .window import ScrptWindow
 import logging
 
@@ -39,14 +39,16 @@ class ScriptoriumApplication(Adw.Application):
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
 
-        style_manager = Adw.StyleManager.get_default()
-        style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
 
         self.settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
         style_variant_action = self.settings.create_action("style-variant")
-        style_variant_action.connect("notify", self.change_color_scheme)
         self.add_action(style_variant_action)
 
+        self.settings.connect("changed::style-variant", self.change_color_scheme)
+
+        # Get the current color scheme
+        current_value = self.settings.get_string("style-variant")
+        style_variant_action.activate(GLib.Variant('s', current_value))
         # Force loading WebKit, otherwise it is not recognized in Builder
         dummy = WebKit.WebView()
         del dummy
@@ -55,8 +57,17 @@ class ScriptoriumApplication(Adw.Application):
         dummy = MultiLineEntryRow()
         del dummy
 
-    def change_color_scheme(self, action, new_state):
-        logger.info(f"{action} {new_state}")
+    def change_color_scheme(self, _settings, value):
+        color_scheme = self.settings.get_string(value)
+        logger.info(f"{color_scheme}")
+
+        style_manager = Adw.StyleManager.get_default()
+        if color_scheme == 'dark':
+            style_manager.set_color_scheme(Adw.ColorScheme.FORCE_DARK)
+        elif color_scheme == 'light':
+            style_manager.set_color_scheme(Adw.ColorScheme.FORCE_LIGHT)
+        elif color_scheme == 'default':
+            style_manager.set_color_scheme(Adw.ColorScheme.DEFAULT)
 
     def do_activate(self):
         """Called when the application is activated.

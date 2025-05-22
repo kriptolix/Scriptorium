@@ -57,6 +57,7 @@ blueprints = custom_target(
 		'widgets/manuscript.blp',
 		'widgets/multiline_entry_row.blp',
 		'widgets/cards_list.blp',
+		'widgets/theme_selector.blp',
 	),
 	output: '.',
 	command: [
