@@ -6,5 +6,9 @@ scriptorium_models_sources = [
 	'scene.py',
 	'entity.py',
 	'commit_message.py',
+	'resource.py',
+	'project.py',
+	'image.py',
+	'link.py',
 ]
 install_data(scriptorium_models_sources, install_dir: moduledir / 'models')

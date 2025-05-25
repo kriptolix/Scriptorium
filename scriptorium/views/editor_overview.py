@@ -39,12 +39,12 @@ class ScrptOverviewPanel(Adw.NavigationPage):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
 
-        self._manuscript = editor.manuscript
+        self._editor = editor
 
         self.chapter_column_factory.connect("setup", self.on_setup_item)
         self.chapter_column_factory.connect("bind", self.on_bind_item)
 
-        selection_model = Gtk.NoSelection(model=editor.manuscript.chapters)
+        selection_model = Gtk.NoSelection(model=editor.project.manuscript.chapters)
         self.chapter_columns.set_model(selection_model)
 
     def bind_chapter(self, chapter):

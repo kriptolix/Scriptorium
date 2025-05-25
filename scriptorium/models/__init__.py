@@ -23,9 +23,11 @@ from .manuscript import Manuscript
 from .chapter import Chapter
 from .scene import Scene
 from .commit_message import CommitMessage
-from .entity import Entity, EntityLink
+from .entity import Entity
+from .project import Project
+from .link import Link
 
 __all__ = [
     'Library', 'Manuscript', 'Chapter', 'Scene', 'CommitMessage',
-    'Entity', 'EntityLink'
+    'Entity', 'Link', 'Project'
 ]

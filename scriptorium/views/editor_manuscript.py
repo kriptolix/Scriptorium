@@ -44,23 +44,22 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         super().__init__(**kwargs)
 
         self._editor = editor
-        self._manuscript = editor.manuscript
         self.set_title(self.__title__)
 
         # Bind the identifier, title and synopsis
-        editor.manuscript.bind_property(
+        editor.project.manuscript.bind_property(
             "identifier",
             self.identifier,
             "subtitle",
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
-        editor.manuscript.bind_property(
+        editor.project.manuscript.bind_property(
             "title",
             self.edit_title,
             "text",
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
-        editor.manuscript.bind_property(
+        editor.project.manuscript.bind_property(
             "synopsis",
             self.edit_synopsis,
             "text",
@@ -68,7 +67,7 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         )
 
     def create_message_entry(self, message):
-        """Bind a scene card to a scene."""
+        """Add a message to the history."""
         message_entry = Adw.ActionRow()
         message_entry.add_css_class("property")
         message_entry.set_title(message.datetime)
@@ -78,10 +77,11 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def on_delete_manuscript_activated(self, _button):
         """Handle a request to delete the scene."""
-        logger.info(f"Delete {self._manuscript.title}")
+        title = self._editor.project.manuscript.title
+        logger.info(f"Delete {title}")
         dialog = Adw.AlertDialog(
             heading="Delete manuscript?",
-            body=f'This action can not be undone. Are you sure you want to delete the whole manuscript "{self._manuscript.title}"',
+            body=f'This action can not be undone. Are you sure you want to delete the whole manuscript "{title}"',
             close_response="cancel",
         )
         dialog.add_response("cancel", "Cancel")
@@ -96,9 +96,9 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         response = _dialog.choose_finish(task)
         if response == "delete":
             # Delete the manuscript
-            library = self._manuscript.library
-            library.delete_manuscript(self._manuscript)
+            library = self._editor.project.library
+            library.delete_project(self._editor.project)
 
-            # Trigger a close on the editor
+            # Pop the navigation
             self._editor.close_on_delete()
 

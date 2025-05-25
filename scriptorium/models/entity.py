@@ -18,48 +18,28 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """An entity is a story element (person, place, prop, ...)"""
 
-from pathlib import Path
-from gi.repository import Gtk, GObject, Gio
+from gi.repository import GObject, Gio
+from .resource import Resource
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class Entity(GObject.Object):
+class Entity(Resource):
     """An entity is a story element (person, place, prop, ...)"""
     __gtype_name__ = "Entity"
 
-    title = GObject.Property(type=str)
-    synopsis = GObject.Property(type=str)
+    category = GObject.Property(type=str)
 
-    def __init__(self, manuscript, identifier: str,  entity_type):
+    def __init__(self, project, identifier: str):
         """Create an entity."""
-        super().__init__()
-        self._identifier = identifier
-        self._manuscript = manuscript
-        self._links = Gio.ListStore.new(item_type=EntityLink)
-        self._entity_type = entity_type
+        super().__init__(project, identifier)
 
     @GObject.Property(type=GObject.Object)
     def manuscript(self):
         """Return the manuscript the entity is associated to."""
         return self._manuscript
-
-    @GObject.Property(type=str)
-    def identifier(self):
-        """Return the identifier of the entity."""
-        return self._identifier
-
-    @GObject.Property(type=str)
-    def entity_type(self):
-        """Return the type of the entity."""
-        return self._entity_type
-
-    @GObject.Property(type=Gio.ListStore)
-    def links(self):
-        """Return the links from this entity."""
-        return self._links
 
     def delete(self):
         """Delete the entity."""
@@ -74,22 +54,19 @@ class Entity(GObject.Object):
         # Remove the entity from the manuscript
         self._manuscript.entities.remove(position)
 
-class EntityLink(GObject.Object):
-    """A directed link from one entity to another"""
+    def to_dict(self):
+        return {
+            "a": "Entity",
+            "title": self.title,
+            "synopsis": self.synopsis,
+            "identifier": self.identifier,
+            "category": self.category,
+        }
 
-    def __init__(self, predicate: str, target: Entity):
-        super().__init__()
-
-        self._predicate = predicate
-        self._target = target
-
-    @GObject.Property(type=str)
-    def predicate(self) -> str:
-        return self._predicate
-
-    @GObject.Property(type=Entity)
-    def target(self) -> Entity:
-        return self._target
-
+    def from_dict(self, data):
+        self.title = data["title"]
+        self.synopsis = data["synopsis"]
+        self.category = data["category"]
+        return self
 
 

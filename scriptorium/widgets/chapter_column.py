@@ -91,5 +91,5 @@ class ChapterColumn(Adw.Bin):
         """Drop a chapter where another chapter is located."""
         # Move the chapter
         logger.info(f"Move {chapter.title} where {self._chapter.title} is")
-        chapter.manuscript.splice_chapters(chapter, self._chapter)
+        chapter.project.manuscript.splice_chapters(chapter, self._chapter)
 

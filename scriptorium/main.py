@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import sys
 from scriptorium.widgets.multiline_entry_row import MultiLineEntryRow
-from gi.repository import Gio, Adw, WebKit, GLib, GObject
+from gi.repository import Gio, Adw, WebKit, GLib
 from .window import ScrptWindow
 import logging
 
@@ -39,16 +39,21 @@ class ScriptoriumApplication(Adw.Application):
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
 
-
-        self.settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+        self.settings = Gio.Settings(
+            schema_id="com.github.cgueret.Scriptorium"
+        )
         style_variant_action = self.settings.create_action("style-variant")
         self.add_action(style_variant_action)
 
-        self.settings.connect("changed::style-variant", self.change_color_scheme)
+        self.settings.connect(
+            "changed::style-variant",
+            self.change_color_scheme
+        )
 
         # Get the current color scheme
         current_value = self.settings.get_string("style-variant")
         style_variant_action.activate(GLib.Variant('s', current_value))
+
         # Force loading WebKit, otherwise it is not recognized in Builder
         dummy = WebKit.WebView()
         del dummy
@@ -58,8 +63,8 @@ class ScriptoriumApplication(Adw.Application):
         del dummy
 
     def change_color_scheme(self, _settings, value):
+        """Handle a change in the select color scheme setting."""
         color_scheme = self.settings.get_string(value)
-        logger.info(f"{color_scheme}")
 
         style_manager = Adw.StyleManager.get_default()
         if color_scheme == 'dark':

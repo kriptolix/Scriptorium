@@ -67,13 +67,15 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
             lambda scene: SceneCard(scene, can_move=True, can_activate=False)
         )
 
-        self.scenes_list.connect("start-drag",
+        self.scenes_list.connect(
+            "start-drag",
             lambda x:
-            self.assign_remove_stack.set_visible_child_name("remove_scene")
+                self.assign_remove_stack.set_visible_child_name("remove_scene")
         )
-        self.scenes_list.connect("stop-drag",
+        self.scenes_list.connect(
+            "stop-drag",
             lambda x:
-            self.assign_remove_stack.set_visible_child_name("assign_scene")
+                self.assign_remove_stack.set_visible_child_name("assign_scene")
         )
 
     @Gtk.Template.Callback()
@@ -92,7 +94,7 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
                 logger.info(f"Adding {scene.title}")
                 self._chapter.add_scene(scene)
 
-        dialog = ScrptSelectScenesDialog(self._chapter.manuscript.scenes)
+        dialog = ScrptSelectScenesDialog(self._chapter.project.scenes)
         dialog.choose(self, None, handle_response)
 
     @Gtk.Template.Callback()
@@ -116,7 +118,7 @@ class ScrptChaptersDetailsPanel(Adw.NavigationPage):
         response = _dialog.choose_finish(task)
         if response == "delete":
             # Delete the chapter
-            self._chapter.delete()
+            self._chapter.project.delete_resource(self._chapter)
 
             # Return to listing the chapters
             self.get_parent().pop()

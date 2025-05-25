@@ -26,6 +26,7 @@ from scriptorium.globals import BASE
 from scriptorium.widgets import SceneCard
 from scriptorium.dialogs import ScrptAddDialog
 from .editor_scenes_details import ScrptWritingDetailsPanel
+from scriptorium.models import Scene
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +47,10 @@ class ScrptWritingPanel(Adw.NavigationPage):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
 
-        self._manuscript = editor.manuscript
+        self.editor = editor
 
         self.scenes_list.bind_model(
-            editor.manuscript.scenes,
+            self.editor.project.scenes,
             lambda scene: SceneCard(scene=scene, can_activate=True)
         )
 
@@ -70,7 +71,7 @@ class ScrptWritingPanel(Adw.NavigationPage):
             response = dialog.choose_finish(task)
             if response == "add":
                 logger.info(f"Add scene {dialog.title}: {dialog.synopsis}")
-                self._manuscript.create_scene(dialog.title, dialog.synopsis)
+                self.editor.project.create_scene(dialog.title, dialog.synopsis)
 
         dialog = ScrptAddDialog("scene")
         dialog.choose(self, None, handle_response)

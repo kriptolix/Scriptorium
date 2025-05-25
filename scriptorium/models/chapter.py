@@ -25,56 +25,29 @@ from pathlib import Path
 import git
 import yaml
 from gi.repository import Gio, GObject, Gtk
-
+from .resource import Resource
 from .commit_message import CommitMessage
 from .scene import Scene
 
 logger = logging.getLogger(__name__)
 
 
-class Chapter(GObject.Object):
+class Chapter(Resource):
     """A chapter is a list of scenes."""
     __gtype_name__ = "Chapter"
 
-    # Properties of the chapter
-    title = GObject.Property(type=str)
-    synopsis = GObject.Property(type=str)
+    scenes = GObject.Property(type=Gio.ListStore)
 
-    def __init__(self, manuscript, **kwargs):
+    def __init__(self, project, identifier):
         """Create a new instance of Chapter."""
-        super().__init__(**kwargs)
-        self._manuscript = manuscript
-        self._scenes = Gio.ListStore.new(item_type=Scene)
-
-    @GObject.Property(type=GObject.Object)
-    def manuscript(self):
-        """Return the manuscript the scene is associated to."""
-        return self._manuscript
-
-    @GObject.Property(type=Gio.ListStore)
-    def scenes(self):
-        """Return the list of scenes."""
-        return self._scenes
-
-    def delete(self):
-        """Delete the chapter."""
-        found, position = self._manuscript.chapters.find(self)
-        if not found:
-            raise ValueError("The chapter is already deleted")
-
-        # Remove the chapter from the list of chapters
-        self._manuscript.chapters.remove(position)
-
-        # Set all the scenes assigned to this chapter as being unassigned
-        for scene in self._scenes:
-            scene.chapter = None
+        super().__init__(project, identifier)
+        self.scenes = Gio.ListStore.new(item_type=Scene)
 
     def remove_scene(self, scene: Scene):
         """Remove a scene from the chapter."""
         found, position = self.scenes.find(scene)
         if found:
             self.scenes.remove(position)
-            scene.chapter = None
         else:
             logger.warning(f"Could not find {scene}")
 
@@ -84,7 +57,6 @@ class Chapter(GObject.Object):
             self.scenes.insert(position, scene)
         else:
             self.scenes.append(scene)
-        scene.chapter = self
 
     def to_html(self):
         """Return the HTML payload for the chapter."""
@@ -92,5 +64,4 @@ class Chapter(GObject.Object):
         for scene in self.scenes:
             content.append(scene.to_html())
         return "\n".join(content)
-
 

@@ -75,8 +75,8 @@ class ScrptWindow(Adw.ApplicationWindow):
         # Get a reference to the library panel
         self._library_panel = ScrptLibraryView()
         self.navigation.replace([self._library_panel])
-        self._library_panel.connect('notify::selected-manuscript',
-            self.on_selected_manuscript_changed)
+        self._library_panel.connect('notify::selected-project',
+            self.on_selected_project_changed)
 
         # Set the data folder
         manuscript_path = Path(GLib.get_user_data_dir()) / Path('manuscripts')
@@ -86,23 +86,24 @@ class ScrptWindow(Adw.ApplicationWindow):
         self._library_panel.set_property('manuscripts_base_path',
                                     manuscript_path.resolve())
 
-        last_opened = self.settings.get_string("last-manuscript-name")
-        logger.info(f"Last opened: {last_opened}")
+        #last_opened = self.settings.get_string("last-manuscript-name")
+        #logger.info(f"Trigger selection for last opened: {last_opened}")
 
-        manuscripts_model = self._library_panel.manuscripts_grid.get_model()
-        if self.settings.get_boolean("open-last-project"):
-            if len(manuscripts_model) > 0:
-                index = 0
-                for i in range(len(manuscripts_model)):
-                    if manuscripts_model[i].identifier == last_opened:
-                        index = i
-                manuscripts_model.select_item(index, True)
+        #manuscripts_model = self._library_panel.manuscripts_grid.get_model()
+        #if self.settings.get_boolean("open-last-project"):
+        #    if len(manuscripts_model) > 0:
+        #        index = 0
+        #        for i in range(len(manuscripts_model)):
+        #            if manuscripts_model[i].identifier == last_opened:
+        #                index = i
+        #        manuscripts_model.select_item(index, True)
 
-    def on_selected_manuscript_changed(self, _navigation, _a):
-        manuscript = self._library_panel.selected_manuscript
-        self.settings.set_string("last-manuscript-name", manuscript.identifier)
-        logger.info(f"Create and open editor for {manuscript.title}")
+    def on_selected_project_changed(self, _navigation, _other):
+        project = self._library_panel.selected_project
+        logger.info(f"Create and open editor for {project.manuscript.title}")
 
-        editor_view = ScrptEditorView(self, manuscript)
+        editor_view = ScrptEditorView(self, project)
         self.navigation.push(editor_view)
 
+    def close_editor(self, editor_view):
+        self.navigation.pop()

@@ -22,7 +22,7 @@ from gi.repository import Adw, Gtk, GObject, Gio, GLib
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.widgets import ThemeSelector
-from scriptorium.models import Manuscript
+from scriptorium.models import Manuscript, Project
 
 from .editor_scenes import ScrptWritingPanel
 from .editor_entities import ScrptEntityPanel
@@ -63,27 +63,25 @@ class ScrptEditorView(Adw.NavigationPage):
 
     __gtype_name__ = "ScrptEditorView"
 
+    project = GObject.Property(type=Project)
+
     panels_navigation = Gtk.Template.Child()
     panels = Gtk.Template.Child()
     split_view = Gtk.Template.Child()
     panels_sidebar = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
 
-    @GObject.Property(type=Manuscript)
-    def manuscript(self):
-        """The manuscript the editor is connected to."""
-        return self._manuscript
 
-    def __init__(self, window, manuscript: Manuscript, **kwargs):
+    def __init__(self, window, project:Project):
         """Create a new instance of the editor."""
-        super().__init__(**kwargs)
+        super().__init__()
 
         # We're a view not a stand alone window so we get the pointer to the
         # actual window to create the actions
         self._window = window
 
         # Keep track of the manuscript the editor is associated to
-        self._manuscript = manuscript
+        self.project = project
 
         # Connect an instance of the theme button to the menu
         popover = self.win_menu.get_popover()
@@ -100,8 +98,6 @@ class ScrptEditorView(Adw.NavigationPage):
             if PANELS[index][0] == DEFAULT:
                 row = self.panels_navigation.get_row_at_index(index)
                 self.panels_navigation.select_row(row)
-
-        self.create_action(window, "add_entity", self.on_add_entity, ["<primary>1"])
 
     def create_action(self, window, name, callback, shortcuts=None):
         """Add an application action.
@@ -122,7 +118,7 @@ class ScrptEditorView(Adw.NavigationPage):
 
     def initialise_panels(self):
         """Add all the panels to the menu."""
-        self.panels_sidebar.set_title(self.manuscript.title)
+        self.panels_sidebar.set_title(self.project.manuscript.title)
 
         for panel_id, panel in PANELS:
             # Create a menu entry
@@ -201,9 +197,13 @@ class ScrptEditorView(Adw.NavigationPage):
     @Gtk.Template.Callback()
     def on_editorview_closed(self, _editorview):
         """Handle a request to close the editor."""
-        logger.info("Editor is closed, saving the manuscript")
-        if self.manuscript is not None:
-            self.manuscript.save_to_disk()
+        if self.project is not None:
+            logger.info("Editor is closed, saving the manuscript")
+            self.project.save_to_disk()
+
+    def close_on_delete(self):
+        self.project = None
+        self._window.close_editor(self)
 
     def on_add_entity(self, _action, entity_type):
         target_type = entity_type.get_string()

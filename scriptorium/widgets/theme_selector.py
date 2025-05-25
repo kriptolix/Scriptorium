@@ -68,7 +68,7 @@ class ThemeSelector(Adw.Bin):
         visible = style_manager.get_system_supports_color_schemes()
         self.set_visible(visible)
 
-    def on_notify_dark(self, style_manager):
+    def on_notify_dark(self, style_manager, _value):
         if style_manager.get_dark():
             self.add_css_class("dark")
         else:

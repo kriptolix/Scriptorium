@@ -77,7 +77,7 @@ class ScrptEntitiesDetailsPanel(Adw.NavigationPage):
         response = _dialog.choose_finish(task)
         if response == "delete":
             # Delete the chapter
-            self._entity.delete()
+            self._entity.project.delete_resource(self._entity)
 
             # Return to listing the entities
             self.get_parent().pop()

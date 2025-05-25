@@ -17,12 +17,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, GObject
-from gi.repository import Gtk
-from scriptorium.models import Library
+from gi.repository import Adw, GObject, Gio, Gtk
+
+from scriptorium.models import Library, Project
 from scriptorium.widgets import ManuscriptItem
 from scriptorium.dialogs import ScrptAddDialog
-
 
 import logging
 
@@ -35,6 +34,8 @@ class ScrptLibraryView(Adw.NavigationPage):
 
     # The library
     library: Library
+
+    selected_project = GObject.Property(type=Project)
 
     # The base path of all the manuscripts
     manuscripts_base_path = GObject.Property(type=str)
@@ -52,16 +53,6 @@ class ScrptLibraryView(Adw.NavigationPage):
         self.item_factory.connect("setup", self.on_setup_item)
         self.item_factory.connect("bind", self.on_bind_item)
 
-        self._selected_manuscript = None
-
-    @GObject.Property
-    def selected_manuscript(self):
-        return self._selected_manuscript
-
-    @selected_manuscript.setter
-    def selected_manuscript(self, value):
-        self._selected_manuscript = value
-
     @Gtk.Template.Callback()
     def on_add_manuscript_clicked(self, _button):
         """Handle a click on the button to add a manuscript."""
@@ -74,18 +65,18 @@ class ScrptLibraryView(Adw.NavigationPage):
         response = dialog.choose_finish(task)
         if response == "add":
             logger.info(f"Add manuscript {dialog.title}: {dialog.synopsis}")
-            self.library.create_manuscript(dialog.title, dialog.synopsis)
+            self.library.create_project(dialog.title, dialog.synopsis)
 
     def on_setup_item(self, _, list_item):
         list_item.set_child(ManuscriptItem())
 
     def on_bind_item(self, _, list_item):
-        manuscript = list_item.get_item()
+        project = list_item.get_item()
         manuscript_item = list_item.get_child()
-        manuscript_item.set_property("title", manuscript.title)
+        manuscript_item.set_property("title", project.manuscript.title)
 
         # Set the path of the cover image
-        manuscript_item.set_property("cover", manuscript.get_cover_path())
+        manuscript_item.set_property("cover", project.manuscript.get_cover_path())
 
     def on_base_path_changed(self, _base_path, _other):
         """
@@ -97,12 +88,14 @@ class ScrptLibraryView(Adw.NavigationPage):
         self.library = Library(self.manuscripts_base_path)
 
         # Connect the model to the grid, don't select anything by default
-        selection_model = Gtk.SingleSelection(model=self.library.manuscripts)
+        selection_model = Gtk.SingleSelection(model=self.library.projects)
         selection_model.set_autoselect(False)
         selection_model.set_can_unselect(True)
         selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
         selection_model.connect("selection-changed", self.on_selection_changed)
         self.manuscripts_grid.set_model(selection_model)
+
+        self.open_last_project()
 
     def on_selection_changed(self, selection, position, n_items):
         """
@@ -111,7 +104,34 @@ class ScrptLibraryView(Adw.NavigationPage):
         # Get the select manuscript and unselect it
         selected_item = selection.get_selected_item()
         if selected_item is not None:
-            self.selected_manuscript = selection.get_selected_item()
-            logger.info(f"Selected manuscript {self.selected_manuscript.title}")
+            self.selected_project = selection.get_selected_item()
+            manuscript = self.selected_project.manuscript
+
+            logger.info(f"Selected manuscript {manuscript.title}")
+            settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+            settings.set_string(
+                "last-manuscript-name",
+                self.selected_project.identifier
+            )
             selection.set_selected(Gtk.INVALID_LIST_POSITION)
+
+    def open_last_project(self):
+        """Check if we need to open the last project."""
+        settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+
+        if not settings.get_boolean("open-last-project"):
+            # Nope, don't need to open the last project
+            return
+
+        last_opened = settings.get_string("last-manuscript-name")
+
+        logger.info(f"Trigger open for last opened: {last_opened}")
+
+        model = self.manuscripts_grid.get_model()
+        if len(model) > 0:
+            index = 0
+            for i in range(len(model)):
+                if model[i].identifier == last_opened:
+                    index = i
+            model.select_item(index, True)
 

@@ -40,7 +40,7 @@ class ScrptFormattingPanel(Adw.NavigationPage):
 
     def __init__(self, editor, **kwargs):
         super().__init__(**kwargs)
-        self._manuscript = editor.manuscript
+        self._editor = editor
 
         self.button_next_page.connect("clicked", self.on_click_next_page)
         self.button_previous_page.connect("clicked", self.on_click_previous_page)
@@ -53,7 +53,7 @@ class ScrptFormattingPanel(Adw.NavigationPage):
             "title",
         )
         self.chapters_drop_down.set_expression(list_store_expression)
-        self.chapters_drop_down.set_model(editor.manuscript.chapters)
+        self.chapters_drop_down.set_model(editor.project.manuscript.chapters)
 
     def on_selected_item(self, _drop_down, _selected_item):
         selected_chapter = _drop_down.get_selected_item()

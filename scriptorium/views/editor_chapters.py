@@ -1,4 +1,4 @@
-# editor_writing.py
+# editor_chapter.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -16,14 +16,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Editor panel to select and work on the scenes."""
+"""Editor panel to select and work on the chapters."""
 
 import logging
 
-from gi.repository import Adw, Gtk, GObject
+from gi.repository import Adw, Gtk
 
 from scriptorium.globals import BASE
-from scriptorium.widgets import ChapterCard, CardsList, SceneCard
+from scriptorium.widgets import ChapterCard
 from scriptorium.dialogs import ScrptAddDialog
 
 from .editor_chapters_details import ScrptChaptersDetailsPanel
@@ -46,10 +46,11 @@ class ScrptChaptersPanel(Adw.NavigationPage):
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
-        self._manuscript = editor.manuscript
+        self.editor = editor
 
         self.chapters_list.bind_model(
-            editor.manuscript.chapters, self.on_add_chapter_to_list
+            editor.project.manuscript.chapters,
+            lambda chapter: ChapterCard(chapter)
         )
 
     @Gtk.Template.Callback()
@@ -69,10 +70,10 @@ class ScrptChaptersPanel(Adw.NavigationPage):
         response = dialog.choose_finish(_task)
         if response == "add":
             logger.info(f"Add chapter {dialog.title}: {dialog.synopsis}")
-            self._manuscript.create_chapter(dialog.title, dialog.synopsis)
-
-    def on_add_chapter_to_list(self, chapter):
-        """Add the new chapter to the list."""
-        card = ChapterCard(chapter)
-        return card
+            chapter = self.editor.project.create_resource(
+                Chapter,
+                dialog.title,
+                dialog.synopsis
+            )
+            self.editor.project.manuscript.add_chapter(chapter)
 

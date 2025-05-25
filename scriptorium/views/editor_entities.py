@@ -18,11 +18,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 
-from gi.repository import Adw, Gtk, GObject, Gio
+from gi.repository import Adw, Gtk
 from scriptorium.widgets import EntityCard
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.globals import BASE
 from .editor_entities_details import ScrptEntitiesDetailsPanel
+from scriptorium.models import Entity
 
 import logging
 
@@ -44,11 +45,11 @@ class ScrptEntityPanel(Adw.NavigationPage):
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
-        self._manuscript = editor.manuscript
+        self._editor = editor
 
         # Connect to the entities of the manuscript
         self.entities_list.bind_model(
-            editor.manuscript.entities,
+            editor.project.entities,
             lambda entity: EntityCard(entity, can_activate=True)
         )
 
@@ -59,7 +60,9 @@ class ScrptEntityPanel(Adw.NavigationPage):
             response = dialog.choose_finish(task)
             if response == "add":
                 logger.info(f"Add entity {dialog.title}: {dialog.synopsis}")
-                self._manuscript.create_entity(dialog.title, dialog.synopsis)
+                self._editor.project.create_resource(
+                    Entity, dialog.title, dialog.synopsis
+                )
 
         dialog = ScrptAddDialog("story element")
         dialog.choose(self, None, handle_response)

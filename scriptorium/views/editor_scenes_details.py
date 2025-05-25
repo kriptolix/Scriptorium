@@ -41,9 +41,9 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
     entities_list = Gtk.Template.Child()
     assign_remove_stack = Gtk.Template.Child()
 
-    def __init__(self, scene, **kwargs):
+    def __init__(self, scene):
         """Create an instance of the panel."""
-        super().__init__(**kwargs)
+        super().__init__()
 
         self._scene = scene
         self.set_title(scene.title)
@@ -125,7 +125,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         response = _dialog.choose_finish(task)
         if response == "delete":
             # Delete the scene
-            self._scene.delete()
+            self._scene.project.delete_resource(self._scene)
 
             # Return to listing the scenes
             self.get_parent().pop()
@@ -143,7 +143,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
 
         dialog = ScrptSelectEntitiesDialog(
             self._scene,
-            self._scene.manuscript.entities
+            self._scene.project.entities
         )
         dialog.choose(self, None, handle_response)
 

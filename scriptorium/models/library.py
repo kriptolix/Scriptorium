@@ -24,42 +24,42 @@ import logging
 import uuid
 import shutil
 
+from .project import Project
 from .manuscript import Manuscript
 
 logger = logging.getLogger(__name__)
 
 
 class Library(GObject.Object):
-    """The library is the collection of manuscripts."""
+    """The library is the collection of projects."""
+
+    projects: GObject.Property = GObject.Property(type=Gio.ListStore)
 
     def __init__(self, base_directory: str):
         """Create an instance of the library for the target folder."""
+        super().__init__()
+
         # Keep track of attributes
         self._base_directory = Path(base_directory)
 
         # List of manuscripts
-        self._manuscripts = Gio.ListStore.new(item_type=Manuscript)
+        self.projects = Gio.ListStore(item_type=Project)
 
         # Create one manuscript entry per directory
         logger.info(f"Scanning content of {self._base_directory}")
         for directory in self._base_directory.iterdir():
-            logger.info(f"Adding manuscript {directory.name}")
-            manuscript = Manuscript(self, directory)
-            self.manuscripts.append(manuscript)
-
-    @GObject.Property(type=Gio.ListStore)
-    def manuscripts(self) -> Gio.ListStore:
-        """List of manuscripts."""
-        return self._manuscripts
+            logger.info(f"Adding project {directory.name}")
+            project = Project(self, directory)
+            self.projects.append(project)
 
     @property
     def base_directory(self) -> Path:
         """The base directory where all the manuscripts are located."""
         return self._base_directory
 
-    def create_manuscript(self, title: str, synopsis: str = None):
-        """Create a new manuscript."""
-        logger.info("Create manuscript")
+    def create_project(self, title: str, synopsis: str = None):
+        """Create a new project with a manuscript in it."""
+        logger.info("Create project")
 
         # Create a new identifier, we use a UUID so that several manuscripts
         # may share the same name
@@ -67,22 +67,24 @@ class Library(GObject.Object):
 
         # Create the manuscript
         path = self.base_directory / Path(identifier)
-        manuscript = Manuscript(self, path)
-        manuscript.title = title
-        manuscript.synopsis = synopsis
-        manuscript.init()
+
+        # Create the project
+        project = Project(self, path)
+
+        # Add a manuscript to it
+        manuscript = project.create_resource(Manuscript, title, synopsis)
 
         # Add it to the list
-        self.manuscripts.append(manuscript)
+        self.projects.append(project)
 
-    def delete_manuscript(self, manuscript):
-        """Delete the manuscript from disk."""
+    def delete_project(self, project):
+        """Delete the project from disk."""
 
-        found, position = self.manuscripts.find(manuscript)
+        found, position = self.projects.find(project)
         if found:
             # Remove from the library
-            self.manuscripts.remove(position)
+            self.projects.remove(position)
 
             # Delete all the content on disk
-            path = self.base_directory / Path(manuscript.identifier)
+            path = self.base_directory / Path(project.identifier)
             shutil.rmtree(path)
