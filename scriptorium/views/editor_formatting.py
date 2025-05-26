@@ -59,6 +59,11 @@ class ScrptFormattingPanel(Adw.NavigationPage):
 
     def on_selected_item(self, _drop_down, _selected_item):
         selected_chapter = _drop_down.get_selected_item()
+        if selected_chapter is None:
+            self.button_previous.set_sensitive(False)
+            self.button_next.set_sensitive(False)
+            return
+
         logger.info(f"Chapter selected: {selected_chapter.title}")
 
         # Get all the HTML content from the model
