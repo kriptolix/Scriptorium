@@ -34,18 +34,18 @@ class ScrptFormattingPanel(Adw.NavigationPage):
     __description__ = "Preview and modify the formatting"
 
     web_view = Gtk.Template.Child()
-    button_next_page = Gtk.Template.Child()
-    button_previous_page = Gtk.Template.Child()
+    button_next = Gtk.Template.Child()
+    button_previous = Gtk.Template.Child()
     chapters_drop_down = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         super().__init__(**kwargs)
         self._editor = editor
 
-        self.button_next_page.connect("clicked", self.on_click_next_page)
-        self.button_previous_page.connect("clicked", self.on_click_previous_page)
-
-        self.chapters_drop_down.connect("notify::selected-item", self.on_selected_item)
+        self.chapters_drop_down.connect(
+            "notify::selected-item",
+            self.on_selected_item
+        )
 
         list_store_expression = Gtk.PropertyExpression.new(
             Chapter,
@@ -54,6 +54,8 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         )
         self.chapters_drop_down.set_expression(list_store_expression)
         self.chapters_drop_down.set_model(editor.project.manuscript.chapters)
+
+        self._position = 0
 
     def on_selected_item(self, _drop_down, _selected_item):
         selected_chapter = _drop_down.get_selected_item()
@@ -72,21 +74,21 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         # Load the content
         self.web_view.load_html(html_content)
 
-    def on_click_next_page(self, _button):
-        logger.info("Move to next page")
-        self.web_view.evaluate_javascript(
-            "nextPage()", -1, None, None, None, self.on_page_changed, None
-        )
+        # Find the position of the chapter
+        chapters = self._editor.project.manuscript.chapters
+        found, self._position = chapters.find(selected_chapter)
 
-    def on_click_previous_page(self, _button):
-        logger.info("Move to previous page")
-        self.web_view.evaluate_javascript(
-            "prevPage()", -1, None, None, None, self.on_page_changed, None
-        )
+        # Enable the buttons
+        self.button_previous.set_sensitive(self._position > 0)
+        self.button_next.set_sensitive(self._position < chapters.get_n_items() - 1)
 
-    def on_page_changed(self, _web_view, _task, _c):
-        value = self.web_view.call_async_javascript_function_finish(_task)
-        if value.is_number():
-            current_page = value.to_int32()
-            logger.info(f"Now showing page {current_page}")
+    @Gtk.Template.Callback()
+    def on_button_next_clicked(self, _button):
+        logger.info("Move to next chapter")
+        self.chapters_drop_down.set_selected(self._position + 1)
+
+    @Gtk.Template.Callback()
+    def on_button_previous_clicked(self, _button):
+        logger.info("Move to previous chapter")
+        self.chapters_drop_down.set_selected(self._position - 1)
 

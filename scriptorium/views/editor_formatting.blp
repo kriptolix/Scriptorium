@@ -48,18 +48,20 @@ template $ScrptFormattingPanel: Adw.NavigationPage {
         Box {
           spacing: 12;
 
+          Button button_previous {
+            icon-name: "pan-start-symbolic";
+            tooltip-text: _("Previous");
+            clicked => $on_button_previous_clicked();
+          }
+
           DropDown chapters_drop_down {
             enable-search: true;
           }
 
-          Button button_previous_page {
-            icon-name: "pan-start-symbolic";
-            tooltip-text: _("Previous");
-          }
-
-          Button button_next_page {
+          Button button_next {
             icon-name: "pan-end-symbolic";
             tooltip-text: _("Next");
+            clicked => $on_button_next_clicked();
           }
         }
       }
