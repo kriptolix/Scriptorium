@@ -42,3 +42,7 @@ https://matplotlib.org/stable/gallery/user_interfaces/embedding_in_gtk4_sgskip.h
 To consider 
 
 https://www.svgrepo.com/collection/grommet-interface-icons/
+
+https://www.svgrepo.com/svg/229764/quill
+
+

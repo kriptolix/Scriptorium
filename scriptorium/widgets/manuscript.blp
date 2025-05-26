@@ -10,23 +10,25 @@ template $ManuscriptItem: Box {
   margin-top: 6;
   margin-bottom: 6;
   hexpand: false;
+  spacing: 6;
 
-  Frame {
-    Stack stack {
-      StackPage {
-        name: 'cover';
-        child: Picture cover_picture {
-            valign: end;
-            content-fit: fill;
-            height-request: 160;
-        };
-      }
-      StackPage {
-        name: 'label';
-        child: Label cover_label {
-          wrap: true;
-        };
-      }
+  Stack stack {
+    styles [
+    "card"
+    ]
+    StackPage {
+      name: 'cover';
+      child: Picture cover_picture {
+          valign: end;
+          content-fit: fill;
+          height-request: 160;
+      };
+    }
+    StackPage {
+      name: 'label';
+      child: Label cover_label {
+        wrap: true;
+      };
     }
   }
 
