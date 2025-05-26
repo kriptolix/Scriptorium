@@ -11,7 +11,7 @@
   </description>
 
   <developer id="tld.vendor">
-    <name>Developer name</name>
+    <name>Christophe Gueret</name>
   </developer>
 
   <!-- Requered: Should be a link to the upstream homepage for the component -->
