@@ -71,7 +71,7 @@ class ScrptWritingPanel(Adw.NavigationPage):
             response = dialog.choose_finish(task)
             if response == "add":
                 logger.info(f"Add scene {dialog.title}: {dialog.synopsis}")
-                self.editor.project.create_scene(dialog.title, dialog.synopsis)
+                self.editor.project.create_resource(Scene, dialog.title, dialog.synopsis)
 
         dialog = ScrptAddDialog("scene")
         dialog.choose(self, None, handle_response)

@@ -25,6 +25,7 @@ from gi.repository import Adw, Gtk
 from scriptorium.globals import BASE
 from scriptorium.widgets import ChapterCard
 from scriptorium.dialogs import ScrptAddDialog
+from scriptorium.models import Chapter
 
 from .editor_chapters_details import ScrptChaptersDetailsPanel
 
