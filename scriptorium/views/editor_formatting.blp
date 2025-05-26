@@ -33,7 +33,7 @@ template $ScrptFormattingPanel: Adw.NavigationPage {
         ToggleButton show_settings_sidebar_button {
           icon-name: "sidebar-show-right-symbolic";
           tooltip-text: _("Toggle Settings Sidebar");
-          active: bind split_view.show-sidebar;
+          active: bind split_view.show-sidebar no-sync-create;
         }
       }
 

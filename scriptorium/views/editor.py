@@ -54,7 +54,7 @@ PANELS = [
     # TODO: Export
 ]
 
-DEFAULT = "scenes"
+DEFAULT = "manuscript"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/editor.ui")

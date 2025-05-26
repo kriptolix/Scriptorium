@@ -12,14 +12,7 @@ template $ScrptChaptersDetailsPanel: Adw.NavigationPage {
     }
 
     content: ScrolledWindow {
-      child: Adw.Clamp {
-        maximum-size: 600;
-        margin-top: 12;
-
-        Box {
-          orientation: vertical;
-          spacing: 24;
-
+      child: Adw.PreferencesPage {
           Adw.PreferencesGroup {
             title: "Overview";
 
@@ -100,7 +93,6 @@ template $ScrptChaptersDetailsPanel: Adw.NavigationPage {
                 activated => $on_delete_chapter_activated();
               }
             }
-          }
         }
       };
     };
