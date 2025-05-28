@@ -2,8 +2,8 @@ pkgdatadir = get_option('prefix') / get_option('datadir') / meson.project_name()
 gnome = import('gnome')
 
 desktop_file = i18n.merge_file(
-	input: 'com.github.cgueret.Scriptorium.desktop.in',
-	output: 'com.github.cgueret.Scriptorium.desktop',
+	input: 'io.github.cgueret.Scriptorium.desktop.in',
+	output: 'io.github.cgueret.Scriptorium.desktop',
 	type: 'desktop',
 	po_dir: '../po',
 	install: true,
@@ -16,8 +16,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-	input: 'com.github.cgueret.Scriptorium.metainfo.xml.in',
-	output: 'com.github.cgueret.Scriptorium.metainfo.xml',
+	input: 'io.github.cgueret.Scriptorium.metainfo.xml.in',
+	output: 'io.github.cgueret.Scriptorium.metainfo.xml',
 	po_dir: '../po',
 	install: true,
 	install_dir: get_option('datadir') / 'metainfo',
@@ -31,7 +31,7 @@ test(
 )
 
 install_data(
-	'com.github.cgueret.Scriptorium.gschema.xml',
+	'io.github.cgueret.Scriptorium.gschema.xml',
 	install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )
 
@@ -45,8 +45,8 @@ test(
 service_conf = configuration_data()
 service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
 configure_file(
-	input: 'com.github.cgueret.Scriptorium.service.in',
-	output: 'com.github.cgueret.Scriptorium.service',
+	input: 'io.github.cgueret.Scriptorium.service.in',
+	output: 'io.github.cgueret.Scriptorium.service',
 	configuration: service_conf,
 	install_dir: get_option('datadir') / 'dbus-1' / 'services',
 )

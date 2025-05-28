@@ -33,14 +33,14 @@ class ScriptoriumApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self):
-        super().__init__(application_id='com.github.cgueret.Scriptorium',
+        super().__init__(application_id='io.github.cgueret.Scriptorium',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
 
         self.settings = Gio.Settings(
-            schema_id="com.github.cgueret.Scriptorium"
+            schema_id="io.github.cgueret.Scriptorium"
         )
         style_variant_action = self.settings.create_action("style-variant")
         self.add_action(style_variant_action)
@@ -88,7 +88,7 @@ class ScriptoriumApplication(Adw.Application):
     def on_about_action(self, *args):
         """Callback for the app.about action."""
         about = Adw.AboutDialog(application_name='Scriptorium',
-                                application_icon='com.github.cgueret.Scriptorium',
+                                application_icon='io.github.cgueret.Scriptorium',
                                 developer_name='Christophe Guéret',
                                 version='0.1.0',
                                 developers=['Christophe Guéret'],

@@ -1,6 +1,6 @@
 # Scriptorium
 
-<img src="data/icons/hicolor/scalable/apps/com.github.cgueret.Scriptorium.svg" width="128" height="128" />
+<img src="data/icons/hicolor/scalable/apps/io.github.cgueret.Scriptorium.svg" width="128" height="128" />
 <p>Write short stories, novels, or anything in between in an IDE for books.</p>
 
 Main features:

@@ -1,4 +1,4 @@
-application_id = 'com.github.cgueret.Scriptorium'
+application_id = 'io.github.cgueret.Scriptorium'
 
 scalable_dir = 'hicolor' / 'scalable' / 'apps'
 install_data(

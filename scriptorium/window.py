@@ -51,7 +51,7 @@ class ScrptWindow(Adw.ApplicationWindow):
         theme.add_resource_path("/com/github/cgueret/Scriptorium/icons/actions")
 
         # Load the settings up
-        self.settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+        self.settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
 
         # Bind the settings related to the window
         self.settings.bind("window-width", self, "default-width",

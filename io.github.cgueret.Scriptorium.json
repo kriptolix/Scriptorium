@@ -1,5 +1,5 @@
 {
-    "id": "com.github.cgueret.Scriptorium",
+    "id": "io.github.cgueret.Scriptorium",
     "runtime": "org.gnome.Platform",
     "runtime-version": "48",
     "sdk": "org.gnome.Sdk",

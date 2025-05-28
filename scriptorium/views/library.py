@@ -108,7 +108,7 @@ class ScrptLibraryView(Adw.NavigationPage):
             manuscript = self.selected_project.manuscript
 
             logger.info(f"Selected manuscript {manuscript.title}")
-            settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+            settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
             settings.set_string(
                 "last-manuscript-name",
                 self.selected_project.identifier
@@ -117,7 +117,7 @@ class ScrptLibraryView(Adw.NavigationPage):
 
     def open_last_project(self):
         """Check if we need to open the last project."""
-        settings = Gio.Settings(schema_id="com.github.cgueret.Scriptorium")
+        settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
 
         if not settings.get_boolean("open-last-project"):
             # Nope, don't need to open the last project
