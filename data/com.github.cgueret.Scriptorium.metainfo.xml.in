@@ -8,6 +8,20 @@
   <summary>Write short stories, novels, or anything in between in an IDE for books.</summary>
   <description>
     <p>Scriptorium is a text editor coupled with a plotting tool and a formatting tool. The objective is to provide writers with a simple and complete environment to plan, plot, write and edit e-books.</p>
+    <p>Main features:
+      <ul>
+        <li>Manage a set of scenes</li>
+        <li>Edit the text of the scene in a focused writer tool</li>
+        <li>Switch to dark mode or light mode if desired </li>
+        <li>Manage a set of chapters</li>
+        <li>Assign scenes to chapter</li>
+        <li>Manage a set of story elements (Places, characters, props, ...)</li>
+        <li>Assign story elements to scenes</li>
+        <li>Use the overview panel to re-organise the structure of the book</li>
+        <li>Use the preview panel to see and adjust the look of the final book</li>
+        <li>Versioning managed via Git on the back-end using YAML and HTML files</li>
+      </ul>
+    </p>
   </description>
 
   <developer id="tld.vendor">
