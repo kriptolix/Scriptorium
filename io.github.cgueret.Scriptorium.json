@@ -65,7 +65,7 @@
                 {
                     "type": "git",
                     "url": "https://github.com/cgueret/Scriptorium.git",
-                    "tag": "v0.1.1"
+                    "tag": "v0.1.0"
                 }
             ]
         }
