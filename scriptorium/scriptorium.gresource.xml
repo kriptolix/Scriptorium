@@ -58,16 +58,16 @@
   </gresource>
 
   <!-- Icons -->
-  <gresource prefix="/com/github/cgueret/Scriptorium/icons/actions">
-    <file preprocess="xml-stripblanks" alias="dictionary-symbolic.svg">icons/dictionary-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="library-symbolic.svg">icons/library-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="plus-large-symbolic.svg">icons/plus-large-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="edit-symbolic.svg">icons/edit-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="notepad-symbolic.svg">icons/notepad-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="view-columns-symbolic.svg">icons/view-columns-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="open-book-symbolic.svg">icons/open-book-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="info-outline-symbolic.svg">icons/info-outline-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="right-symbolic.svg">icons/right-symbolic.svg</file>
-    <file preprocess="xml-stripblanks" alias="item-missing-symbolic.svg">icons/item-missing-symbolic.svg</file>
+  <gresource prefix="/com/github/cgueret/Scriptorium/icons/scalable/actions">
+    <file preprocess="xml-stripblanks" alias="plus-large-symbolic.svg">icons/hicolor/scalable/actions/plus-large-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="dictionary-symbolic.svg">icons/hicolor/scalable/actions/dictionary-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="library-symbolic.svg">icons/hicolor/scalable/actions/library-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="edit-symbolic.svg">icons/hicolor/scalable/actions/edit-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="notepad-symbolic.svg">icons/hicolor/scalable/actions/notepad-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="view-columns-symbolic.svg">icons/hicolor/scalable/actions/view-columns-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="open-book-symbolic.svg">icons/hicolor/scalable/actions/open-book-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="info-outline-symbolic.svg">icons/hicolor/scalable/actions/info-outline-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="right-symbolic.svg">icons/hicolor/scalable/actions/right-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="item-missing-symbolic.svg">icons/hicolor/scalable/actions/item-missing-symbolic.svg</file>
   </gresource>
 </gresources>

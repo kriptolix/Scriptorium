@@ -48,7 +48,7 @@ class ScrptWindow(Adw.ApplicationWindow):
 
         # Load custom icons
         theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
-        theme.add_resource_path("/com/github/cgueret/Scriptorium/icons/actions")
+        theme.add_resource_path("/com/github/cgueret/Scriptorium/icons")
 
         # Load the settings up
         self.settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
