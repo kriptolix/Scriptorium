@@ -22,6 +22,7 @@ from gi.repository import Adw, GObject, Gio, Gtk
 from scriptorium.models import Library, Project
 from scriptorium.widgets import ManuscriptItem
 from scriptorium.dialogs import ScrptAddDialog
+from scriptorium.widgets import ThemeSelector
 
 import logging
 
@@ -43,6 +44,8 @@ class ScrptLibraryView(Adw.NavigationPage):
     # Objects of the templace
     manuscripts_grid = Gtk.Template.Child()
     item_factory = Gtk.Template.Child()
+    win_menu = Gtk.Template.Child()
+    grid_stack = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -52,6 +55,12 @@ class ScrptLibraryView(Adw.NavigationPage):
 
         self.item_factory.connect("setup", self.on_setup_item)
         self.item_factory.connect("bind", self.on_bind_item)
+
+        # Connect an instance of the theme button to the menu
+        popover = self.win_menu.get_popover()
+        theme_selector = ThemeSelector()
+        theme_selector.action_name = "app.style-variant"
+        popover.add_child(theme_selector, "theme")
 
     @Gtk.Template.Callback()
     def on_add_manuscript_clicked(self, _button):
@@ -95,7 +104,21 @@ class ScrptLibraryView(Adw.NavigationPage):
         selection_model.connect("selection-changed", self.on_selection_changed)
         self.manuscripts_grid.set_model(selection_model)
 
+        # Connect a signal to the list model to detect when content is available
+        self.library.projects.connect("items-changed", self.on_grid_content_changed)
+
+        # Manually trigger it
+        self.on_grid_content_changed(self.library.projects, 0, 0, 0)
+
+        # See if we should open the last project
         self.open_last_project()
+
+    def on_grid_content_changed(self, list_model, _position, _added, _removed):
+        n_items = list_model.get_n_items()
+        if n_items > 0:
+            self.grid_stack.set_visible_child_name("manuscripts")
+        else:
+            self.grid_stack.set_visible_child_name("empty_folder")
 
     def on_selection_changed(self, selection, position, n_items):
         """

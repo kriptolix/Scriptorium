@@ -16,7 +16,7 @@ template $ScrptLibraryView: Adw.NavigationPage {
       }
 
       [end]
-      MenuButton {
+      MenuButton win_menu {
         icon-name: "open-menu-symbolic";
         tooltip-text: _("Main Menu");
         primary: true;
@@ -25,11 +25,25 @@ template $ScrptLibraryView: Adw.NavigationPage {
     }
 
     content: ScrolledWindow {
-      GridView manuscripts_grid {
-          min-columns: 1;
-          max-columns: 10;
-          vexpand: false;
-          factory: SignalListItemFactory item_factory {};
+      Stack grid_stack {
+        StackPage {
+          name: "manuscripts";
+          child: GridView manuscripts_grid {
+            min-columns: 1;
+            max-columns: 10;
+            vexpand: false;
+            factory: SignalListItemFactory item_factory {};
+          };
+        }
+        StackPage {
+          name: "empty_folder";
+          child: Adw.StatusPage {
+            icon-name: "io.github.cgueret.Scriptorium";
+            description: _("Your data folder is empty, click on the button on the top left corner to create a first manuscript");
+            title: _("Welcome to Scriptorium !");
+          };
+        }
+        visible-child-name: "empty_folder";
       }
     };
   };
@@ -41,12 +55,12 @@ Adw.AlertDialog {
 menu window_menu {
   section {
     item {
-      label: _("Keyboard Shortcuts");
-      action: "app.shortcuts";
+      custom: "theme";
     }
-
+  }
+  section {
     item {
-      label: _("About App");
+      label: _("About Scriptorium");
       action: "app.about";
     }
   }
