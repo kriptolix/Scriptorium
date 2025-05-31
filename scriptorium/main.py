@@ -92,7 +92,7 @@ class ScriptoriumApplication(Adw.Application):
                                 developer_name='Christophe Guéret',
                                 version='0.1.0',
                                 developers=['Christophe Guéret'],
-                                copyright='© 2025 Unknown')
+                                copyright='© 2025 Christophe Guéret')
         # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
         #about.set_translator_credits(_('translator-credits'))
         about.present(self.props.active_window)
