@@ -91,6 +91,7 @@ class ScriptoriumApplication(Adw.Application):
                                 application_icon='io.github.cgueret.Scriptorium',
                                 developer_name='Christophe Guéret',
                                 version='0.1.0',
+                                website='https://github.com/cgueret/Scriptorium',
                                 developers=['Christophe Guéret'],
                                 copyright='© 2025 Christophe Guéret')
         # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
