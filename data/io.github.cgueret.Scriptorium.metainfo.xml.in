@@ -5,7 +5,7 @@
   <project_license>GPL-3.0-or-later</project_license>
 
   <name>Scriptorium</name>
-  <summary>Write short stories, novels, or anything in between in an IDE for books.</summary>
+  <summary>Design and write manuscripts</summary>
   <description>
     <p>Scriptorium is a text editor coupled with a plotting tool and a formatting tool. The objective is to provide writers with a simple and complete environment to plan, plot, write and edit e-books.</p>
     <p>Main features:</p>
@@ -23,8 +23,8 @@
     </ul>
   </description>
 
-  <developer id="tld.vendor">
-    <name>Christophe Gueret</name>
+  <developer id="io.github.cgueret">
+    <name>Christophe Guéret</name>
   </developer>
 
   <url type="homepage">https://github.com/cgueret/Scriptorium</url>
@@ -43,29 +43,25 @@
   </branding>
 
   <screenshots>
-    <screenshot type="default">
+    <screenshot type="default" xml:lang="en">
       <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/main_window.png</image>
       <caption>Main window</caption>
     </screenshot>
-    <screenshot>
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/library.png</image>
-      <caption>Library for managing different manuscripts</caption>
-    </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/overview.png</image>
       <caption>Use overview mode to drag and drop content</caption>
     </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/scenes.png</image>
       <caption>Get a list of all your scenes, including those not included in the manuscript draft</caption>
     </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/scene_details.png</image>
       <caption>Use the scene details editor to assign story elements</caption>
     </screenshot>
-    <screenshot>
+    <screenshot xml:lang="en">
       <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/dark_mode.png</image>
-      <caption>Switch to dark more, if you want to, when editing the content of a scene</caption>
+      <caption>Switch to dark mode, if you want to, when editing the content of a scene in the distraction-free editor</caption>
     </screenshot>
   </screenshots>
 
