@@ -90,7 +90,7 @@ class ScriptoriumApplication(Adw.Application):
         about = Adw.AboutDialog(application_name='Scriptorium',
                                 application_icon='io.github.cgueret.Scriptorium',
                                 developer_name='Christophe Guéret',
-                                version='0.2.0',
+                                version='0.2.1',
                                 website='https://github.com/cgueret/Scriptorium',
                                 developers=['Christophe Guéret'],
                                 copyright='© 2025 Christophe Guéret')

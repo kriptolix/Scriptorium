@@ -16,6 +16,12 @@ Main features:
   * Use the preview panel to see and adjust the look of the final book
   * Versioning managed via Git on the back-end using YAML and HTML files
 
+
+## Installation
+
+<a href='https://flathub.org/apps/io.github.cgueret.Scriptorium'><img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/></a>
+
+
 ## Screenshots
 
 ![screenshot](data/screenshots/main_window.png)
