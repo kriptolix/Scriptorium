@@ -33,7 +33,7 @@ jobs:
 
       - name: 🧰 Install Homebrew packages
         run: |
-          brew install gtk4 libadwaita glib meson ninja create-dmg git desktop-file-utils
+          brew install gtk4 libadwaita glib gobject-introspection meson ninja create-dmg git desktop-file-utils
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
