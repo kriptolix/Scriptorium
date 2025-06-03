@@ -33,7 +33,7 @@ jobs:
 
       - name: 🧰 Install Homebrew packages
         run: |
-          brew install gtk4 libadwaita meson ninja create-dmg
+          brew install gtk4 libadwaita meson ninja create-dmg blueprint-compiler
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
