@@ -49,8 +49,9 @@ jobs:
         run: |
           git clone https://gitlab.gnome.org/GNOME/blueprint-compiler
           cd blueprint-compiler
-          meson compile -C builddir
-          meson install -C builddir
+          meson setup _build
+          ninja -C _build
+          ninja -C _build install
 
       - name: ⚙️ Build app with Meson
         run: |
