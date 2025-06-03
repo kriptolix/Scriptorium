@@ -33,7 +33,7 @@ jobs:
 
       - name: 🧰 Install Homebrew packages
         run: |
-          brew install gtk4 libadwaita meson ninja create-dmg blueprint-compiler
+          brew install gtk4 libadwaita meson ninja create-dmg git
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
@@ -44,6 +44,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
+
+      - name: 📦 Install blueprint
+        run: |
+          git clone https://gitlab.gnome.org/GNOME/blueprint-compiler
+          cd blueprint-compiler
+          meson compile -C builddir
+          meson install -C builddir
 
       - name: ⚙️ Build app with Meson
         run: |
