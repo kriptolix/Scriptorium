@@ -5,16 +5,16 @@ name: Build macOS .dmg
 on:
   workflow_dispatch:
     # Inputs the workflow accepts.
-    inputs:
-      name:
+#    inputs:
+#      name:
         # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
+#        description: 'Person to greet'
         # Default value if no value is explicitly provided
-        default: 'World'
+#        default: 'World'
         # Input has to be provided for the workflow to run
-        required: true
+#        required: true
         # The data type of the input
-        type: string
+#        type: string
 
 #on:
 #  push:
@@ -33,7 +33,7 @@ jobs:
 
       - name: 🧰 Install Homebrew packages
         run: |
-          brew install gtk4 libadwaita meson ninja create-dmg git desktop-file-utils
+          brew install gtk4 libadwaita glib meson ninja create-dmg git desktop-file-utils
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
