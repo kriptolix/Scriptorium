@@ -62,10 +62,10 @@ jobs:
 
       - name: ⚙️ Package it with pyinstaller
         run: |
-  	  pyinstaller --name Scriptorium \
-	    --windowed \
-	    --add-data "builddir:." \
-	    install/bin/scriptorium
+          pyinstaller --name Scriptorium \
+            --windowed \
+            --add-data "builddir:." \
+            install/bin/scriptorium
 
       - name: 📀 Create DMG
         run: |
