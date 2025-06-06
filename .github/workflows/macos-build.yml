@@ -90,7 +90,7 @@ jobs:
             --icon "Scriptorium.app" 200 190 \
             --app-drop-link 600 185 \
             dist/ \
-            Scriptorium.app
+            Scriptorium.dmg
 
       - name: 📤 Upload DMG artifact
         uses: actions/upload-artifact@v4
