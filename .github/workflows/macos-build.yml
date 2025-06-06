@@ -66,6 +66,7 @@ jobs:
             --windowed \
             --add-data "builddir:." \
             install/bin/scriptorium
+          codesign --deep --force --sign - dist/Scriptorium.app
 
       - name: 📀 Create DMG
         run: |
