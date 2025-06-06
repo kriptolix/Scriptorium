@@ -82,12 +82,13 @@ jobs:
 
       - name: 📀 Create DMG
         run: |
+          mkdir -p dist
           create-dmg \
             --volname "Scriptorium" \
             --window-size 1000 800 \
             --icon "Scriptorium.app" 200 190 \
             --app-drop-link 600 185 \
-            "Scriptorium.dmg" \
+            "dist/Scriptorium.dmg" \
             "dist/"
 
 
