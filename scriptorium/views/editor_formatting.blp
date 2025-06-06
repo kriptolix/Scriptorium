@@ -1,6 +1,5 @@
 using Gtk 4.0;
 using Adw 1;
-using WebKit 6.0;
 
 template $ScrptFormattingPanel: Adw.NavigationPage {
   title: "Formatting";
@@ -76,19 +75,10 @@ template $ScrptFormattingPanel: Adw.NavigationPage {
           margin-start: 12;
           margin-end: 12;
 
-          Box {
+          Box web_view_placeholder {
             styles [
               "card",
             ]
-            WebKit.WebView web_view {
-              zoom-level: 1;
-              vexpand: true;
-              hexpand: true;
-              margin-start: 6;
-              margin-end: 6;
-              margin-top: 6;
-              margin-bottom: 6;
-            }
           }
         }
       };
