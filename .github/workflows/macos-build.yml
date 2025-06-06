@@ -83,6 +83,7 @@ jobs:
       - name: 📀 Create DMG
         run: |
           mkdir -p dist
+          cp -R Scriptorium.app dist/
           rm -f dist/Scriptorium.dmg
           create-dmg \
             --volname "Scriptorium" \
