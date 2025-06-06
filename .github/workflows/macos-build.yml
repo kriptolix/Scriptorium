@@ -84,13 +84,12 @@ jobs:
         run: |
           create-dmg \
             --volname "Scriptorium" \
-            --window-pos 200 120 \
-            --window-size 800 400 \
-            --icon-size 100 \
+            --window-size 1000 800 \
             --icon "Scriptorium.app" 200 190 \
             --app-drop-link 600 185 \
-            dist/ \
-            Scriptorium.dmg
+            "Scriptorium.dmg" \
+            "dist/"
+
 
       - name: 📤 Upload DMG artifact
         uses: actions/upload-artifact@v4
