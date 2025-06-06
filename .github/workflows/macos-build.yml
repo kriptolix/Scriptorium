@@ -60,30 +60,16 @@ jobs:
           meson compile -C builddir
           meson install -C builddir
 
-      - name: 🧱 Create .app bundle
+      - name: ⚙️ Package it with pyinstaller
         run: |
-          mkdir -p Scriptorium.app/Contents/MacOS
-          cp install/bin/scriptorium Scriptorium.app/Contents/MacOS/
-          cp -r install/share Scriptorium.app/Contents/Resources/
-          # Create basic Info.plist
-          cat > Scriptorium.app/Contents/Info.plist <<EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>CFBundleName</key><string>Scriptorium</string>
-            <key>CFBundleIdentifier</key><string>io.github.cgueret.Scriptorium</string>
-            <key>CFBundleVersion</key><string>${{ github.ref_name }}</string>
-            <key>CFBundleExecutable</key><string>scriptorium</string>
-            <key>CFBundlePackageType</key><string>APPL</string>
-          </dict>
-          </plist>
-          EOF
+  	  pyinstaller --name Scriptorium \
+	    --windowed \
+	    --add-data "builddir:." \
+	    install/bin/scriptorium
 
       - name: 📀 Create DMG
         run: |
           mkdir -p dist
-          cp -R Scriptorium.app dist/
           rm -f dist/Scriptorium.dmg
           create-dmg \
             --volname "Scriptorium" \
