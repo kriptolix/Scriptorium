@@ -62,19 +62,19 @@ jobs:
 
       - name: 🧱 Create .app bundle
         run: |
-          mkdir -p MyApp.app/Contents/MacOS
-          cp install/bin/my-gtk-app MyApp.app/Contents/MacOS/
-          cp -r install/share MyApp.app/Contents/Resources/
+          mkdir -p Scriptorium.app/Contents/MacOS
+          cp install/bin/scriptorium Scriptorium.app/Contents/MacOS/
+          cp -r install/share Scriptorium.app/Contents/Resources/
           # Create basic Info.plist
-          cat > MyApp.app/Contents/Info.plist <<EOF
+          cat > Scriptorium.app/Contents/Info.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
-            <key>CFBundleName</key><string>MyApp</string>
-            <key>CFBundleIdentifier</key><string>com.example.myapp</string>
+            <key>CFBundleName</key><string>Scriptorium</string>
+            <key>CFBundleIdentifier</key><string>io.github.cgueret.Scriptorium</string>
             <key>CFBundleVersion</key><string>${{ github.ref_name }}</string>
-            <key>CFBundleExecutable</key><string>my-gtk-app</string>
+            <key>CFBundleExecutable</key><string>scriptorium</string>
             <key>CFBundlePackageType</key><string>APPL</string>
           </dict>
           </plist>
@@ -83,17 +83,17 @@ jobs:
       - name: 📀 Create DMG
         run: |
           create-dmg \
-            --volname "MyApp" \
+            --volname "Scriptorium" \
             --window-pos 200 120 \
             --window-size 800 400 \
             --icon-size 100 \
-            --icon "MyApp.app" 200 190 \
+            --icon "Scriptorium.app" 200 190 \
             --app-drop-link 600 185 \
             dist/ \
-            MyApp.app
+            Scriptorium.app
 
       - name: 📤 Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MyApp-macos-dmg
+          name: Scriptorium-macos-dmg
           path: dist/*.dmg
