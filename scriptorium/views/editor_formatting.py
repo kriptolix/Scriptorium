@@ -17,10 +17,16 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, Gio, GObject
+import logging
+from gi.repository import Adw, Gtk, Gio
 from scriptorium.models import Chapter
 from scriptorium.globals import BASE
-import logging
+
+try:
+    from gi.repository import WebKit
+    HAVE_WEBKIT = True
+except ImportError:
+    HAVE_WEBKIT = False
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +39,7 @@ class ScrptFormattingPanel(Adw.NavigationPage):
     __icon_name__ = "open-book-symbolic"
     __description__ = "Preview and modify the formatting"
 
-    web_view = Gtk.Template.Child()
+    web_view_placeholder = Gtk.Template.Child()
     button_next = Gtk.Template.Child()
     button_previous = Gtk.Template.Child()
     chapters_drop_down = Gtk.Template.Child()
@@ -41,6 +47,29 @@ class ScrptFormattingPanel(Adw.NavigationPage):
     def __init__(self, editor, **kwargs):
         super().__init__(**kwargs)
         self._editor = editor
+
+        # If we have WebKit set the component, otherwise show placeholder
+        if HAVE_WEBKIT:
+            logger.info("Webkit is available")
+            self.web_view = WebKit.WebView()
+            self.web_view.set_zoom_level(1)
+            self.web_view.set_margin_start(6)
+            self.web_view.set_margin_end(6)
+            self.web_view.set_margin_top(6)
+            self.web_view.set_margin_bottom(6)
+            self.web_view.set_vexpand(True)
+            self.web_view.set_hexpand(True)
+            self.web_view_placeholder.append(self.web_view)
+        else:
+            widget = Adw.StatusPage(
+                title = "Not available",
+                icon_name = "process-stop-symbolic",
+                description = "This feature is not available on your operating system"
+            )
+            widget.set_vexpand(True)
+            widget.set_hexpand(True)
+            self.web_view_placeholder.append(widget)
+
 
         self.chapters_drop_down.connect(
             "notify::selected-item",
@@ -56,6 +85,7 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         self.chapters_drop_down.set_model(editor.project.manuscript.chapters)
 
         self._position = 0
+
 
     def on_selected_item(self, _drop_down, _selected_item):
         selected_chapter = _drop_down.get_selected_item()
@@ -77,7 +107,8 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         html_content = html_content.replace("{content}", content)
 
         # Load the content
-        self.web_view.load_html(html_content)
+        if HAVE_WEBKIT:
+            self.web_view.load_html(html_content)
 
         # Find the position of the chapter
         chapters = self._editor.project.manuscript.chapters

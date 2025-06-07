@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import sys
 from scriptorium.widgets.multiline_entry_row import MultiLineEntryRow
-from gi.repository import Gio, Adw, WebKit, GLib
+from gi.repository import Gio, Adw, GLib
 from .window import ScrptWindow
 import logging
 
@@ -54,11 +54,7 @@ class ScriptoriumApplication(Adw.Application):
         current_value = self.settings.get_string("style-variant")
         style_variant_action.activate(GLib.Variant('s', current_value))
 
-        # Force loading WebKit, otherwise it is not recognized in Builder
-        dummy = WebKit.WebView()
-        del dummy
-
-        # Same for MultiLineEntryRow
+        # Force loading MultiLineEntryRow, otherwise it is not recognized in Builder
         dummy = MultiLineEntryRow()
         del dummy
 
