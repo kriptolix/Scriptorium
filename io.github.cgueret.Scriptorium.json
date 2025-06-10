@@ -3,13 +3,17 @@
 	"runtime": "org.gnome.Platform",
 	"runtime-version": "48",
 	"sdk": "org.gnome.Sdk",
+	"sdk-extensions": [
+	 "org.freedesktop.Sdk.Extension.openjdk21"
+	],
 	"command": "scriptorium",
 	"finish-args": [
 		"--share=network",
 		"--share=ipc",
 		"--socket=fallback-x11",
+		"--socket=wayland",
 		"--device=dri",
-		"--socket=wayland"
+		"--env=PATH=/app/jre/bin:/usr/bin:/app/bin"
 	],
 	"cleanup": [
 		"/include",
@@ -53,6 +57,29 @@
 				}
 			]
 		},
+		{
+			"name": "LanguageTool",
+			"buildsystem": "simple",
+			"build-commands": [
+				"cp -r . /app/LanguageTool"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://languagetool.org/download/LanguageTool-6.6.zip",
+					"sha256": "53600506b399bb5ffe1e4c8dec794fd378212f14aaf38ccef9b6f89314d11631"
+				}
+			],
+			"modules": [
+				{
+					"name": "openjdk",
+					"buildsystem": "simple",
+					"build-commands": [
+						"/usr/lib/sdk/openjdk21/install.sh"
+					]
+				}
+			]
+		}
 		"python3-ebooklib.json",
 		"python3-beautifulsoup4.json",
 		"python3-pyyaml.json",
