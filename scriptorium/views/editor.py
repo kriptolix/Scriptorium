@@ -54,7 +54,7 @@ PANELS = [
     # TODO: Export
 ]
 
-DEFAULT = "manuscript"
+DEFAULT = "scenes"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/editor.ui")
@@ -71,14 +71,13 @@ class ScrptEditorView(Adw.NavigationPage):
     panels_sidebar = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
 
-
     def __init__(self, window, project:Project):
         """Create a new instance of the editor."""
         super().__init__()
 
         # We're a view not a stand alone window so we get the pointer to the
         # actual window to create the actions
-        self._window = window
+        self.window = window
 
         # Keep track of the manuscript the editor is associated to
         self.project = project
@@ -203,7 +202,7 @@ class ScrptEditorView(Adw.NavigationPage):
 
     def close_on_delete(self):
         self.project = None
-        self._window.close_editor(self)
+        self.window.close_editor(self)
 
     def on_add_entity(self, _action, entity_type):
         target_type = entity_type.get_string()

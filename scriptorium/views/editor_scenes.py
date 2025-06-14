@@ -28,6 +28,8 @@ from scriptorium.dialogs import ScrptAddDialog
 from .editor_scenes_details import ScrptWritingDetailsPanel
 from scriptorium.models import Scene
 
+from scriptorium.dialogs import Writer
+
 logger = logging.getLogger(__name__)
 
 
@@ -53,6 +55,14 @@ class ScrptWritingPanel(Adw.NavigationPage):
             self.editor.project.scenes,
             lambda scene: SceneCard(scene=scene, can_activate=True)
         )
+
+        self.connect("map", self.on_map)
+
+    def on_map(self, _widget):
+        test_scene_id = "9ede0795-6ee2-486d-8b94-4c95cef254c1"
+        writer = Writer()
+        writer.load_scene(self.editor.project.get_resource(test_scene_id))
+        writer.present(self)
 
     @Gtk.Template.Callback()
     def on_listbox_row_activated(self, _list_box, row):

@@ -63,6 +63,7 @@ class ScriptoriumApplication(Adw.Application):
         del dummy
 
         self.connect("startup", self.on_startup)
+        self.connect("shutdown", self.on_shutdown)
 
     def change_color_scheme(self, _settings, value):
         """Handle a change in the select color scheme setting."""
@@ -124,6 +125,8 @@ class ScriptoriumApplication(Adw.Application):
         # Instantiate our language tool interface
         self.language_tool = LanguageTool()
 
-        self.language_tool.check("Hello worlds!", "en-GB")
+    def on_shutdown(self, _application):
+        # Instantiate our language tool interface
+        self.language_tool.shutdown()
 
 

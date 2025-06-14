@@ -19,6 +19,7 @@
 #
 # Code inspired from https://github.com/sonnyp/Eloquent/blob/main/src/languagetool.js
 from gi.repository import Gio, GObject, Soup, GLib
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,10 @@ class LanguageTool(GObject.Object):
             # Let's try to start it
             self._start_server()
 
+    def shutdown(self):
+        if self._proc_language_tool:
+            self._proc_language_tool.force_exit()
+
     def _start_server(self):
         # Only try once!
         if self._proc_language_tool is not None:
@@ -93,9 +98,9 @@ class LanguageTool(GObject.Object):
         #    logger.info(message.decode())
         #    started = "Server started" in message.decode()
 
-    def check(self, text: str, language: str):
+    def check(self, text: str, language: str, callback):
         if not self.server_is_alive:
-            return
+            return None
 
         encoded = Soup.form_encode_hash({
             "text": text,
@@ -103,12 +108,21 @@ class LanguageTool(GObject.Object):
         })
 
         message = Soup.Message.new_from_encoded_form(
-            method = "POST",
-            uri_string = "http://localhost:8081/v2/check",
-            encoded_form = encoded,
+            method="POST",
+            uri_string="http://localhost:8081/v2/check",
+            encoded_form=encoded
         )
 
-        response = self._session.send_and_read(msg=message, cancellable=None)
+        self._session.send_and_read_async(
+            msg=message,
+            cancellable=None,
+            io_priority=GObject.PRIORITY_LOW,
+            callback=self.process_check_result,
+            user_data=callback
+        )
 
-        logger.info(response)
-        
+    def process_check_result(self, session, result, callback):
+        raw_data = session.send_and_read_finish(result)
+        data = json.loads(raw_data.get_data().decode())
+        callback(data)
+
