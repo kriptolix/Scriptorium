@@ -19,9 +19,17 @@ class Writer(Adw.Dialog):
     label_words = Gtk.Template.Child()
     css_provider = Gtk.CssProvider()
 
-    def __init__(self, **kwargs):
-        """Create an instance of the panel."""
-        super().__init__(**kwargs)
+    def __init__(self, scene):
+        """Create an instance of the editor."""
+        super().__init__()
+        self._scene = scene
+
+        self._idle_timeout_id = None
+        self._matches = None
+
+        gesture = Gtk.GestureClick()
+        gesture.connect("pressed", self.on_text_view_click, self.text_view)
+        self.text_view.add_controller(gesture)
 
         # Create the tags for the buffer
         text_buffer = self.text_view.get_buffer()
@@ -69,21 +77,36 @@ class Writer(Adw.Dialog):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-        self._check_timeout_id = None
-
-    def check_content(self, language_tool):
-        text_buffer = self.text_view.get_buffer()
-        start_iter, end_iter = text_buffer.get_bounds()
-        content = text_buffer.get_text(start_iter, end_iter, False)
-        language_tool.check(content, "en-GB", self.process_matches)
-
-        # This is called from a timer, we don't want to repeat execution
-        self._check_timeout_id = None
-        return False
+    def on_text_view_click(self, _gesture, button, x, y, text_view):
+        # If we are on a suggestion, automatically select it.
+        # This will trigger the selection changed
+        if isinstance(_gesture, Gtk.GestureClick) and button == 1:
+            buff_x, buff_y = self.text_view.window_to_buffer_coords(
+                Gtk.TextWindowType.WIDGET,
+                x, y
+            )
+            found, click_iter = self.text_view.get_iter_at_location(
+                buff_x, buff_y
+            )
+            if found and self._matches is not None:
+                buffer = self.text_view.get_buffer()
+                for match in self._matches:
+                    start_iter = buffer.get_iter_at_offset(
+                        match['offset']
+                    )
+                    end_iter = buffer.get_iter_at_offset(
+                        match['offset'] + match['length']
+                    )
+                    if click_iter.in_range(start_iter, end_iter):
+                        def do_select():
+                            buffer.select_range(start_iter, end_iter)
+                            return False
+                        GLib.idle_add(do_select)
+                        break
 
     def process_matches(self, results):
         # If there is another check queued forget that one
-        if self._check_timeout_id is not None:
+        if self._idle_timeout_id is not None:
             return
 
         if text_buffer_lock.acquire(blocking=True):
@@ -96,7 +119,8 @@ class Writer(Adw.Dialog):
                 text_buffer.remove_tag_by_name("hint", start_iter, end_iter)
 
                 # Then add the new ones
-                for match in results['matches']:
+                self._matches = results['matches']
+                for match in self._matches:
                     start_iter = text_buffer.get_iter_at_offset(match['offset'])
                     end_iter = text_buffer.get_iter_at_offset(match['offset'] + match['length'])
                     if match["type"]["typeName"] == "Hint":
@@ -113,65 +137,77 @@ class Writer(Adw.Dialog):
             finally:
                 text_buffer_lock.release()
 
-    @Gtk.Template.Callback()
-    def on_buffer_changed(self, text_buffer):
-        """Keep an eye on modifications of the buffer."""
+    def on_editor_idle(self):
+        self._idle_timeout_id = None
 
-        # Update the number of words
+        text_buffer = self.text_view.get_buffer()
         start_iter, end_iter = text_buffer.get_bounds()
         content = text_buffer.get_text(start_iter, end_iter, False)
+
+        # Update the number of words
         words = len(content.split())
         self.label_words.set_label(str(words))
 
-        # Set a new timeout to check the content
-        if self._check_timeout_id is not None:
-            GLib.source_remove(self._check_timeout_id)
+        # Call LanguageTool
         window = self.props.root
-        if window is not None:
-            application = window.props.application
-            language_tool = application.language_tool
-            self._check_timeout_id = GLib.timeout_add_seconds(0.5, self.check_content, language_tool)
+        application = window.props.application
+        language_tool = application.language_tool
+        language_tool.check(content, "en-GB", self.process_matches)
+
+        # Don't repeat that callback
+        return False
+
+    @Gtk.Template.Callback()
+    def on_buffer_changed(self, text_buffer):
+        """Keep an eye on modifications of the buffer."""
+        if self._idle_timeout_id:
+            GLib.source_remove(self._idle_timeout_id)
+
+        self._idle_timeout_id = GLib.timeout_add(200, self.on_editor_idle)
+
+    @Gtk.Template.Callback()
+    def on_selection_changed(self, text_buffer, selection):
+        # Show the pop over for the selection: style elements + suggestions eventually
+        # If we are on more than one suggestion do not show any
+        if not text_buffer.get_has_selection():
+            return
+
+        logger.info("Selected")
+
+    @Gtk.Template.Callback()
+    def on_writer_opened(self, _dialog):
+        """Switch to editing the scene that has been selected."""
+        logger.info(f"Open editor for {self._scene.title}")
+
+        # Set the editor title to the title of the scene
+        self.set_title(self._scene.title)
+
+        # Load the content of the scene
+        text_buffer = self.text_view.get_buffer()
+        self._scene.load_into_buffer(text_buffer)
 
     @Gtk.Template.Callback()
     def on_writer_closed(self, _dialog):
         """Perform any action needed when closing the editor."""
-        Gtk.StyleContext.remove_provider_for_display(Gdk.Display.get_default(),
-                                                    self.css_provider)
-        text_buffer = self.text_view.get_buffer()
+        logger.info(f"Close editor for {self._scene.title}")
+
+        if self._idle_timeout_id:
+            GLib.source_remove(self._idle_timeout_id)
+
+        # Remove the styling
+        Gtk.StyleContext.remove_provider_for_display(
+            Gdk.Display.get_default(),
+            self.css_provider
+        )
 
         # Remove all the language check annotations
+        text_buffer = self.text_view.get_buffer()
         start_iter, end_iter = text_buffer.get_bounds()
         text_buffer.remove_tag_by_name("error", start_iter, end_iter)
         text_buffer.remove_tag_by_name("warning", start_iter, end_iter)
         text_buffer.remove_tag_by_name("hint", start_iter, end_iter)
 
-        logger.info(f"Save content of {text_buffer.scene.title}")
-        text_buffer.scene.save_from_buffer(text_buffer)
-
-    def load_scene(self, scene):
-        """Switch to editing the scene that has been selected."""
-        logger.info(f"Open editor for {scene.title}")
-
-        # Set the editor title to the title of the scene
-        self.set_title(scene.title)
-
-        # Get the text buffer
-        text_buffer = self.text_view.get_buffer()
-
-        # Assign the scene to it
-        text_buffer.scene = scene
-
-        # We don't want undo to span across scenes
-        text_buffer.begin_irreversible_action()
-
-        # Delete previous content
-        start_iter, end_iter = text_buffer.get_bounds()
-        text_buffer.delete(start_iter, end_iter)
-
-        # Load the scene
-        scene.load_into_buffer(text_buffer)
-
-        # Finish
-        text_buffer.end_irreversible_action()
+        # Save the content of the buffer
+        self._scene.save_from_buffer(text_buffer)
 
 

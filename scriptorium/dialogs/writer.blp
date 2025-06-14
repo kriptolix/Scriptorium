@@ -7,6 +7,7 @@ template $Writer: Adw.Dialog {
   content-width: 1200;
   content-height: 800;
   closed => $on_writer_closed();
+  map => $on_writer_opened();
 
   Adw.ToolbarView {
     extend-content-to-top-edge: false;
@@ -63,10 +64,11 @@ template $Writer: Adw.Dialog {
           buffer: Gtk.TextBuffer {
             enable-undo: true;
             changed => $on_buffer_changed();
+            notify::has-selection => $on_selection_changed();
           };
 
           wrap-mode: word;
-          input-hints: no_spellcheck | word_completion | uppercase_sentences | emoji;
+          input-hints: spellcheck | word_completion | uppercase_sentences | emoji;
         }
       };
     }
