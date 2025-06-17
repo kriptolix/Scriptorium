@@ -21,10 +21,11 @@
 from gi.repository import Gio, GObject, Soup, GLib
 import json
 import logging
+from scriptorium.models import Annotation
 
 logger = logging.getLogger(__name__)
 
-SEND_PING_TIMEOUT_SECONDS = 2
+SEND_PING_TIMEOUT_SECONDS = 1
 
 # TODO Replace pings with a passive check, update alive everytime asked
 # TODO Create a model "Annotation" and return instances of it, tagged with LanguageTool as author
@@ -48,12 +49,13 @@ class LanguageTool(GObject.Object):
         self._session.send_and_read_async(
             message, GObject.PRIORITY_LOW, None, self.handle_ping_reply
         )
-        return True
+        return False
 
     def handle_ping_reply(self, session, result):
         try:
             message = session.send_and_read_finish(result)
             if "LanguageTool API" in message.get_data().decode():
+                logger.info("Connected to LanguageTool")
                 self.server_is_alive = True
         except GLib.GError:
             # We could not connect
@@ -61,6 +63,9 @@ class LanguageTool(GObject.Object):
 
             # Let's try to start it
             self._start_server()
+
+            # Try to ping it
+            GLib.timeout_add_seconds(SEND_PING_TIMEOUT_SECONDS, self.send_ping)
 
     def shutdown(self):
         if self._proc_language_tool:
@@ -71,7 +76,7 @@ class LanguageTool(GObject.Object):
         if self._proc_language_tool is not None:
             return
 
-        logging.info("Starting LanguageTool server")
+        logger.info("Starting LanguageTool server")
 
         # Start the subprocess
         self._proc_language_tool = Gio.Subprocess.new(
@@ -87,18 +92,6 @@ class LanguageTool(GObject.Object):
             ],
             Gio.SubprocessFlags.INHERIT_FDS | Gio.SubprocessFlags.STDOUT_PIPE,
         )
-
-        # TODO Replace this code by an async to diplay the logs from LanguageTool
-        # Wait until we can read "Server started"
-        #stdout_stream = Gio.DataInputStream(
-        #    base_stream=self._proc_language_tool.get_stdout_pipe(),
-        #    close_base_stream=True,
-        #)
-        #started = False
-        #while not started:
-        #    message, length = stdout_stream.read_line()
-        #    logger.info(message.decode())
-        #    started = "Server started" in message.decode()
 
     def check(self, text: str, language: str, callback):
         if not self.server_is_alive:
@@ -119,12 +112,40 @@ class LanguageTool(GObject.Object):
             msg=message,
             cancellable=None,
             io_priority=GObject.PRIORITY_LOW,
-            callback=self.process_check_result,
+            callback=self._process_check_result,
             user_data=callback
         )
 
-    def process_check_result(self, session, result, callback):
+    def _process_check_result(self, session, result, callback):
+        """Handle a response to a check request."""
+
+        # Decode the response
         raw_data = session.send_and_read_finish(result)
-        data = json.loads(raw_data.get_data().decode())
-        callback(data)
+        results = json.loads(raw_data.get_data().decode())
+
+        # Prepare a list of annotations
+        annotations = []
+        for match in results['matches']:
+            annotation = Annotation()
+            annotation.title = match["shortMessage"]
+            if len(match["shortMessage"]) == 0:
+                annotation.title = match["rule"]["category"]["name"]
+            annotation.message = match["message"]
+            annotation.offset = match["offset"]
+            annotation.length = match["length"]
+            if match["type"]["typeName"] == "Hint":
+                annotation.category = "hint"
+            elif match["rule"]["issueType"] == "style":
+                annotation.category = "hint"
+            elif match["type"]["typeName"] == "Other":
+                annotation.category = "warning"
+            elif match["rule"]["issueType"] == "inconsistency":
+                annotation.category = "warning"
+            else:
+                annotation.category = "error"
+            annotations.append(annotation)
+
+        # Call back with the annotations
+        callback(annotations)
+
 

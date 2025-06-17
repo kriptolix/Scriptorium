@@ -62,7 +62,8 @@ template $Writer: Adw.Dialog {
       show-sidebar: bind show_sidebar_button.active;
       sidebar-position: end;
 
-      sidebar: Box {
+      sidebar: ScrolledWindow{
+      Box {
         orientation: vertical;
         margin-start: 6;
         margin-end: 6;
@@ -70,7 +71,7 @@ template $Writer: Adw.Dialog {
         Adw.PreferencesGroup {
           title: _("Suggestions");
 
-          ListBox {
+          ListBox annotations_list {
             styles [
               "boxed-list-separate",
             ]
@@ -81,6 +82,7 @@ template $Writer: Adw.Dialog {
               description: "No suggested changes";
             }
           }
+        }
         }
       };
 

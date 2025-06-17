@@ -28,7 +28,7 @@
     <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
     <file preprocess="xml-stripblanks">widgets/cards_list.ui</file>
     <file preprocess="xml-stripblanks">widgets/theme_selector.ui</file>
-    <file preprocess="xml-stripblanks">widgets/writer_popover.ui</file>
+    <file preprocess="xml-stripblanks">widgets/annotation.ui</file>
 
     <!-- Dialogs -->
     <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>

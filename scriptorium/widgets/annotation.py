@@ -22,19 +22,37 @@
 
 from gi.repository import Adw, Gtk, GObject, GLib
 from scriptorium.globals import BASE
+from scriptorium.models import Annotation
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/widgets/writer_popover.ui")
-class WriterPopover(Gtk.Popover):
-    __gtype_name__ = "WriterPopover"
+@Gtk.Template(resource_path=f"{BASE}/widgets/annotation.ui")
+class AnnotationCard(Adw.Bin):
+    __gtype_name__ = "AnnotationCard"
 
     category = GObject.Property(type=str)
-    description = GObject.Property(type=str)
+    message = GObject.Property(type=str)
+    title = GObject.Property(type=str)
+    icon = Gtk.Template.Child()
+    header = Gtk.Template.Child()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, annotation: Annotation):
+        super().__init__()
 
+        self.title = annotation.title
+        self.message = annotation.message
+        self.category = annotation.category
+
+        if annotation.category == "warning":
+            self.icon.add_css_class("annotation-warning")
+            self.icon.set_from_icon_name("dialog-warning-symbolic")
+        elif annotation.category == "error":
+            self.icon.add_css_class("annotation-error")
+            self.icon.set_from_icon_name("dialog-error-symbolic")
+        elif annotation.category == "hint":
+            self.icon.add_css_class("annotation-hint")
+            self.icon.set_from_icon_name("dialog-information-symbolic")
+    

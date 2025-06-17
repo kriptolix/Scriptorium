@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Adw, Gtk, Pango, Gdk, GLib
 from scriptorium.globals import BASE
-from scriptorium.widgets import WriterPopover
+from scriptorium.widgets import AnnotationCard
 import logging
 import threading
 
@@ -37,6 +37,7 @@ class Writer(Adw.Dialog):
     text_view = Gtk.Template.Child()
     label_words = Gtk.Template.Child()
     css_provider = Gtk.CssProvider()
+    annotations_list = Gtk.Template.Child()
 
     def __init__(self, scene):
         """Create an instance of the editor."""
@@ -46,14 +47,6 @@ class Writer(Adw.Dialog):
         self._idle_timeout_id = None
         self._matches = None
         self._button_down = False
-
-        gesture = Gtk.GestureClick()
-        gesture.connect("pressed", self.on_text_view_click, self.text_view)
-        gesture.connect("released", self.check_selection_after_release)
-            #lambda *args : GLib.timeout_add(0, self.check_selection_after_release)
-        #)
-        gesture.connect("unpaired_release",self.check_selection_after_release)
-        self.text_view.add_controller(gesture)
 
         # Create the tags for the buffer
         text_buffer = self.text_view.get_buffer()
@@ -132,7 +125,7 @@ class Writer(Adw.Dialog):
 
         if self.popover is None:
             self.anchor_overlay = Adw.Bin()
-            self.popover = WriterPopover()
+            #self.popover = WriterPopover()
             self.popover.set_parent(self.anchor_overlay)
             self.text_view.add_overlay(child=self.anchor_overlay, xpos=x, ypos=y)
         else:
@@ -179,7 +172,7 @@ class Writer(Adw.Dialog):
                     if match['offset'] < offset < match['offset'] + match['length']:
                         GLib.idle_add(self.trigger_highlight_for_match, match)
 
-    def process_matches(self, results):
+    def on_received_annotations(self, annotations):
         # If there is another check queued forget that one
         if self._idle_timeout_id is not None:
             return
@@ -193,22 +186,23 @@ class Writer(Adw.Dialog):
                 text_buffer.remove_tag_by_name("warning", start_iter, end_iter)
                 text_buffer.remove_tag_by_name("hint", start_iter, end_iter)
 
+                # Clear the list box
+                self.annotations_list.remove_all()
+
                 # Then add the new ones
-                self._matches = results['matches']
-                for match in self._matches:
-                    start_iter = text_buffer.get_iter_at_offset(match['offset'])
-                    end_iter = text_buffer.get_iter_at_offset(match['offset'] + match['length'])
-                    if match["type"]["typeName"] == "Hint":
-                        tag_name = "hint"
-                    elif match["rule"]["issueType"] == "style":
-                        tag_name = "hint"
-                    elif match["type"]["typeName"] == "Other":
-                        tag_name = "warning"
-                    elif match["rule"]["issueType"] == "inconsistency":
-                        tag_name = "warning"
-                    else:
-                        tag_name = "error"
-                    text_buffer.apply_tag_by_name(tag_name, start_iter, end_iter)
+                for annotation in annotations:
+                    start_iter = text_buffer.get_iter_at_offset(
+                        annotation.offset
+                    )
+                    end_iter = text_buffer.get_iter_at_offset(
+                        annotation.offset + annotation.length
+                    )
+                    text_buffer.apply_tag_by_name(
+                        annotation.category, start_iter, end_iter
+                    )
+                    self.annotations_list.append(
+                        AnnotationCard(annotation)
+                    )
             finally:
                 text_buffer_lock.release()
 
@@ -232,7 +226,7 @@ class Writer(Adw.Dialog):
         if not language_tool.server_is_alive:
             self._idle_timeout_id = GLib.timeout_add(200, self.on_editor_idle)
         else:
-            language_tool.check(content, "en-GB", self.process_matches)
+            language_tool.check(content, "en-GB", self.on_received_annotations)
 
         # Don't repeat that callback
         return False

@@ -34,6 +34,18 @@ listview {
   background-color: var(--secondary-sidebar-bg-color);
 }
 
+.annotation-error {
+  color: #e01b24;
+}
+
+.annotation-warning {
+  color: #f5c211;
+}
+
+.annotation-hint {
+  color: #62a0ea;
+}
+
 
 .themeselector {
   margin: 3px;

@@ -1,4 +1,4 @@
-# models/__init__.py
+# models/annotation.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -16,19 +16,21 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Data models for all the custom objects managed by Scriptorium."""
+# TODO: Turn those into a Resource managed via the project to handle
+# sharing annotation across authors
 
-from .library import Library
-from .manuscript import Manuscript
-from .chapter import Chapter
-from .scene import Scene
-from .commit_message import CommitMessage
-from .entity import Entity
-from .project import Project
-from .link import Link
-from .annotation import Annotation
+from gi.repository import GObject
+import logging
 
-__all__ = [
-    'Library', 'Manuscript', 'Chapter', 'Scene', 'CommitMessage',
-    'Entity', 'Link', 'Project', 'Annotation'
-]
+logger = logging.getLogger(__name__)
+
+
+class Annotation(GObject.Object):
+    """An annotation is a section of a text marked with some text."""
+    __gtype_name__ = "Annotation"
+
+    title = GObject.Property(type=str)
+    message = GObject.Property(type=str)
+    category = GObject.Property(type=str)
+    offset = GObject.Property(type=int)
+    length = GObject.Property(type=int)
