@@ -1,0 +1,46 @@
+using Gtk 4.0;
+
+template $WriterPopover : Popover {
+  autohide: false;
+  has-arrow: true;
+
+  child: Box {
+    orientation: vertical;
+    spacing: 6;
+
+    Box {
+      orientation: horizontal;
+      vexpand: true;
+
+      Button format_bold {
+        icon-name: "format-text-bold-symbolic";
+      }
+    }
+
+    Separator {}
+
+    Box {
+      halign: fill;
+      orientation: vertical;
+
+      Box {
+        Label category {
+          justify: left;
+          label: bind template.category;
+        }
+      }
+      Label description {
+        margin-top: 12;
+        wrap: true;
+        lines: 2;
+        single-line-mode: false;
+        label: bind template.description;
+      }
+    }
+
+    Box suggestions {
+      margin-top: 12;
+      spacing: 6;
+    }
+  };
+}

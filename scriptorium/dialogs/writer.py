@@ -1,5 +1,24 @@
+# dialogs/writer.py
+#
+# Copyright 2025 Christophe Gueret
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Adw, Gtk, Pango, Gdk, GLib
 from scriptorium.globals import BASE
+from scriptorium.widgets import WriterPopover
 import logging
 import threading
 
@@ -26,9 +45,14 @@ class Writer(Adw.Dialog):
 
         self._idle_timeout_id = None
         self._matches = None
+        self._button_down = False
 
         gesture = Gtk.GestureClick()
         gesture.connect("pressed", self.on_text_view_click, self.text_view)
+        gesture.connect("released", self.check_selection_after_release)
+            #lambda *args : GLib.timeout_add(0, self.check_selection_after_release)
+        #)
+        gesture.connect("unpaired_release",self.check_selection_after_release)
         self.text_view.add_controller(gesture)
 
         # Create the tags for the buffer
@@ -77,10 +101,71 @@ class Writer(Adw.Dialog):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def on_text_view_click(self, _gesture, button, x, y, text_view):
+        self.popover = None
+
+    def check_selection_after_release(self, *args):
+        logger.info("release")
+
+        buffer = self.text_view.get_buffer()
+        if not buffer.get_has_selection():
+            return False
+
+        start_iter, end_iter = buffer.get_selection_bounds()
+        if start_iter.get_offset() == end_iter.get_offset():
+            return False
+
+        logger.info(f"Release with {buffer.get_text(start_iter, end_iter, False)}")
+
+        # Aim to place the popover under the selected text and in the middle
+        rect_start = self.text_view.get_iter_location(start_iter)
+        win_start_x, win_start_y = self.text_view.buffer_to_window_coords(
+            Gtk.TextWindowType.WIDGET,
+            rect_start.x, rect_start.y
+        )
+        rect_end = self.text_view.get_iter_location(end_iter)
+        win_end_x, win_end_y = self.text_view.buffer_to_window_coords(
+            Gtk.TextWindowType.WIDGET,
+            rect_end.x, rect_end.y
+        )
+        x = win_end_x
+        y = win_end_y + rect_start.height * 0.8
+
+        if self.popover is None:
+            self.anchor_overlay = Adw.Bin()
+            self.popover = WriterPopover()
+            self.popover.set_parent(self.anchor_overlay)
+            self.text_view.add_overlay(child=self.anchor_overlay, xpos=x, ypos=y)
+        else:
+            self.text_view.move_overlay(child=self.anchor_overlay, xpos=x, ypos=y)
+
+        self.popover.category = buffer.get_text(start_iter, end_iter, False)
+        self.popover.set_pointing_to(Gdk.Rectangle(x, y))
+        self.popover.popup()
+        #def show_popup():
+        #    self.popover.popup()
+        #    return False
+        #GLib.idle_add(show_popup)
+
+        return False
+
+    def trigger_highlight_for_match(self, match):
+        buffer = self.text_view.get_buffer()
+        start_iter = buffer.get_iter_at_offset(
+            match['offset']
+        )
+        end_iter = buffer.get_iter_at_offset(
+            match['offset'] + match['length']
+        )
+        buffer.select_range(start_iter, end_iter)
+        return False
+
+    def on_text_view_click(self, _gesture, n_press, x, y, text_view):
         # If we are on a suggestion, automatically select it.
         # This will trigger the selection changed
-        if isinstance(_gesture, Gtk.GestureClick) and button == 1:
+        if self.popover:
+            self.popover.popdown()
+
+        if isinstance(_gesture, Gtk.GestureClick) and n_press == 1:
             buff_x, buff_y = self.text_view.window_to_buffer_coords(
                 Gtk.TextWindowType.WIDGET,
                 x, y
@@ -89,20 +174,10 @@ class Writer(Adw.Dialog):
                 buff_x, buff_y
             )
             if found and self._matches is not None:
-                buffer = self.text_view.get_buffer()
+                offset = click_iter.get_offset()
                 for match in self._matches:
-                    start_iter = buffer.get_iter_at_offset(
-                        match['offset']
-                    )
-                    end_iter = buffer.get_iter_at_offset(
-                        match['offset'] + match['length']
-                    )
-                    if click_iter.in_range(start_iter, end_iter):
-                        def do_select():
-                            buffer.select_range(start_iter, end_iter)
-                            return False
-                        GLib.idle_add(do_select)
-                        break
+                    if match['offset'] < offset < match['offset'] + match['length']:
+                        GLib.idle_add(self.trigger_highlight_for_match, match)
 
     def process_matches(self, results):
         # If there is another check queued forget that one
@@ -152,7 +227,12 @@ class Writer(Adw.Dialog):
         window = self.props.root
         application = window.props.application
         language_tool = application.language_tool
-        language_tool.check(content, "en-GB", self.process_matches)
+
+        # If language tool is not ready try again later
+        if not language_tool.server_is_alive:
+            self._idle_timeout_id = GLib.timeout_add(200, self.on_editor_idle)
+        else:
+            language_tool.check(content, "en-GB", self.process_matches)
 
         # Don't repeat that callback
         return False
@@ -166,15 +246,6 @@ class Writer(Adw.Dialog):
         self._idle_timeout_id = GLib.timeout_add(200, self.on_editor_idle)
 
     @Gtk.Template.Callback()
-    def on_selection_changed(self, text_buffer, selection):
-        # Show the pop over for the selection: style elements + suggestions eventually
-        # If we are on more than one suggestion do not show any
-        if not text_buffer.get_has_selection():
-            return
-
-        logger.info("Selected")
-
-    @Gtk.Template.Callback()
     def on_writer_opened(self, _dialog):
         """Switch to editing the scene that has been selected."""
         logger.info(f"Open editor for {self._scene.title}")
@@ -185,6 +256,7 @@ class Writer(Adw.Dialog):
         # Load the content of the scene
         text_buffer = self.text_view.get_buffer()
         self._scene.load_into_buffer(text_buffer)
+
 
     @Gtk.Template.Callback()
     def on_writer_closed(self, _dialog):

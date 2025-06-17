@@ -23,14 +23,30 @@ template $Writer: Adw.Dialog {
       ToggleButton show_sidebar_button {
         icon-name: "info-outline-symbolic";
         tooltip-text: _("Toggle text details");
-        active: bind split_view.show-sidebar no-sync-create;
+        active: bind split_view.show-sidebar ; // no-sync-create
       }
     }
+
 
     [bottom]
     ActionBar action_bar {
       revealed: true;
       valign: end;
+
+      [start]
+      Box {
+        Button format_bold {
+          icon-name: "format-text-bold-symbolic";
+        }
+
+        Button format_italic {
+          icon-name: "format-text-italic-symbolic";
+        }
+
+        ToggleButton spelling {
+          icon-name: "tools-check-spelling-symbolic";
+        }
+      }
 
       [end]
       Box {
@@ -48,29 +64,52 @@ template $Writer: Adw.Dialog {
 
       sidebar: Box {
         orientation: vertical;
+        margin-start: 6;
+        margin-end: 6;
+
+        Adw.PreferencesGroup {
+          title: _("Suggestions");
+
+          ListBox {
+            styles [
+              "boxed-list-separate",
+            ]
+
+            [placeholder]
+            Adw.StatusPage {
+              icon-name: "object-select-symbolic";
+              description: "No suggested changes";
+            }
+          }
+        }
       };
 
-      content: ScrolledWindow content {
-        TextView text_view {
-          styles [
-            "text_editor"
-          ]
+      content: Box {
+        hexpand: true;
+        orientation: vertical;
 
-          vexpand: true;
-          left-margin: 6;
-          right-margin: 6;
-          top-margin: 6;
-          bottom-margin: 6;
-          buffer: Gtk.TextBuffer {
-            enable-undo: true;
-            changed => $on_buffer_changed();
-            notify::has-selection => $on_selection_changed();
-          };
+        ScrolledWindow content {
+          TextView text_view {
+            styles [
+              "text_editor"
+            ]
 
-          wrap-mode: word;
-          input-hints: spellcheck | word_completion | uppercase_sentences | emoji;
+            vexpand: true;
+            left-margin: 6;
+            right-margin: 6;
+            top-margin: 6;
+            bottom-margin: 6;
+            buffer: Gtk.TextBuffer {
+              enable-undo: true;
+              changed => $on_buffer_changed();
+            };
+
+            wrap-mode: word;
+            input-hints: spellcheck | word_completion | uppercase_sentences | emoji;
+          }
         }
       };
     }
   }
 }
+
