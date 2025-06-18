@@ -100,8 +100,7 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
     def on_open_editor_activated(self, _button):
         """Open the scene editor."""
         logger.info(f"Open text editor for {self._scene.title}")
-        writer = Writer()
-        writer.load_scene(self._scene)
+        writer = Writer(self._scene)
         writer.present(self)
 
     @Gtk.Template.Callback()

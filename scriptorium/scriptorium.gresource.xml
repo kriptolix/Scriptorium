@@ -28,28 +28,13 @@
     <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
     <file preprocess="xml-stripblanks">widgets/cards_list.ui</file>
     <file preprocess="xml-stripblanks">widgets/theme_selector.ui</file>
+    <file preprocess="xml-stripblanks">widgets/annotation.ui</file>
 
     <!-- Dialogs -->
     <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>
     <file preprocess="xml-stripblanks">dialogs/writer.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_scenes.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_entities.ui</file>
-
-    <!-- Editor mode -->
-    <!--
-    <file>editor/emulator.html</file>
-    <file preprocess="xml-stripblanks">editor/plotting.ui</file>
-    <file preprocess="xml-stripblanks">editor/editor_entity.ui</file>
-    <file preprocess="xml-stripblanks">editor/editor_overview.ui</file>
-    <file preprocess="xml-stripblanks">editor/editor_formatting.ui</file>
-    <file preprocess="xml-stripblanks">editor/editor_writing.ui</file>
-    <file preprocess="xml-stripblanks">editor/scene.ui</file>
-    <file preprocess="xml-stripblanks">editor/chapter_column.ui</file>
-    <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
-    -->
-
-    <!-- Gtk help overlay -->
-    <!-- <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file> -->
   </gresource>
 
   <!-- Assets -->

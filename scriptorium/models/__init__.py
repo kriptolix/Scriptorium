@@ -26,8 +26,9 @@ from .commit_message import CommitMessage
 from .entity import Entity
 from .project import Project
 from .link import Link
+from .annotation import Annotation
 
 __all__ = [
     'Library', 'Manuscript', 'Chapter', 'Scene', 'CommitMessage',
-    'Entity', 'Link', 'Project'
+    'Entity', 'Link', 'Project', 'Annotation'
 ]

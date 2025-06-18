@@ -5,10 +5,11 @@ from .chapter_column import ChapterColumn
 from .manuscript import ManuscriptItem
 from .cards_list import CardsList
 from .theme_selector import ThemeSelector
+from .annotation import AnnotationCard
 
 __all__ = [
     "SceneCard", "ChapterCard", "EntityCard",
     "ChapterColumn", "ManuscriptItem", "CardsList"
-    "ThemeSelector"
+    "ThemeSelector", "WriterPopover", "AnnotationCard"
 ]
 

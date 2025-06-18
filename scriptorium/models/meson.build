@@ -10,5 +10,6 @@ scriptorium_models_sources = [
 	'project.py',
 	'image.py',
 	'link.py',
+	'annotation.py',
 ]
 install_data(scriptorium_models_sources, install_dir: moduledir / 'models')

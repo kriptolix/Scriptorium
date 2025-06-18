@@ -21,9 +21,11 @@ configure_file(
 scriptorium_sources = [
 	'__init__.py',
 	'main.py',
+	'application.py',
 	'window.py',
 	'utils.py',
 	'globals.py',
+	'language_tool.py',
 ]
 install_data(scriptorium_sources, install_dir: moduledir)
 
@@ -58,6 +60,7 @@ blueprints = custom_target(
 		'widgets/multiline_entry_row.blp',
 		'widgets/cards_list.blp',
 		'widgets/theme_selector.blp',
+		'widgets/annotation.blp',
 	),
 	output: '.',
 	command: [
