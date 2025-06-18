@@ -19,7 +19,7 @@ template $AnnotationCard : Adw.Bin {
       hexpand: true;
       spacing: 3;
 
-      Box header {
+      Box {
         spacing: 3;
 
         styles [
@@ -44,9 +44,10 @@ template $AnnotationCard : Adw.Bin {
       }
     }
 
-    Box suggestions {
-      margin-top: 12;
-      spacing: 6;
+    Adw.WrapBox suggestions {
+      orientation: horizontal;
+      child-spacing: 3;
+      line-spacing: 3;
     }
   }
 }

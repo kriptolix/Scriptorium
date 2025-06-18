@@ -127,12 +127,18 @@ class LanguageTool(GObject.Object):
         annotations = []
         for match in results['matches']:
             annotation = Annotation()
+
+            # Set the message
             annotation.title = match["shortMessage"]
             if len(match["shortMessage"]) == 0:
                 annotation.title = match["rule"]["category"]["name"]
             annotation.message = match["message"]
+
+            # Set the boundaries
             annotation.offset = match["offset"]
             annotation.length = match["length"]
+
+            # Set the category
             if match["type"]["typeName"] == "Hint":
                 annotation.category = "hint"
             elif match["rule"]["issueType"] == "style":
@@ -143,6 +149,12 @@ class LanguageTool(GObject.Object):
                 annotation.category = "warning"
             else:
                 annotation.category = "error"
+
+            # Add the suggestions
+            for replacement in match["replacements"]:
+                annotation.suggestions.append(replacement["value"])
+
+            # Append the annotation
             annotations.append(annotation)
 
         # Call back with the annotations

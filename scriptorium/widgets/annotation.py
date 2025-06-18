@@ -20,7 +20,7 @@
 # Code inspired from Eloquent:
 # https://github.com/sonnyp/Eloquent/blob/main/src/widgets/SuggestionPopover.js
 
-from gi.repository import Adw, Gtk, GObject, GLib
+from gi.repository import Adw, Gtk, GObject
 from scriptorium.globals import BASE
 from scriptorium.models import Annotation
 
@@ -33,19 +33,21 @@ logger = logging.getLogger(__name__)
 class AnnotationCard(Adw.Bin):
     __gtype_name__ = "AnnotationCard"
 
-    category = GObject.Property(type=str)
-    message = GObject.Property(type=str)
+    annotation = GObject.Property(type=Annotation)
     title = GObject.Property(type=str)
+    message = GObject.Property(type=str)
     icon = Gtk.Template.Child()
-    header = Gtk.Template.Child()
+    suggestions = Gtk.Template.Child()
 
-    def __init__(self, annotation: Annotation):
+    def __init__(self, text_buffer, annotation: Annotation):
         super().__init__()
+        self.annotation = annotation
 
+        # Set basic attributes
         self.title = annotation.title
         self.message = annotation.message
-        self.category = annotation.category
 
+        # Adjust the color of the header according to the type of annotation
         if annotation.category == "warning":
             self.icon.add_css_class("annotation-warning")
             self.icon.set_from_icon_name("dialog-warning-symbolic")
@@ -55,4 +57,19 @@ class AnnotationCard(Adw.Bin):
         elif annotation.category == "hint":
             self.icon.add_css_class("annotation-hint")
             self.icon.set_from_icon_name("dialog-information-symbolic")
-    
+
+        # Add the suggestions (limit to top 10 if we have more)
+        for suggestion in annotation.suggestions[:10]:
+            button = Gtk.Button(label=suggestion.get_string())
+            button.add_css_class("suggested-action")
+            button.connect("clicked", self.on_suggestion_click, text_buffer)
+            self.suggestions.append(button)
+
+    def on_suggestion_click(self, button, text_buffer):
+        start_iter = text_buffer.get_iter_at_offset(self.annotation.offset)
+        end_iter = text_buffer.get_iter_at_offset(
+            self.annotation.offset + self.annotation.length
+        )
+        text_buffer.delete(start_iter, end_iter)
+        text_buffer.insert(start_iter, button.get_label())
+

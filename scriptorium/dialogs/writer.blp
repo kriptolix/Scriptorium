@@ -23,7 +23,7 @@ template $Writer: Adw.Dialog {
       ToggleButton show_sidebar_button {
         icon-name: "info-outline-symbolic";
         tooltip-text: _("Toggle text details");
-        active: bind split_view.show-sidebar ; // no-sync-create
+        active: bind split_view.show-sidebar no-sync-create; // no-sync-create
       }
     }
 
@@ -43,8 +43,11 @@ template $Writer: Adw.Dialog {
           icon-name: "format-text-italic-symbolic";
         }
 
-        ToggleButton spelling {
+        ToggleButton show_annotations {
+          active: true;
           icon-name: "tools-check-spelling-symbolic";
+          toggled => $on_show_annotations_toggled();
+          tooltip-text: _("Show annotations");
         }
       }
 
@@ -75,6 +78,7 @@ template $Writer: Adw.Dialog {
             styles [
               "boxed-list-separate",
             ]
+            selection-mode: none;
 
             [placeholder]
             Adw.StatusPage {

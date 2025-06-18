@@ -56,7 +56,8 @@ class ScrptWritingPanel(Adw.NavigationPage):
             lambda scene: SceneCard(scene=scene, can_activate=True)
         )
 
-        self.connect("map", self.on_map)
+        # Open a test scene for debugging
+        #self.connect("map", self.on_map)
 
     def on_map(self, _widget):
         test_scene_id = "9ede0795-6ee2-486d-8b94-4c95cef254c1"
