@@ -68,6 +68,7 @@ def buffer_to_html(buffer: Gtk.TextBuffer):
 
     return '\n'.join(html_content)
 
+
 def get_child_at(widget, position):
     # In the special case we ask for -1 return None
     if position < 0:

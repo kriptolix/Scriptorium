@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Adw, Gtk, Pango, Gdk, GLib
+from gi.repository import Adw, Gtk, Pango, Gdk, GLib, Gio
 from scriptorium.globals import BASE
 from scriptorium.widgets import AnnotationCard
 import logging
@@ -54,8 +54,9 @@ class Writer(Adw.Dialog):
         # Create the tags for the buffer
         text_buffer = self.text_view.get_buffer()
 
-        # Italics tag
+        # Text formatting tags
         text_buffer.create_tag("em", style=Pango.Style.ITALIC)
+        text_buffer.create_tag("strong", weight=Pango.Weight.BOLD)
 
         # Error tag
         color_error = Gdk.RGBA()
@@ -97,6 +98,31 @@ class Writer(Adw.Dialog):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
+    def _switch_tag_for_selection(self, tag_name):
+        text_buffer = self.text_view.get_buffer()
+        if not text_buffer.get_has_selection():
+            return
+        tag = text_buffer.get_tag_table().lookup(tag_name)
+        start, end = text_buffer.get_selection_bounds()
+
+        iter_ = start.copy()
+        full_tagged = True
+        while iter_.compare(end) < 0 and full_tagged:
+            full_tagged = full_tagged & iter_.has_tag(tag)
+            iter_.forward_char()
+
+        if full_tagged:
+            text_buffer.remove_tag(tag, start, end)
+        else:
+            text_buffer.apply_tag(tag, start, end)
+
+    @Gtk.Template.Callback()
+    def do_toggle_bold(self, _src, _param = None):
+        self._switch_tag_for_selection("strong")
+
+    @Gtk.Template.Callback()
+    def do_toggle_italics(self, _src, _param = None):
+        self._switch_tag_for_selection("em")
 
     def on_received_annotations(self, annotations):
         # If there is another check queued forget that one
@@ -176,6 +202,31 @@ class Writer(Adw.Dialog):
     def on_writer_opened(self, _dialog):
         """Switch to editing the scene that has been selected."""
         logger.info(f"Open editor for {self._scene.title}")
+
+        # Create all the actions
+        action_group = Gio.SimpleActionGroup()
+        controller = Gtk.ShortcutController()
+
+        action = Gio.SimpleAction.new("do_toggle_bold", None)
+        action.connect("activate", self.do_toggle_bold)
+        action_group.add_action(action)
+        shortcut = Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("<Primary>b"),
+            Gtk.NamedAction.new("custom.do_toggle_bold")
+        )
+        controller.add_shortcut(shortcut)
+
+        action = Gio.SimpleAction.new("do_toggle_italics", None)
+        action.connect("activate", self.do_toggle_italics)
+        action_group.add_action(action)
+        shortcut = Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("<Primary>i"),
+            Gtk.NamedAction.new("custom.do_toggle_italics")
+        )
+        controller.add_shortcut(shortcut)
+
+        self.text_view.insert_action_group("custom", action_group)
+        self.text_view.add_controller(controller)
 
         # Set the editor title to the title of the scene
         self.set_title(self._scene.title)
