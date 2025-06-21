@@ -37,10 +37,12 @@ template $Writer: Adw.Dialog {
       Box {
         Button format_bold {
           icon-name: "format-text-bold-symbolic";
+          clicked => $do_toggle_bold();
         }
 
         Button format_italic {
           icon-name: "format-text-italic-symbolic";
+          clicked => $do_toggle_italics();
         }
 
         ToggleButton show_annotations {
