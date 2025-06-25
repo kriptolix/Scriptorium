@@ -57,12 +57,12 @@ class ScrptWritingPanel(Adw.NavigationPage):
         )
 
         # Open a test scene for debugging
-        self.connect("map", self.on_map)
+        # self.connect("map", self.on_map)
 
     def on_map(self, _widget):
         test_scene_id = "9ede0795-6ee2-486d-8b94-4c95cef254c1"
         writer = Writer(self.editor.project.get_resource(test_scene_id))
-        #writer.load_scene(self.editor.project.get_resource(test_scene_id))
+        # writer.load_scene(self.editor.project.get_resource(test_scene_id))
         writer.present(self)
 
     @Gtk.Template.Callback()
