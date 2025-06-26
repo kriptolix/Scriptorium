@@ -107,6 +107,7 @@ class Writer(Adw.Dialog):
 
         iter_ = start.copy()
         full_tagged = True
+
         while iter_.compare(end) < 0 and full_tagged:
             full_tagged = full_tagged & iter_.has_tag(tag)
             iter_.forward_char()

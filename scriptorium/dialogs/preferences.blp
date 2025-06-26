@@ -1,0 +1,74 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptPreferencesDialog: Adw.PreferencesDialog {
+  content-height: 600;
+
+  Adw.PreferencesPage {
+    title: _("Editor");
+    icon-name: "settings-symbolic";
+
+    Adw.PreferencesGroup {
+      title: "Preview";
+      Adw.PreferencesRow {
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-start: 6;
+        margin-end: 6;
+        $ScrptTextView text_view {
+          editable: false;
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Settings");
+
+      Adw.ActionRow {
+        title: _("Font");
+        subtitle: _("The font used within the scene editor");
+        [suffix]
+        FontDialogButton font_dialog_button {
+          halign: center;
+          use-font: true;
+          use-size: false;
+          margin-top: 6;
+          margin-bottom: 6;
+          dialog: Gtk.FontDialog {
+            title: _("Select a font");
+            modal: true;
+          };
+          notify::font-desc => $on_font_desc_notify();
+        }
+      }
+
+      Adw.SpinRow {
+        title: _("Line Height");
+        subtitle: _("Adjust the space between lines");
+        value: 1.2;
+      }
+    }
+  }
+
+  Adw.PreferencesPage {
+    title: _("General");
+    icon-name: "settings-symbolic";
+
+
+    Adw.PreferencesGroup {
+      title: "Theme";
+      description: "Select the theme for the application";
+      Adw.PreferencesRow {
+        $ThemeSelector {}
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Projects";
+      Adw.SwitchRow open_last_project {
+        title: _("Restore Previous Session");
+        subtitle: _("Open the last project when starting Scriptorium");
+      }
+    }
+  }
+}

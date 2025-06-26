@@ -6,10 +6,13 @@ from .manuscript import ManuscriptItem
 from .cards_list import CardsList
 from .theme_selector import ThemeSelector
 from .annotation import AnnotationCard
+from .multiline_entry_row import MultiLineEntryRow
+from .text_view import ScrptTextView
 
 __all__ = [
     "SceneCard", "ChapterCard", "EntityCard",
-    "ChapterColumn", "ManuscriptItem", "CardsList"
-    "ThemeSelector", "WriterPopover", "AnnotationCard"
+    "ChapterColumn", "ManuscriptItem", "CardsList",
+    "ThemeSelector", "WriterPopover", "AnnotationCard",
+    "MultiLineEntryRow", "ScrptTextView"
 ]
 
