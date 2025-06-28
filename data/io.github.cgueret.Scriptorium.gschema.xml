@@ -30,6 +30,9 @@
       <summary>Style Variant</summary>
       <description>Use the light or dark variant of the GTK theme and/or GtkSourceView style scheme.</description>
     </key>
+    <key name="editor-line-height" type="d">
+      <default>1.2</default>
+    </key>
 	</schema>
 </schemalist>
 

@@ -42,10 +42,15 @@ template $ScrptPreferencesDialog: Adw.PreferencesDialog {
         }
       }
 
-      Adw.SpinRow {
+      Adw.SpinRow editor_line_height {
         title: _("Line Height");
         subtitle: _("Adjust the space between lines");
-        value: 1.2;
+        digits: 1;
+        adjustment: Gtk.Adjustment {
+          lower: 0.0;
+          upper: 2.0;
+          step-increment: 0.1;
+        };
       }
     }
   }

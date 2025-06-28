@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Gtk, GObject, Pango, Gdk
+from gi.repository import Gtk, GObject, Pango, Gdk, Gio
 from scriptorium.globals import BASE
 
 import logging
@@ -32,6 +32,13 @@ class ScrptTextView(Gtk.TextView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # Set the style for the editor
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(),
+            self.css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
         # Create the tags for the buffer
         text_buffer = self.get_buffer()
@@ -67,16 +74,38 @@ class ScrptTextView(Gtk.TextView):
             underline_rgba=color_hint
         )
 
-        # Set the style for the editor
-        style = """textview.text_editor {
+        self.connect("map", self.on_map)
+
+    def on_map(self, a):
+        logger.info("Map")
+        # Keep an eye on changes in settings
+        settings = Gio.Settings.new(
+            schema_id="io.github.cgueret.Scriptorium"
+        )
+        #settings.connect(
+        #    "changed::editor-line-height",
+        #    self.on_settings_changed
+        #)
+        settings.connect(
+            "changed::editor-line-height",
+            lambda x, y: logger.info("Hello from text view")
+        )
+
+        self.refresh_css(settings)
+
+    def on_settings_changed(self, settings, _key):
+        """
+        Handle a change in settings by updating the CSS
+        """
+        logger.info("Setting change")
+        self.refresh_css(settings)
+
+    def refresh_css(self, settings):
+        line_height = settings.get_double("editor-line-height")
+        style = f"""textview.text_editor {{
             font-family: Cantarell, serif;
             font-size: 18px;
-            line-height: 1.2;
-        }"""
+            line-height: {line_height};
+        }}"""
         self.css_provider.load_from_string(style)
-        Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default(),
-            self.css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        )
 

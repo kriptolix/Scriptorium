@@ -40,6 +40,7 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
     open_last_project = Gtk.Template.Child()
     text_view = Gtk.Template.Child()
     font_dialog_button = Gtk.Template.Child()
+    editor_line_height = Gtk.Template.Child()
 
     def __init__(self):
         """Create a new instance of the class."""
@@ -56,6 +57,18 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             "active",
             Gio.SettingsBindFlags.DEFAULT
         )
+
+        settings.bind(
+            "editor-line-height",
+            self.editor_line_height,
+            "value",
+            Gio.SettingsBindFlags.DEFAULT
+        )
+        settings.connect(
+            "changed::editor-line-height",
+            lambda x, y: logger.info("Hello from preferences")
+        )
+
 
         # Load up the text for the font preview
         html_to_buffer(
