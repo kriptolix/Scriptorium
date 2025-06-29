@@ -2,7 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 template $ScrptPreferencesDialog: Adw.PreferencesDialog {
-  content-height: 600;
+  content-height: 500;
 
   Adw.PreferencesPage {
     title: _("Editor");
@@ -10,13 +10,21 @@ template $ScrptPreferencesDialog: Adw.PreferencesDialog {
 
     Adw.PreferencesGroup {
       title: "Preview";
-      Adw.PreferencesRow {
-        margin-top: 6;
-        margin-bottom: 6;
-        margin-start: 6;
-        margin-end: 6;
-        $ScrptTextView text_view {
-          editable: false;
+      Box {
+        styles [
+          "card"
+        ]
+        hexpand: true;
+        ScrolledWindow {
+          margin-top: 6;
+          margin-bottom: 6;
+          margin-start: 6;
+          margin-end: 6;
+          vexpand: true;
+          hexpand: true;
+          $ScrptTextView text_view {
+            editable: false;
+          }
         }
       }
     }
@@ -38,7 +46,6 @@ template $ScrptPreferencesDialog: Adw.PreferencesDialog {
             title: _("Select a font");
             modal: true;
           };
-          notify::font-desc => $on_font_desc_notify();
         }
       }
 
@@ -47,7 +54,7 @@ template $ScrptPreferencesDialog: Adw.PreferencesDialog {
         subtitle: _("Adjust the space between lines");
         digits: 1;
         adjustment: Gtk.Adjustment {
-          lower: 0.0;
+          lower: 1.0;
           upper: 2.0;
           step-increment: 0.1;
         };

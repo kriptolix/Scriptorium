@@ -16,5 +16,8 @@ template $ScrptTextView: Gtk.TextView {
 
   wrap-mode: word;
   input-hints: spellcheck | word_completion | uppercase_sentences | emoji;
+
+  notify::line-height => $on_settings_changed();
+  notify::font-desc   => $on_settings_changed();
 }
 

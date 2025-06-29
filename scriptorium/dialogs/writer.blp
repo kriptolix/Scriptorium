@@ -97,12 +97,7 @@ template $Writer: Adw.Dialog {
         orientation: vertical;
 
         ScrolledWindow content {
-          $ScrptTextView text_view {
-            buffer: Gtk.TextBuffer {
-              enable-undo: true;
-              changed => $on_buffer_changed();
-            };
-          }
+          $ScrptTextView text_view {}
         }
       };
     }

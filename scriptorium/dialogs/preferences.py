@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Dialog to select scenes in Scriptorium."""
-from gi.repository import Adw, GObject, Gtk, Gio
+from gi.repository import Adw, GObject, Gtk, Gio, Pango, GLib
 from scriptorium.globals import BASE
 from scriptorium.utils import html_to_buffer
 
@@ -41,11 +41,14 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
     text_view = Gtk.Template.Child()
     font_dialog_button = Gtk.Template.Child()
     editor_line_height = Gtk.Template.Child()
+    font_dialog_button = Gtk.Template.Child()
 
     def __init__(self):
         """Create a new instance of the class."""
         super().__init__()
+        self.connect("map", self.on_map)
 
+    def on_map(self, _):
         # Bind settings
         settings = Gio.Settings(
             schema_id="io.github.cgueret.Scriptorium"
@@ -64,11 +67,15 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             "value",
             Gio.SettingsBindFlags.DEFAULT
         )
-        settings.connect(
-            "changed::editor-line-height",
-            lambda x, y: logger.info("Hello from preferences")
-        )
 
+        settings.bind_with_mapping(
+            "editor-font-desc",
+            self.font_dialog_button,
+            "font-desc",
+            Gio.SettingsBindFlags.DEFAULT,
+            self.get_font_desc,
+            self.set_font_desc
+        )
 
         # Load up the text for the font preview
         html_to_buffer(
@@ -76,8 +83,14 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             self.text_view.get_buffer()
         )
 
-    @Gtk.Template.Callback()
-    def on_font_desc_notify(self, button, _):
-        font_desc = button.get_font_desc()
-        print("Selected font:", font_desc.to_string())
+    def get_font_desc(self, target, font_description_variant):
+        font_desc_string = font_description_variant.get_string()
+        logger.info(f"Get {target} from string {font_desc_string}")
+        font_desc = Pango.FontDescription.from_string(font_desc_string)
+        self.font_dialog_button.set_font_desc(font_desc)
+        return True
+
+    def set_font_desc(self, font_description, _):
+        logger.info(f"Set to {font_description.to_string()}")
+        return GLib.Variant("s", font_description.to_string())
 

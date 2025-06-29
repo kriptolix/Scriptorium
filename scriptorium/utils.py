@@ -64,7 +64,10 @@ def buffer_to_html(buffer: Gtk.TextBuffer):
 
     # Split according to paragraphs
     paragraphs = ''.join(html_content).split('\n\n')
-    html_content = [f'<p>{paragraph}</p>' for paragraph in paragraphs if len(paragraph) > 1]
+    html_content = [
+        f'<p>{paragraph}</p>' for paragraph in paragraphs
+        if len(paragraph) > 1
+    ]
 
     return '\n'.join(html_content)
 

@@ -51,52 +51,7 @@ class Writer(Adw.Dialog):
         # Instantiated with a list of annotations from the spellchecker
         self._annotations = None
 
-        # Create the tags for the buffer
-        text_buffer = self.text_view.get_buffer()
-
-        # Text formatting tags
-        text_buffer.create_tag("em", style=Pango.Style.ITALIC)
-        text_buffer.create_tag("strong", weight=Pango.Weight.BOLD)
-
-        # Error tag
-        color_error = Gdk.RGBA()
-        color_error.parse("#e01b24")
-        text_buffer.create_tag(
-            "error",
-            underline=Pango.Underline.ERROR,
-            underline_rgba=color_error
-        )
-
-        # Warning tag
-        color_warning = Gdk.RGBA()
-        color_warning.parse("#f5c211")
-        text_buffer.create_tag(
-            "warning",
-            underline=Pango.Underline.ERROR,
-            underline_rgba=color_warning
-        )
-
-        # Hint tag
-        color_hint = Gdk.RGBA()
-        color_hint.parse("#62a0ea")
-        text_buffer.create_tag(
-            "hint",
-            underline=Pango.Underline.ERROR,
-            underline_rgba=color_hint
-        )
-
-        # Set the style for the editor
-        style = """textview.text_editor {
-            font-family: Cantarell, serif;
-            font-size: 18px;
-            line-height: 1.2;
-        }"""
-        self.css_provider.load_from_string(style)
-        Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default(),
-            self.css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        )
+        self.text_view.get_buffer().connect("changed", self.on_buffer_changed)
 
     def _switch_tag_for_selection(self, tag_name):
         text_buffer = self.text_view.get_buffer()
@@ -191,7 +146,6 @@ class Writer(Adw.Dialog):
     def on_show_annotations_toggled(self, _toggle_button):
         self.refresh_annotations_tags()
 
-    @Gtk.Template.Callback()
     def on_buffer_changed(self, text_buffer):
         """Keep an eye on modifications of the buffer."""
         if self._idle_timeout_id:

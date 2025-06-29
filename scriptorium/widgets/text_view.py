@@ -30,6 +30,10 @@ class ScrptTextView(Gtk.TextView):
 
     css_provider = Gtk.CssProvider()
 
+    line_height = GObject.Property(type=float)
+    font_desc = GObject.Property(type=str)
+    font_size = GObject.Property(type=int)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -74,38 +78,36 @@ class ScrptTextView(Gtk.TextView):
             underline_rgba=color_hint
         )
 
-        self.connect("map", self.on_map)
-
-    def on_map(self, a):
-        logger.info("Map")
-        # Keep an eye on changes in settings
+        # Connect the properties to the settings
         settings = Gio.Settings.new(
             schema_id="io.github.cgueret.Scriptorium"
         )
-        #settings.connect(
-        #    "changed::editor-line-height",
-        #    self.on_settings_changed
-        #)
-        settings.connect(
-            "changed::editor-line-height",
-            lambda x, y: logger.info("Hello from text view")
+        settings.bind(
+            "editor-line-height", self, "line-height",
+            Gio.SettingsBindFlags.DEFAULT
+        )
+        settings.bind(
+            "editor-font-desc", self, "font-desc",
+            Gio.SettingsBindFlags.DEFAULT
         )
 
-        self.refresh_css(settings)
 
-    def on_settings_changed(self, settings, _key):
+
+    @Gtk.Template.Callback()
+    def on_settings_changed(self, _settings = None, _key = None):
         """
         Handle a change in settings by updating the CSS
         """
-        logger.info("Setting change")
-        self.refresh_css(settings)
+        logger.info(f"Style {self.font_desc} with {self.line_height}")
 
-    def refresh_css(self, settings):
-        line_height = settings.get_double("editor-line-height")
+        font = Pango.FontDescription.from_string(self.font_desc)
         style = f"""textview.text_editor {{
-            font-family: Cantarell, serif;
-            font-size: 18px;
-            line-height: {line_height};
+            font-family: {font.get_family()};
+            font-size: {font.get_size() / Pango.SCALE}px;
+            font-style: {font.get_style().value_nick};
+            font-weight: {font.get_weight()};
+            line-height: {self.line_height};
         }}"""
         self.css_provider.load_from_string(style)
+
 

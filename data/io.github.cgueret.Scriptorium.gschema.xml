@@ -33,6 +33,9 @@
     <key name="editor-line-height" type="d">
       <default>1.2</default>
     </key>
+    <key name="editor-font-desc" type="s">
+      <default>"Adwaita Sans 12"</default>
+    </key>
 	</schema>
 </schemalist>
 
