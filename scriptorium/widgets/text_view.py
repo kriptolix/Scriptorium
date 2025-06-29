@@ -84,11 +84,11 @@ class ScrptTextView(Gtk.TextView):
         )
         settings.bind(
             "editor-line-height", self, "line-height",
-            Gio.SettingsBindFlags.DEFAULT
+            Gio.SettingsBindFlags.GET
         )
         settings.bind(
             "editor-font-desc", self, "font-desc",
-            Gio.SettingsBindFlags.DEFAULT
+            Gio.SettingsBindFlags.GET
         )
 
 

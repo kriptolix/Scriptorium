@@ -46,6 +46,7 @@ template $ScrptPreferencesDialog: Adw.PreferencesDialog {
             title: _("Select a font");
             modal: true;
           };
+          notify::font-desc => $on_font_selected();
         }
       }
 

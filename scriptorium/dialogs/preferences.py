@@ -68,14 +68,10 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             Gio.SettingsBindFlags.DEFAULT
         )
 
-        settings.bind_with_mapping(
-            "editor-font-desc",
-            self.font_dialog_button,
-            "font-desc",
-            Gio.SettingsBindFlags.DEFAULT,
-            self.get_font_desc,
-            self.set_font_desc
-        )
+        # Set the dialog to the current font in the settings
+        font_desc_str = settings.get_string("editor-font-desc")
+        font_desc = Pango.FontDescription.from_string(font_desc_str)
+        self.font_dialog_button.set_font_desc(font_desc)
 
         # Load up the text for the font preview
         html_to_buffer(
@@ -83,14 +79,18 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             self.text_view.get_buffer()
         )
 
-    def get_font_desc(self, target, font_description_variant):
-        font_desc_string = font_description_variant.get_string()
-        logger.info(f"Get {target} from string {font_desc_string}")
-        font_desc = Pango.FontDescription.from_string(font_desc_string)
-        self.font_dialog_button.set_font_desc(font_desc)
-        return True
+    @Gtk.Template.Callback()
+    def on_font_selected(self, _, _):
+        """
+        Handle the selection of a new font
+        """
+        font_description = self.font_dialog_button.get_font_desc()
 
-    def set_font_desc(self, font_description, _):
-        logger.info(f"Set to {font_description.to_string()}")
-        return GLib.Variant("s", font_description.to_string())
+        settings = Gio.Settings(
+            schema_id="io.github.cgueret.Scriptorium"
+        )
+        settings.set_string(
+            "editor-font-desc",
+            font_description.to_string()
+        )
 
