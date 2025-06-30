@@ -129,10 +129,6 @@ class ScriptoriumApplication(Adw.Application):
         # Instantiate our language tool interface
         self.language_tool = LanguageTool()
 
-        # Debug
-        pref = self.lookup_action("preferences")
-        pref.activate()
-
     def on_shutdown(self, _application):
         # Instantiate our language tool interface
         self.language_tool.shutdown()

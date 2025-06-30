@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Dialog to select scenes in Scriptorium."""
-from gi.repository import Adw, GObject, Gtk, Gio, Pango, GLib
+from gi.repository import Adw, Gtk, Gio, Pango
 from scriptorium.globals import BASE
 from scriptorium.utils import html_to_buffer
 
@@ -34,13 +34,6 @@ an <em>emphasis</em> or noted as <strong>strong</strong> will look like.</p>
 
 UNDERLINE_OPTIONS = ["single", "double", "dashed"]
 
-def get_underline_style(_, variant) -> int:
-    index = UNDERLINE_OPTIONS.index(variant.get_string())
-    logger.info(f"get {variant} => {index}")
-    return 0
-
-def set_underline_style(selected_value, _) -> GLib.Variant:
-    return GLib.Variant("s", UNDERLINE_OPTIONS[selected_value])
 
 @Gtk.Template(resource_path=f"{BASE}/dialogs/preferences.ui")
 class ScrptPreferencesDialog(Adw.PreferencesDialog):
@@ -56,9 +49,7 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
     def __init__(self):
         """Create a new instance of the class."""
         super().__init__()
-        self.connect("map", self.on_map)
 
-    def on_map(self, _):
         # Bind settings
         settings = Gio.Settings(
             schema_id="io.github.cgueret.Scriptorium"
@@ -97,9 +88,7 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
 
     @Gtk.Template.Callback()
     def on_font_selected(self, _button, _value):
-        """
-        Handle the selection of a new font
-        """
+        """Handle the selection of a new font."""
         font_description = self.font_dialog_button.get_font_desc()
 
         settings = Gio.Settings(
@@ -112,6 +101,7 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
 
     @Gtk.Template.Callback()
     def on_underline_style_selected(self, _combo, _value):
+        """Handle the selection of a new underline style."""
         selected_value = self.editor_underline_style.get_selected()
 
         settings = Gio.Settings(
@@ -121,4 +111,4 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             "editor-underline-style",
             UNDERLINE_OPTIONS[selected_value]
         )
-        pass
+
