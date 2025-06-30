@@ -17,7 +17,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 import sys
-from scriptorium.widgets.multiline_entry_row import MultiLineEntryRow
+from scriptorium.widgets import MultiLineEntryRow
+from scriptorium.dialogs import ScrptPreferencesDialog
 from gi.repository import Gio, Adw, GLib, GObject
 from .window import ScrptWindow
 from .language_tool import LanguageTool
@@ -39,28 +40,6 @@ class ScriptoriumApplication(Adw.Application):
     def __init__(self):
         super().__init__(application_id='io.github.cgueret.Scriptorium',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
-        self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
-        self.create_action('about', self.on_about_action)
-        self.create_action('preferences', self.on_preferences_action)
-
-        self.settings = Gio.Settings(
-            schema_id="io.github.cgueret.Scriptorium"
-        )
-        style_variant_action = self.settings.create_action("style-variant")
-        self.add_action(style_variant_action)
-
-        self.settings.connect(
-            "changed::style-variant",
-            self.change_color_scheme
-        )
-
-        # Get the current color scheme
-        current_value = self.settings.get_string("style-variant")
-        style_variant_action.activate(GLib.Variant('s', current_value))
-
-        # Force loading MultiLineEntryRow, otherwise it is not recognized in Builder
-        dummy = MultiLineEntryRow()
-        del dummy
 
         self.connect("startup", self.on_startup)
         self.connect("shutdown", self.on_shutdown)
@@ -88,16 +67,17 @@ class ScriptoriumApplication(Adw.Application):
             window = ScrptWindow(application=self)
         window.present()
 
-
     def on_about_action(self, *args):
         """Callback for the app.about action."""
-        about = Adw.AboutDialog(application_name='Scriptorium',
-                                application_icon='io.github.cgueret.Scriptorium',
-                                developer_name='Christophe Guéret',
-                                version='0.2.1',
-                                website='https://github.com/cgueret/Scriptorium',
-                                developers=['Christophe Guéret'],
-                                copyright='© 2025 Christophe Guéret')
+        about = Adw.AboutDialog(
+            application_name='Scriptorium',
+            application_icon='io.github.cgueret.Scriptorium',
+            developer_name='Christophe Guéret',
+            version='0.2.1',
+            website='https://github.com/cgueret/Scriptorium',
+            developers=['Christophe Guéret'],
+            copyright='© 2025 Christophe Guéret'
+        )
         # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
         #about.set_translator_credits(_('translator-credits'))
         about.present(self.props.active_window)
@@ -105,6 +85,8 @@ class ScriptoriumApplication(Adw.Application):
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
         logger.info('app.preferences action activated')
+        preferences = ScrptPreferencesDialog()
+        preferences.present(self.props.active_window)
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
@@ -122,6 +104,28 @@ class ScriptoriumApplication(Adw.Application):
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
     def on_startup(self, _application):
+        """
+        Handle the application startup.
+        """
+        self.create_action('quit', lambda *_: self.quit())
+        self.create_action('about', self.on_about_action)
+        self.create_action('preferences', self.on_preferences_action)
+
+        self.settings = Gio.Settings(
+            schema_id="io.github.cgueret.Scriptorium"
+        )
+        style_variant_action = self.settings.create_action("style-variant")
+        self.add_action(style_variant_action)
+
+        self.settings.connect(
+            "changed::style-variant",
+            self.change_color_scheme
+        )
+
+        # Get the current color scheme
+        current_value = self.settings.get_string("style-variant")
+        style_variant_action.activate(GLib.Variant('s', current_value))
+
         # Instantiate our language tool interface
         self.language_tool = LanguageTool()
 

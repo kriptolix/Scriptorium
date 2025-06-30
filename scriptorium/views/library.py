@@ -58,9 +58,7 @@ class ScrptLibraryView(Adw.NavigationPage):
 
         # Connect an instance of the theme button to the menu
         popover = self.win_menu.get_popover()
-        theme_selector = ThemeSelector()
-        theme_selector.action_name = "app.style-variant"
-        popover.add_child(theme_selector, "theme")
+        popover.add_child(ThemeSelector(), "theme")
 
     @Gtk.Template.Callback()
     def on_add_manuscript_clicked(self, _button):

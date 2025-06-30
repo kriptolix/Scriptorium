@@ -29,12 +29,14 @@
     <file preprocess="xml-stripblanks">widgets/cards_list.ui</file>
     <file preprocess="xml-stripblanks">widgets/theme_selector.ui</file>
     <file preprocess="xml-stripblanks">widgets/annotation.ui</file>
+    <file preprocess="xml-stripblanks">widgets/text_view.ui</file>
 
     <!-- Dialogs -->
     <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>
     <file preprocess="xml-stripblanks">dialogs/writer.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_scenes.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_entities.ui</file>
+    <file preprocess="xml-stripblanks">dialogs/preferences.ui</file>
   </gresource>
 
   <!-- Assets -->
@@ -54,5 +56,6 @@
     <file preprocess="xml-stripblanks" alias="info-outline-symbolic.svg">icons/hicolor/scalable/actions/info-outline-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="right-symbolic.svg">icons/hicolor/scalable/actions/right-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="item-missing-symbolic.svg">icons/hicolor/scalable/actions/item-missing-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="settings-symbolic.svg">icons/hicolor/scalable/actions/settings-symbolic.svg</file>
   </gresource>
 </gresources>

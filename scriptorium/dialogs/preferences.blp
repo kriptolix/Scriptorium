@@ -1,0 +1,97 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptPreferencesDialog: Adw.PreferencesDialog {
+  content-height: 500;
+
+  Adw.PreferencesPage {
+    title: _("General");
+    icon-name: "settings-symbolic";
+
+
+    Adw.PreferencesGroup {
+      title: "Theme";
+      description: "Select the theme for the application";
+      Adw.PreferencesRow {
+        $ThemeSelector {}
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Projects";
+      Adw.SwitchRow open_last_project {
+        title: _("Restore Previous Session");
+        subtitle: _("Open the last project when starting Scriptorium");
+      }
+    }
+  }
+
+  Adw.PreferencesPage {
+    title: _("Editor");
+    icon-name: "settings-symbolic";
+
+    Adw.PreferencesGroup {
+      title: "Preview";
+      Box {
+        styles [
+          "card"
+        ]
+        hexpand: true;
+        ScrolledWindow {
+          margin-top: 6;
+          margin-bottom: 6;
+          margin-start: 6;
+          margin-end: 6;
+          vexpand: true;
+          hexpand: true;
+          $ScrptTextView text_view {
+            editable: false;
+          }
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Settings");
+
+      Adw.ActionRow {
+        title: _("Font");
+        subtitle: _("The font used within the scene editor");
+        [suffix]
+        FontDialogButton font_dialog_button {
+          halign: center;
+          use-font: true;
+          use-size: false;
+          margin-top: 6;
+          margin-bottom: 6;
+          dialog: Gtk.FontDialog {
+            title: _("Select a font");
+            modal: true;
+          };
+          notify::font-desc => $on_font_selected();
+        }
+      }
+
+      Adw.SpinRow editor_line_height {
+        title: _("Line Height");
+        subtitle: _("Adjust the space between lines");
+        digits: 1;
+        adjustment: Gtk.Adjustment {
+          lower: 1.0;
+          upper: 2.0;
+          step-increment: 0.1;
+        };
+      }
+
+      Adw.ComboRow editor_underline_style {
+        title: _("Underline style");
+        subtitle: _("Adjust the style of the underlines");
+        model: Gtk.StringList {
+          strings ["single", "double", "dashed"]
+        };
+        notify::selected => $on_underline_style_selected();
+      }
+
+    }
+  }
+}

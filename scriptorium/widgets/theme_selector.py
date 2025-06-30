@@ -49,20 +49,13 @@ class ThemeSelector(Adw.Bin):
 
         style_manager.connect("notify::dark", self.on_notify_dark)
 
-    @GObject.Property(type=GObject.String)
-    def action_name(self):
-        return self._action_name
-
-    @action_name.setter
-    def action_name(self, value):
-        self._action_name = value
-
+        self.action_name = "app.style-variant"
         self.dark.set_action_target_value(GLib.Variant("s", "dark"))
-        self.dark.set_action_name(value)
+        self.dark.set_action_name(self.action_name)
         self.light.set_action_target_value(GLib.Variant("s", "light"))
-        self.light.set_action_name(value)
+        self.light.set_action_name(self.action_name)
         self.follow.set_action_target_value(GLib.Variant("s", "default"))
-        self.follow.set_action_name(value)
+        self.follow.set_action_name(self.action_name)
 
     def on_notify_system_supports_color_schemes(self, style_manager):
         visible = style_manager.get_system_supports_color_schemes()

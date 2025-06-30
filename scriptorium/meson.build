@@ -39,6 +39,7 @@ blueprints = custom_target(
 		'dialogs/writer.blp',
 		'dialogs/select_scenes.blp',
 		'dialogs/select_entities.blp',
+		'dialogs/preferences.blp',
 
 		'views/library.blp',
 		'views/editor.blp',
@@ -61,6 +62,7 @@ blueprints = custom_target(
 		'widgets/cards_list.blp',
 		'widgets/theme_selector.blp',
 		'widgets/annotation.blp',
+		'widgets/text_view.blp',
 	),
 	output: '.',
 	command: [
