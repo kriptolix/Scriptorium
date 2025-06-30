@@ -36,6 +36,15 @@
     <key name="editor-font-desc" type="s">
       <default>"Adwaita Sans 12"</default>
     </key>
+    <key name="editor-underline-style" type="s">
+      <default>"single"</default>
+      <choices>
+        <choice value="single"/>
+        <choice value="double"/>
+        <choice value="dashed"/>
+      </choices>
+    </key>
+
 	</schema>
 </schemalist>
 

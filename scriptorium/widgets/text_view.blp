@@ -19,5 +19,6 @@ template $ScrptTextView: Gtk.TextView {
 
   notify::line-height => $on_settings_changed();
   notify::font-desc   => $on_settings_changed();
+  notify::underline-style => $on_settings_changed();
 }
 

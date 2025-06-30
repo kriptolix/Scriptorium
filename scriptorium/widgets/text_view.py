@@ -33,6 +33,7 @@ class ScrptTextView(Gtk.TextView):
     line_height = GObject.Property(type=float)
     font_desc = GObject.Property(type=str)
     font_size = GObject.Property(type=int)
+    underline_style = GObject.Property(type=str)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -90,6 +91,10 @@ class ScrptTextView(Gtk.TextView):
             "editor-font-desc", self, "font-desc",
             Gio.SettingsBindFlags.GET
         )
+        settings.bind(
+            "editor-underline-style", self, "underline_style",
+            Gio.SettingsBindFlags.GET
+        )
 
 
 
@@ -98,7 +103,7 @@ class ScrptTextView(Gtk.TextView):
         """
         Handle a change in settings by updating the CSS
         """
-        logger.info(f"Style {self.font_desc} with {self.line_height}")
+        logger.debug(f"Update styling")
 
         font = Pango.FontDescription.from_string(self.font_desc)
         style = f"""textview.text_editor {{
@@ -110,4 +115,12 @@ class ScrptTextView(Gtk.TextView):
         }}"""
         self.css_provider.load_from_string(style)
 
+        for tag_name in ["error", "warning", "hint"]:
+            tag = self.get_buffer().get_tag_table().lookup(tag_name)
+            if self.underline_style == "single":
+                tag.props.underline = Pango.Underline.SINGLE
+            elif self.underline_style == "double":
+                tag.props.underline = Pango.Underline.DOUBLE
+            elif self.underline_style == "dashed":
+                tag.props.underline = Pango.Underline.ERROR
 

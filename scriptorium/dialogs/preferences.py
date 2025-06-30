@@ -32,6 +32,15 @@ You can also see how <error>annotations</error> are shown and how words with
 an <em>emphasis</em> or noted as <strong>strong</strong> will look like.</p>
 """
 
+UNDERLINE_OPTIONS = ["single", "double", "dashed"]
+
+def get_underline_style(_, variant) -> int:
+    index = UNDERLINE_OPTIONS.index(variant.get_string())
+    logger.info(f"get {variant} => {index}")
+    return 0
+
+def set_underline_style(selected_value, _) -> GLib.Variant:
+    return GLib.Variant("s", UNDERLINE_OPTIONS[selected_value])
 
 @Gtk.Template(resource_path=f"{BASE}/dialogs/preferences.ui")
 class ScrptPreferencesDialog(Adw.PreferencesDialog):
@@ -42,6 +51,7 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
     font_dialog_button = Gtk.Template.Child()
     editor_line_height = Gtk.Template.Child()
     font_dialog_button = Gtk.Template.Child()
+    editor_underline_style = Gtk.Template.Child()
 
     def __init__(self):
         """Create a new instance of the class."""
@@ -68,6 +78,11 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             Gio.SettingsBindFlags.DEFAULT
         )
 
+        # Set the underline style combo to the current value
+        underline_style = settings.get_string("editor-underline-style")
+        index = UNDERLINE_OPTIONS.index(underline_style)
+        self.editor_underline_style.set_selected(index)
+
         # Set the dialog to the current font in the settings
         font_desc_str = settings.get_string("editor-font-desc")
         font_desc = Pango.FontDescription.from_string(font_desc_str)
@@ -79,8 +94,9 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             self.text_view.get_buffer()
         )
 
+
     @Gtk.Template.Callback()
-    def on_font_selected(self, _, _):
+    def on_font_selected(self, _button, _value):
         """
         Handle the selection of a new font
         """
@@ -94,3 +110,15 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             font_description.to_string()
         )
 
+    @Gtk.Template.Callback()
+    def on_underline_style_selected(self, _combo, _value):
+        selected_value = self.editor_underline_style.get_selected()
+
+        settings = Gio.Settings(
+            schema_id="io.github.cgueret.Scriptorium"
+        )
+        settings.set_string(
+            "editor-underline-style",
+            UNDERLINE_OPTIONS[selected_value]
+        )
+        pass

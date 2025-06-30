@@ -60,6 +60,16 @@ template $ScrptPreferencesDialog: Adw.PreferencesDialog {
           step-increment: 0.1;
         };
       }
+
+      Adw.ComboRow editor_underline_style {
+        title: _("Underline style");
+        subtitle: _("Adjust the style of the underlines");
+        model: Gtk.StringList {
+          strings ["single", "double", "dashed"]
+        };
+        notify::selected => $on_underline_style_selected();
+      }
+
     }
   }
 
