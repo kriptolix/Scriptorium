@@ -215,9 +215,10 @@ class Project(GObject.Object):
 
         # Find the YAML data block
         resource_data = None
-        for data in yaml_data["resources"]:
-            if data["identifier"] == identifier:
-                resource_data = data
+        if yaml_data:
+            for data in yaml_data["resources"]:
+                if data["identifier"] == identifier:
+                    resource_data = data
         if resource_data is None:
             logger.error(f"Could not find {identifier} in the YAML file")
             return None
