@@ -64,14 +64,14 @@ class ScrptLibraryView(Adw.NavigationPage):
     def on_add_manuscript_clicked(self, _button):
         """Handle a click on the button to add a manuscript."""
         logger.info("Open dialog to add manuscript")
-        dialog = ScrptAddDialog("manuscript")
+        dialog = ScrptAddDialog("project")
         dialog.choose(self, None, self.on_add_manuscript)
 
     def on_add_manuscript(self, dialog, task):
         """Add a new manuscript."""
         response = dialog.choose_finish(task)
         if response == "add":
-            logger.info(f"Add manuscript {dialog.title}: {dialog.synopsis}")
+            logger.info(f"Add project {dialog.title}: {dialog.synopsis}")
             self.library.create_project(dialog.title, dialog.synopsis)
 
     def on_setup_item(self, _, list_item):
