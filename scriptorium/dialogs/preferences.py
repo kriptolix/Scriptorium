@@ -85,7 +85,6 @@ class ScrptPreferencesDialog(Adw.PreferencesDialog):
             self.text_view.get_buffer()
         )
 
-
     @Gtk.Template.Callback()
     def on_font_selected(self, _button, _value):
         """Handle the selection of a new font."""
