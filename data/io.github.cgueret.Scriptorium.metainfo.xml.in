@@ -78,7 +78,6 @@
           <li>Addition of LanguageTool to provide content suggestions</li>
           <li>Styling options for the text (strong, emphasis)</li>
           <li>Preferences dialog to define preferences of the text editor</li>
-          <li>New contributor! <a href="https://github.com/kriptolix">Kriptolix</a></li>
         </ul>
       </description>
     </release>
