@@ -73,7 +73,7 @@ class ScriptoriumApplication(Adw.Application):
             application_name='Scriptorium',
             application_icon='io.github.cgueret.Scriptorium',
             developer_name='Christophe Guéret',
-            version='0.2.1',
+            version='0.3.0',
             website='https://github.com/cgueret/Scriptorium',
             developers=['Christophe Guéret'],
             copyright='© 2025 Christophe Guéret'

@@ -44,28 +44,44 @@
 
   <screenshots>
     <screenshot type="default" xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/main_window.png</image>
-      <caption>Main window</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/main_window.png</image>
+      <caption>Main window: all the facets of the book authoring process are accessible on the side navigation</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/overview.png</image>
-      <caption>Use overview mode to drag and drop content</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/overview.png</image>
+      <caption>Use the overview mode to drag and drop chapters and scenes</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/scenes.png</image>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/scenes_list.png</image>
       <caption>Get a list of all your scenes, including those not included in the manuscript draft</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/scene_details.png</image>
-      <caption>Use the scene details editor to assign story elements</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/scene_details.png</image>
+      <caption>Use the scene details editor to assign story elements to them and jump onto editing the text</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/3d5ba7267d7f0b6087036ebad4e6d397a995c5e7/data/screenshots/dark_mode.png</image>
-      <caption>Switch to dark mode, if you want to, when editing the content of a scene in the distraction-free editor</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/editor.png</image>
+      <caption>The text editor is minimal to let you focus on the content. Annotations can be hidden and re-styled in the preferences</caption>
+    </screenshot>
+    <screenshot xml:lang="en">
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/editor_dark.png</image>
+      <caption>Scriptorium also supports dark mode for those writting sessions happening late at night</caption>
     </screenshot>
   </screenshots>
 
   <releases>
+    <release version="0.3.0" date="2025-07-04">
+      <url type="details">https://github.com/cgueret/Scriptorium/commits/v0.3.0</url>
+      <description translate="no">
+        <p>Release description</p>
+        <ul>
+          <li>Addition of LanguageTool to provide content suggestions</li>
+          <li>Styling options for the text (strong, emphasis)</li>
+          <li>Preferences dialog to define preferences of the text editor</li>
+          <li>New contributor! <a href="https://github.com/kriptolix">Kriptolix</a></li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.1" date="2025-06-02">
       <url type="details">https://github.com/cgueret/Scriptorium/commits/v0.2.1</url>
       <description translate="no">
