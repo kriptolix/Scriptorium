@@ -71,18 +71,18 @@
 
   <releases>
     <release version="0.3.0" date="2025-07-04">
-      <url type="details">https://github.com/cgueret/Scriptorium/commits/v0.3.0</url>
+      <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v0.3.0</url>
       <description translate="no">
         <p>Release description</p>
         <ul>
           <li>Addition of LanguageTool to provide content suggestions</li>
-          <li>Styling options for the text (strong, emphasis)</li>
-          <li>Preferences dialog to define preferences of the text editor</li>
+          <li>Added styling options for the text (strong, emphasis)</li>
+          <li>Added preferences dialog to define preferences of the text editor</li>
         </ul>
       </description>
     </release>
     <release version="0.2.1" date="2025-06-02">
-      <url type="details">https://github.com/cgueret/Scriptorium/commits/v0.2.1</url>
+      <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v0.2.1</url>
       <description translate="no">
         <p>Release description</p>
         <ul>
@@ -91,7 +91,7 @@
       </description>
     </release>
     <release version="0.2.0" date="2025-05-31">
-      <url type="details">https://github.com/cgueret/Scriptorium/commits/v0.2.0</url>
+      <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v0.2.0</url>
       <description translate="no">
         <p>Release description</p>
         <ul>
@@ -101,7 +101,7 @@
       </description>
     </release>
     <release version="0.1.0" date="2025-05-28">
-      <url type="details">https://github.com/cgueret/Scriptorium/commits/v0.1.0</url>
+      <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v0.1.0</url>
       <description translate="no">
         <p>Release description</p>
         <ul>
