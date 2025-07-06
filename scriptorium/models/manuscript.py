@@ -23,6 +23,7 @@ import logging
 from pathlib import Path
 from gi.repository import GObject, Gio
 from .chapter import Chapter
+from .scene import Scene
 from .resource import Resource
 
 logger = logging.getLogger(__name__)
@@ -33,15 +34,15 @@ class Manuscript(Resource):
     __gtype_name__ = "Manuscript"
 
     # Properties of the manuscript
-    chapters = GObject.Property(type=Gio.ListStore)
+    content = GObject.Property(type=Gio.ListStore)
     cover = GObject.Property(type=str)
 
     def __init__(self, project, identifier):
         """Create a new manuscript."""
         super().__init__(project, identifier)
 
-        # Create the containers for all the main concepts
-        self.chapters = Gio.ListStore(item_type=Chapter)
+        # Create the containers for all the content of the manuscript
+        self.content = Gio.ListStore(item_type=Resource)
 
     def get_cover_path(self):
         if self.cover is None or self.cover == '':
@@ -50,23 +51,29 @@ class Manuscript(Resource):
         img_path = self._base_directory / Path("images") / Path(self.cover)
         return img_path.resolve()
 
-    def add_chapter(self, chapter: Chapter, position: int = None):
-        """Add an existing chapter to the manuscript."""
+    def add_resource(self, resource: Resource, position: int = None) -> bool:
+        """Add an existing resource to the manuscript."""
+        # We can only accept either a Chapter or a Scene
+        if not isinstance(resource, (Chapter, Scene)):
+            return False
+
         if position is not None and position >= 0:
-            self.chapters.insert(position, chapter)
+            self.content.insert(position, resource)
         else:
-            self.chapters.append(chapter)
+            self.content.append(resource)
+
+        return True
 
     def splice_chapters(self, source_chapter, target_chapter):
         """Move the source chapter to the position target chapter is at."""
         # Start by finding the positions of each chapter
-        found_source, source_position = self.chapters.find(source_chapter)
-        found_target, target_position = self.chapters.find(target_chapter)
+        found_source, source_position = self.content.find(source_chapter)
+        found_target, target_position = self.content.find(target_chapter)
         if not found_source or not found_target:
             raise KeyError("Could not find the chapters to swap")
 
         # Now move the source where the target used to be located
-        self.chapters.remove(source_position)
-        self.chapters.insert(target_position, source_chapter)
+        self.content.remove(source_position)
+        self.content.insert(target_position, source_chapter)
 
 
