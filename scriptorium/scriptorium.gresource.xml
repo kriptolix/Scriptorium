@@ -33,10 +33,13 @@
 
     <!-- Dialogs -->
     <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>
-    <file preprocess="xml-stripblanks">dialogs/writer.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_scenes.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_entities.ui</file>
     <file preprocess="xml-stripblanks">dialogs/preferences.ui</file>
+
+    <!-- Write -->
+    <file preprocess="xml-stripblanks">views/write/page.ui</file>
+    <file preprocess="xml-stripblanks">views/write/navigation.ui</file>
   </gresource>
 
   <!-- Assets -->

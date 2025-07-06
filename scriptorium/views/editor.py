@@ -22,7 +22,9 @@ from gi.repository import Adw, Gtk, GObject, Gio, GLib
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.widgets import ThemeSelector
-from scriptorium.models import Manuscript, Project
+from scriptorium.models import Project
+
+from scriptorium.views.write import WritePage
 
 from .editor_scenes import ScrptWritingPanel
 from .editor_entities import ScrptEntityPanel
@@ -65,13 +67,14 @@ class ScrptEditorView(Adw.NavigationPage):
 
     project = GObject.Property(type=Project)
 
-    panels_navigation = Gtk.Template.Child()
-    panels = Gtk.Template.Child()
-    split_view = Gtk.Template.Child()
-    panels_sidebar = Gtk.Template.Child()
+    #panels_navigation = Gtk.Template.Child()
+    #panels = Gtk.Template.Child()
+    #split_view = Gtk.Template.Child()
+    #panels_sidebar = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
+    write_page = Gtk.Template.Child()
 
-    def __init__(self, window, project:Project):
+    def __init__(self, window, project: Project):
         """Create a new instance of the editor."""
         super().__init__()
 
@@ -79,7 +82,7 @@ class ScrptEditorView(Adw.NavigationPage):
         # actual window to create the actions
         self.window = window
 
-        # Keep track of the manuscript the editor is associated to
+        # Keep track of the project the editor is associated to
         self.project = project
 
         # Connect an instance of the theme button to the menu
@@ -87,14 +90,16 @@ class ScrptEditorView(Adw.NavigationPage):
         popover.add_child(ThemeSelector(), "theme")
 
         # Setup all the panels
-        self.initialise_panels()
+        # self.initialise_panels()
 
         # Open the default panel
         row = None
-        for index in range(len(PANELS)):
-            if PANELS[index][0] == DEFAULT:
-                row = self.panels_navigation.get_row_at_index(index)
-                self.panels_navigation.select_row(row)
+        #for index in range(len(PANELS)):
+            #if PANELS[index][0] == DEFAULT:
+                #row = self.panels_navigation.get_row_at_index(index)
+                #self.panels_navigation.select_row(row)
+
+        self.write_page.connect_to_project(project)
 
     def create_action(self, window, name, callback, shortcuts=None):
         """Add an application action.
@@ -151,7 +156,7 @@ class ScrptEditorView(Adw.NavigationPage):
             index += 1
             row = self.panels_navigation.get_row_at_index(index)
 
-    @Gtk.Template.Callback()
+    #@Gtk.Template.Callback()
     def on_listbox_row_selected(self, _list_box, _selected_item):
         """Change the panel currently displayed."""
         selection = _selected_item.get_child()

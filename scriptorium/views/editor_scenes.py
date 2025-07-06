@@ -28,7 +28,6 @@ from scriptorium.dialogs import ScrptAddDialog
 from .editor_scenes_details import ScrptWritingDetailsPanel
 from scriptorium.models import Scene
 
-from scriptorium.dialogs import Writer
 
 logger = logging.getLogger(__name__)
 

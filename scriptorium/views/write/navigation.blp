@@ -1,0 +1,29 @@
+using Gtk 4.0;
+
+template $WriteNavigation: Gtk.Box {
+  orientation: vertical;
+
+  ScrolledWindow {
+    vexpand: true;
+
+    child: ListView list_view {
+      styles [
+        "navigation-sidebar"
+      ]
+
+      factory: SignalListItemFactory factory {
+        setup => $on_list_item_setup();
+        bind => $on_list_item_bind();
+      };
+    };
+  }
+
+  Button {
+    margin-end: 6;
+    margin-top: 6;
+    margin-start: 6;
+    margin-bottom: 6;
+
+    label: _("Add chapter");
+  }
+}

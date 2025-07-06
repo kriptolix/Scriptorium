@@ -20,10 +20,10 @@
 
 import logging
 
-from gi.repository import Adw, Gtk, Pango, GObject, GLib
+from gi.repository import Adw, Gtk, GObject
 
 from scriptorium.globals import BASE
-from scriptorium.dialogs import Writer
+
 
 logger = logging.getLogger(__name__)
 

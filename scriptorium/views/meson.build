@@ -13,3 +13,5 @@ scriptorium_sources_views = [
 	'editor_manuscript.py',
 ]
 install_data(scriptorium_sources_views, install_dir: moduledir / 'views')
+
+subdir('write')

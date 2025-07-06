@@ -23,7 +23,7 @@ import logging
 from gi.repository import Adw, Gtk, Pango, GObject, GLib
 
 from scriptorium.globals import BASE
-from scriptorium.dialogs import Writer, ScrptSelectEntitiesDialog
+from scriptorium.dialogs import ScrptSelectEntitiesDialog
 from scriptorium.widgets import EntityCard
 
 logger = logging.getLogger(__name__)
@@ -100,8 +100,8 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
     def on_open_editor_activated(self, _button):
         """Open the scene editor."""
         logger.info(f"Open text editor for {self._scene.title}")
-        writer = Writer(self._scene)
-        writer.present(self)
+        #writer = Writer(self._scene)
+        #writer.present(self)
 
     @Gtk.Template.Callback()
     def on_delete_scene_activated(self, _button):

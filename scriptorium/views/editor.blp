@@ -6,6 +6,55 @@ template $ScrptEditorView: Adw.NavigationPage {
   tag: "editor";
   unrealize => $on_editorview_closed();
 
+  child: Adw.ToolbarView {
+    top-bar-style: raised_border;
+    bottom-bar-style: raised_border;
+
+    [top]
+    Adw.HeaderBar {
+      title-widget: Adw.ViewSwitcher {
+        stack: phases_stack;
+        policy: wide;
+      };
+
+      [end]
+      MenuButton win_menu {
+        icon-name: "open-menu-symbolic";
+        tooltip-text: _("Main Menu");
+        primary: true;
+        menu-model: window_menu;
+      }
+    }
+
+    content: Adw.ViewStack phases_stack {
+
+      Adw.ViewStackPage {
+        name: "plan_page";
+        title: _("Plan");
+        icon-name: "notepad-symbolic";
+        child: Adw.StatusPage {};
+      }
+
+      Adw.ViewStackPage {
+        name: "write_page";
+        title: _("Write");
+        icon-name: "edit-symbolic";
+        child: $WritePage write_page {};
+      }
+
+      Adw.ViewStackPage {
+        name: "publish_page";
+        title: _("Publish");
+        icon-name: "dictionary-symbolic";
+        child: Adw.StatusPage {};
+      }
+
+      visible-child-name: "write_page";
+    };
+  };
+}
+
+/*
   child: Adw.OverlaySplitView split_view {
     sidebar: Adw.NavigationPage panels_sidebar {
       title: _("Name of manuscript");
@@ -45,7 +94,8 @@ template $ScrptEditorView: Adw.NavigationPage {
       };
     };
   };
-}
+*/
+
 
 menu window_menu {
   section {

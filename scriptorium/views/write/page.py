@@ -1,4 +1,4 @@
-# dialogs/writer.py
+# views/write/page.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -16,9 +16,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Adw, Gtk, Pango, Gdk, GLib, Gio
+from gi.repository import Adw, Gtk, Gdk, GLib, Gio, GObject
 from scriptorium.globals import BASE
 from scriptorium.widgets import AnnotationCard
+from scriptorium.models import Chapter, Scene
+from scriptorium.utils import switch_tag_for_selection
+
 import logging
 import threading
 
@@ -29,10 +32,9 @@ logger = logging.getLogger(__name__)
 # Mutex to avoid having to matches callback edit the buffer at the same time
 text_buffer_lock = threading.Lock()
 
-
-@Gtk.Template(resource_path=f"{BASE}/dialogs/writer.ui")
-class Writer(Adw.Dialog):
-    __gtype_name__ = "Writer"
+@Gtk.Template(resource_path=f"{BASE}/views/write/page.ui")
+class WritePage(Adw.Bin):
+    __gtype_name__ = "WritePage"
 
     text_view = Gtk.Template.Child()
     label_words = Gtk.Template.Child()
@@ -40,10 +42,12 @@ class Writer(Adw.Dialog):
     annotations_list = Gtk.Template.Child()
     show_annotations = Gtk.Template.Child()
 
-    def __init__(self, scene):
+    navigation = Gtk.Template.Child()
+
+    def __init__(self):
         """Create an instance of the editor."""
         super().__init__()
-        self._scene = scene
+        #self._scene = scene
 
         # Instantiated with a timeout to detect when the editor is idle
         self._idle_timeout_id = None
@@ -53,32 +57,19 @@ class Writer(Adw.Dialog):
 
         self.text_view.get_buffer().connect("changed", self.on_buffer_changed)
 
-    def _switch_tag_for_selection(self, tag_name):
-        text_buffer = self.text_view.get_buffer()
-        if not text_buffer.get_has_selection():
-            return
-        tag = text_buffer.get_tag_table().lookup(tag_name)
-        start, end = text_buffer.get_selection_bounds()
 
-        iter_ = start.copy()
-        full_tagged = True
+    def connect_to_project(self, project):
+        self.project = project
 
-        while iter_.compare(end) < 0 and full_tagged:
-            full_tagged = full_tagged & iter_.has_tag(tag)
-            iter_.forward_char()
-
-        if full_tagged:
-            text_buffer.remove_tag(tag, start, end)
-        else:
-            text_buffer.apply_tag(tag, start, end)
+        self.navigation.connect_to(project)
 
     @Gtk.Template.Callback()
     def do_toggle_bold(self, _src, _param = None):
-        self._switch_tag_for_selection("strong")
+        switch_tag_for_selection(self.text_view.get_buffer(), "strong")
 
     @Gtk.Template.Callback()
     def do_toggle_italics(self, _src, _param = None):
-        self._switch_tag_for_selection("em")
+        switch_tag_for_selection(self.text_view.get_buffer(), "em")
 
     def on_received_annotations(self, annotations):
         # If there is another check queued forget that one
@@ -153,7 +144,7 @@ class Writer(Adw.Dialog):
 
         self._idle_timeout_id = GLib.timeout_add(200, self.on_editor_idle)
 
-    @Gtk.Template.Callback()
+    #@Gtk.Template.Callback()
     def on_writer_opened(self, _dialog):
         """Switch to editing the scene that has been selected."""
         logger.info(f"Open editor for {self._scene.title}")
@@ -190,7 +181,7 @@ class Writer(Adw.Dialog):
         text_buffer = self.text_view.get_buffer()
         self._scene.load_into_buffer(text_buffer)
 
-    @Gtk.Template.Callback()
+    #@Gtk.Template.Callback()
     def on_writer_closed(self, _dialog):
         """Perform any action needed when closing the editor."""
         logger.info(f"Close editor for {self._scene.title}")

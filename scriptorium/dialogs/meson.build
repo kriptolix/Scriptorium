@@ -3,7 +3,6 @@ scriptorium_dialog_sources = [
 	'dialog_add.py',
 	'select_scenes.py',
 	'select_entities.py',
-	'writer.py',
 	'preferences.py'
 ]
 install_data(scriptorium_dialog_sources, install_dir: moduledir / 'dialogs')
