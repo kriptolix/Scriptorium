@@ -43,11 +43,16 @@ class WritePage(Adw.Bin):
     show_annotations = Gtk.Template.Child()
 
     navigation = Gtk.Template.Child()
+    edit_title = Gtk.Template.Child()
+    edit_synopsis = Gtk.Template.Child()
+
+    active_scene = GObject.Property(type=Scene)
 
     def __init__(self):
         """Create an instance of the editor."""
         super().__init__()
-        #self._scene = scene
+        # By default we have no active scene
+        self.active_scene = None
 
         # Instantiated with a timeout to detect when the editor is idle
         self._idle_timeout_id = None
@@ -57,11 +62,70 @@ class WritePage(Adw.Bin):
 
         self.text_view.get_buffer().connect("changed", self.on_buffer_changed)
 
-
     def connect_to_project(self, project):
         self.project = project
 
         self.navigation.connect_to(project)
+
+        # Connect to the navigation to see when a scene is selected
+        navigation_model = self.navigation.list_view.get_model()
+        navigation_model.connect("selection-changed", self.on_selection_changed)
+
+    def on_selection_changed(self, selection, position, n_items):
+        """Called when a scene is selected in the navigation."""
+        # Get the select manuscript and unselect it
+        selected_item = selection.get_selected_item()
+        if selected_item is not None:
+            scene = selected_item.get_item()
+            logger.info(f"Selected scene {scene.title}")
+            self.load_scene(scene)
+
+    def load_scene(self, scene: Scene):
+        """Load a new scene into the text editor."""
+        # Get the text buffer of the editor
+        buffer = self.text_view.get_buffer()
+
+        # If there is a scene loaded save the content and clear it
+        if self.active_scene is not None:
+            # Remove all the language check annotations
+            self.clear_annotations()
+
+            # Clear the annotations list box too
+            self.annotations_list.remove_all()
+
+            # Save the content of the buffer
+            self.active_scene.save_from_buffer(buffer)
+
+            # Clear the content of the text buffer
+            buffer.begin_irreversible_action()
+            start_iter, end_iter = buffer.get_bounds()
+            buffer.delete(start_iter, end_iter)
+            buffer.end_irreversible_action()
+
+            # Unbind
+            self.edit_title_binding.unbind()
+            self.edit_synopsis_binding.unbind()
+
+        # Load the scene into the buffer
+        scene.load_into_buffer(buffer)
+
+        # Connect the information bar properties to the scene
+        self.edit_title_binding = scene.bind_property(
+            "title",
+            self.edit_title,
+            "text",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
+        )
+        self.edit_synopsis_binding = scene.bind_property(
+            "synopsis",
+            self.edit_synopsis,
+            "text",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
+        )
+
+        # Set the scene as active
+        self.active_scene = scene
+
 
     @Gtk.Template.Callback()
     def do_toggle_bold(self, _src, _param = None):
@@ -112,24 +176,29 @@ class WritePage(Adw.Bin):
         # Don't repeat that callback
         return False
 
-    def refresh_annotations_tags(self):
-        # Start by removing all previous annotations
+    def clear_annotations(self):
+        """Remove all the current annotations on the text."""
         text_buffer = self.text_view.get_buffer()
         start_iter, end_iter = text_buffer.get_bounds()
         text_buffer.remove_tag_by_name("error", start_iter, end_iter)
         text_buffer.remove_tag_by_name("warning", start_iter, end_iter)
         text_buffer.remove_tag_by_name("hint", start_iter, end_iter)
 
+    def refresh_annotations_tags(self):
+        # Start by removing all previous annotations
+        self.clear_annotations()
+
         # Then add the new ones
         if self.show_annotations.get_active() and self._annotations:
+            buffer = self.text_view.get_buffer()
             for annotation in self._annotations:
-                start_iter = text_buffer.get_iter_at_offset(
+                start_iter = buffer.get_iter_at_offset(
                     annotation.offset
                 )
-                end_iter = text_buffer.get_iter_at_offset(
+                end_iter = buffer.get_iter_at_offset(
                     annotation.offset + annotation.length
                 )
-                text_buffer.apply_tag_by_name(
+                buffer.apply_tag_by_name(
                     annotation.category, start_iter, end_iter
                 )
 
@@ -196,11 +265,7 @@ class WritePage(Adw.Bin):
         )
 
         # Remove all the language check annotations
-        text_buffer = self.text_view.get_buffer()
-        start_iter, end_iter = text_buffer.get_bounds()
-        text_buffer.remove_tag_by_name("error", start_iter, end_iter)
-        text_buffer.remove_tag_by_name("warning", start_iter, end_iter)
-        text_buffer.remove_tag_by_name("hint", start_iter, end_iter)
+        self.clear_annotations()
 
         # Save the content of the buffer
         self._scene.save_from_buffer(text_buffer)

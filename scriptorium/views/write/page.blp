@@ -11,19 +11,44 @@ template $WritePage: Adw.Bin {
       show-sidebar: bind show_sidebar_button.active;
       sidebar-position: end;
 
-      sidebar: ScrolledWindow{
-        Box {
-          orientation: vertical;
+      sidebar: Box {
+        orientation: vertical;
+        spacing: 6;
+        margin-start: 6;
+        margin-end: 6;
+        margin-top: 6;
+        margin-bottom: 6;
+
+        Adw.PreferencesGroup {
+          title: "Summary";
           margin-start: 6;
           margin-end: 6;
+          margin-top: 6;
+          margin-bottom: 6;
 
-          Adw.PreferencesGroup {
-            title: _("Suggestions");
+          Adw.EntryRow edit_title {
+            title: "Title";
+          }
+
+          $MultiLineEntryRow edit_synopsis {
+            header: "Synopsis";
+          }
+        }
+
+        Adw.PreferencesGroup {
+          title: _("Suggestions");
+
+          ScrolledWindow {
+            vexpand: true;
 
             ListBox annotations_list {
               styles [
                 "boxed-list-separate",
               ]
+              margin-top: 6;
+              margin-bottom: 6;
+              margin-start: 6;
+              margin-end: 6;
               selection-mode: none;
 
               [placeholder]
@@ -61,6 +86,8 @@ template $WritePage: Adw.Bin {
 
           [start]
           Box {
+            spacing: 3;
+
             Button format_bold {
               icon-name: "format-text-bold-symbolic";
               clicked => $do_toggle_bold();
@@ -79,6 +106,12 @@ template $WritePage: Adw.Bin {
               toggled => $on_show_annotations_toggled();
               tooltip-text: _("Show annotations");
             }
+
+            ToggleButton show_sidebar_button {
+              icon-name: "info-outline-symbolic";
+              tooltip-text: _("Show information panel");
+              active: bind split_view.show-sidebar no-sync-create; // no-sync-create
+            }
           }
 
           [end]
@@ -88,12 +121,6 @@ template $WritePage: Adw.Bin {
             }
 
             Label label_words {}
-
-            ToggleButton show_sidebar_button {
-              icon-name: "info-outline-symbolic";
-              tooltip-text: _("Toggle text details");
-              active: bind split_view.show-sidebar no-sync-create; // no-sync-create
-            }
           }
         }
       };

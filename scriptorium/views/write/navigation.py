@@ -16,9 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Adw, Gtk, Gdk, GLib, Gio, GObject
+from gi.repository import Gtk, GObject
 from scriptorium.globals import BASE
-from scriptorium.widgets import AnnotationCard
 from scriptorium.models import Chapter, Scene
 
 import logging
@@ -44,6 +43,19 @@ class TreeWidget(Gtk.Box):
         self.append(self.expander)
         self.append(self.label)
 
+        self.label_binding = None
+
+    def set_label(self, item):
+        """Use the property title of the item to set the label of the row."""
+        if self.label_binding is not None:
+            self.label_binding.unbind()
+
+        self.label_binding = item.bind_property(
+            "title",
+            self.label,
+            "label",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
+        )
 
 @Gtk.Template(resource_path=f"{BASE}/views/write/navigation.ui")
 class WriteNavigation(Gtk.Box):
@@ -51,11 +63,6 @@ class WriteNavigation(Gtk.Box):
 
     factory = Gtk.Template.Child()
     list_view = Gtk.Template.Child()
-
-    def __init__(self):
-        """Create an instance of the editor."""
-        super().__init__()
-
 
     @Gtk.Template.Callback()
     def on_list_item_setup(self, _, list_item):
@@ -81,19 +88,24 @@ class WriteNavigation(Gtk.Box):
         widget.expander.set_list_row(list_row)
 
         # Set the label
-        widget.label.set_label(item.title)
-
+        widget.set_label(item)
 
     def connect_to(self, project):
-        """Connect the navigation to the project."""
+        """Connect the navigation to the project and its contents."""
+
+        # Turn the content into a tree, instance of Chapter may have children
         tree_list_model = Gtk.TreeListModel.new(
             project.manuscript.content, False, True,
             lambda item: item.scenes if isinstance(item, Chapter) else None
         )
         tree_list_model.set_autoexpand(False)
+
+        # Use this model to define a selection model that let users pick a scene
+        # with none being selected by default
         selection_model = Gtk.SingleSelection(model=tree_list_model)
         selection_model.set_autoselect(False)
         selection_model.set_can_unselect(True)
         selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
-        self.list_view.set_model(selection_model)
 
+        # Assign this model to the navigation list view
+        self.list_view.set_model(selection_model)
