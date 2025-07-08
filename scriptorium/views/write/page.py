@@ -62,6 +62,40 @@ class WritePage(Adw.Bin):
 
         self.text_view.get_buffer().connect("changed", self.on_buffer_changed)
 
+        # Create all the actions
+        action_group = Gio.SimpleActionGroup()
+        controller = Gtk.ShortcutController()
+
+        action = Gio.SimpleAction.new("do_toggle_bold", None)
+        action.connect("activate", self.do_toggle_bold)
+        action_group.add_action(action)
+        shortcut = Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("<Primary>b"),
+            Gtk.NamedAction.new("custom.do_toggle_bold")
+        )
+        controller.add_shortcut(shortcut)
+
+        action = Gio.SimpleAction.new("do_toggle_italics", None)
+        action.connect("activate", self.do_toggle_italics)
+        action_group.add_action(action)
+        shortcut = Gtk.Shortcut.new(
+            Gtk.ShortcutTrigger.parse_string("<Primary>i"),
+            Gtk.NamedAction.new("custom.do_toggle_italics")
+        )
+        controller.add_shortcut(shortcut)
+
+        self.text_view.insert_action_group("custom", action_group)
+        self.text_view.add_controller(controller)
+
+        gesture = Gtk.GestureClick()
+        gesture.connect("pressed", self.on_text_view_click)
+        self.text_view.add_controller(gesture)
+
+        self.anchor_overlay = Adw.Bin()
+        self.popover_annotation = Gtk.Popover(autohide=False)
+        self.popover_annotation.set_parent(self.anchor_overlay)
+        self.text_view.add_overlay(child=self.anchor_overlay, xpos=0, ypos=0)
+
     def connect_to_project(self, project):
         self.project = project
 
@@ -126,6 +160,46 @@ class WritePage(Adw.Bin):
         # Set the scene as active
         self.active_scene = scene
 
+    def on_text_view_click(self, _gesture, n_press, x, y):
+        # If we are on a suggestion, automatically select it.
+        # This will trigger the selection changed
+        #if self.popover:
+        #    self.popover.popdown()
+        self.popover_annotation.popdown()
+
+        if isinstance(_gesture, Gtk.GestureClick) and n_press == 1:
+            buff_x, buff_y = self.text_view.window_to_buffer_coords(
+                Gtk.TextWindowType.WIDGET,
+                x, y
+            )
+            found, click_iter = self.text_view.get_iter_at_location(
+                buff_x, buff_y
+            )
+            if found and self._annotations is not None:
+                offset = click_iter.get_offset()
+                location = self.text_view.get_iter_location(click_iter)
+                iter_x, iter_y = self.text_view.buffer_to_window_coords(
+                    Gtk.TextWindowType.TEXT, location.x, location.y
+                )
+                for match in self._annotations:
+                    if match.offset < offset < match.offset + match.length:
+                        self.text_view.move_overlay(
+                            child=self.anchor_overlay,
+                            xpos=iter_x,
+                            ypos=iter_y+(location.height / 2)+3
+                        )
+                        self.popover_annotation.set_pointing_to(
+                            Gdk.Rectangle(
+                                x=iter_x,
+                                y=iter_y,
+                                width=1,
+                                height=location.height
+                            )
+                        )
+                        self.popover_annotation.set_child(
+                            AnnotationCard(self.text_view.get_buffer(), match)
+                        )
+                        self.popover_annotation.popup()
 
     @Gtk.Template.Callback()
     def do_toggle_bold(self, _src, _param = None):
@@ -208,6 +282,7 @@ class WritePage(Adw.Bin):
 
     def on_buffer_changed(self, text_buffer):
         """Keep an eye on modifications of the buffer."""
+        self.popover_annotation.popdown()
         if self._idle_timeout_id:
             GLib.source_remove(self._idle_timeout_id)
 
@@ -218,30 +293,6 @@ class WritePage(Adw.Bin):
         """Switch to editing the scene that has been selected."""
         logger.info(f"Open editor for {self._scene.title}")
 
-        # Create all the actions
-        action_group = Gio.SimpleActionGroup()
-        controller = Gtk.ShortcutController()
-
-        action = Gio.SimpleAction.new("do_toggle_bold", None)
-        action.connect("activate", self.do_toggle_bold)
-        action_group.add_action(action)
-        shortcut = Gtk.Shortcut.new(
-            Gtk.ShortcutTrigger.parse_string("<Primary>b"),
-            Gtk.NamedAction.new("custom.do_toggle_bold")
-        )
-        controller.add_shortcut(shortcut)
-
-        action = Gio.SimpleAction.new("do_toggle_italics", None)
-        action.connect("activate", self.do_toggle_italics)
-        action_group.add_action(action)
-        shortcut = Gtk.Shortcut.new(
-            Gtk.ShortcutTrigger.parse_string("<Primary>i"),
-            Gtk.NamedAction.new("custom.do_toggle_italics")
-        )
-        controller.add_shortcut(shortcut)
-
-        self.text_view.insert_action_group("custom", action_group)
-        self.text_view.add_controller(controller)
 
         # Set the editor title to the title of the scene
         self.set_title(self._scene.title)

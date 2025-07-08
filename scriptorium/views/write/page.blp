@@ -76,7 +76,10 @@ template $WritePage: Adw.Bin {
         ]
 
         ScrolledWindow content {
-          $ScrptTextView text_view {}
+          $ScrptTextView text_view {
+            vexpand: true;
+            hexpand: true;
+          }
         }
 
         [bottom]
