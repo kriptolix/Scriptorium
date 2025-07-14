@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GObject, Gio
+from gi.repository import GObject
 from pathlib import Path
 
 class Resource(GObject.Object):

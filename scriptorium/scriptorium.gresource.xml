@@ -40,6 +40,7 @@
     <!-- Write -->
     <file preprocess="xml-stripblanks">views/write/page.ui</file>
     <file preprocess="xml-stripblanks">views/write/navigation.ui</file>
+    <file preprocess="xml-stripblanks">views/write/navigation_item.ui</file>
   </gresource>
 
   <!-- Assets -->

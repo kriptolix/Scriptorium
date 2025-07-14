@@ -1,0 +1,23 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $NavigationItem: Adw.Bin {
+  Box content {
+    orientation: horizontal;
+    spacing: 6;
+    valign: start;
+    margin-start: 6;
+    margin-end: 6;
+    margin-top: 12;
+    margin-bottom: 12;
+
+    TreeExpander expander {
+      indent-for-depth: true;
+      indent-for-icon: false;
+    }
+    Label label {
+      halign: start;
+      ellipsize: end;
+    }
+  }
+}

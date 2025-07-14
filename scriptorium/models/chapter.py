@@ -36,32 +36,32 @@ class Chapter(Resource):
     """A chapter is a list of scenes."""
     __gtype_name__ = "Chapter"
 
-    scenes = GObject.Property(type=Gio.ListStore)
+    content = GObject.Property(type=Gio.ListStore)
 
     def __init__(self, project, identifier):
         """Create a new instance of Chapter."""
         super().__init__(project, identifier)
-        self.scenes = Gio.ListStore.new(item_type=Scene)
+        self.content = Gio.ListStore.new(item_type=Scene)
 
     def remove_scene(self, scene: Scene):
         """Remove a scene from the chapter."""
-        found, position = self.scenes.find(scene)
+        found, position = self.content.find(scene)
         if found:
-            self.scenes.remove(position)
+            self.content.remove(position)
         else:
             logger.warning(f"Could not find {scene}")
 
     def add_scene(self, scene: Scene, position: int = None):
         """Add an existing scene to the chapter."""
         if position is not None and position >= 0:
-            self.scenes.insert(position, scene)
+            self.content.insert(position, scene)
         else:
-            self.scenes.append(scene)
+            self.content.append(scene)
 
     def to_html(self):
         """Return the HTML payload for the chapter."""
         content = []
-        for scene in self.scenes:
+        for scene in self.content:
             content.append(scene.to_html())
         return "\n".join(content)
 
