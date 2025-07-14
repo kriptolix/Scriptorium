@@ -30,8 +30,7 @@ BASE_MARGIN = 12
 
 class State(enum.IntEnum):
     NEUTRAL = 0
-    PUSHED_DOWN = 1
-    PUSHED_UP = 2
+    PUSHED = 1
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/write/navigation_item.ui")
@@ -70,7 +69,7 @@ class NavigationItem(Adw.Bin):
         drop_target.connect("drop", self.on_drop)
         drop_target.connect("enter", self.on_enter)
         drop_target.connect("leave", self.on_leave)
-        drop_target.connect("motion", self.on_enter)
+        drop_target.connect("motion", self.on_motion)
         self.add_controller(drop_target)
 
     def on_drag_prepare(self, _source, _x, _y):
@@ -109,6 +108,8 @@ class NavigationItem(Adw.Bin):
         logger.info(f"Drop {item} {_x} {_y}")
 
     def on_accept(self, _src, drop):
+        return True
+
         # We accept a drag of the same type of ourselves
         if drop.get_formats().contain_gtype(type(self.resource)):
             return True
@@ -133,11 +134,6 @@ class NavigationItem(Adw.Bin):
         if self.is_dragged:
             return Gdk.DragAction.MOVE
 
-        # Don't do anything special if we are a Chapter (have children then)
-        if self.get_children() is not None:
-            # TODO Display the icon +
-            return Gdk.DragAction.MOVE
-
         # Don't do anything while moving
         if self.is_animated:
             return Gdk.DragAction.MOVE
@@ -149,14 +145,15 @@ class NavigationItem(Adw.Bin):
         return self.expander.get_list_row().get_children()
 
     def on_leave(self, _source):
+        logger.info("Leave")
         self._animate(State.NEUTRAL, BASE_MARGIN)
         #self.content.set_margin_top(BASE_MARGIN)
         #self.content.set_margin_bottom(BASE_MARGIN)
         #self.push_state = State.NEUTRAL
 
     def on_motion(self, drop_target, motion_x, motion_y):
-        if self.get_children() is not None:
-            # TODO Display the icon +
+        # Ignore the entry if we are the line dragged
+        if self.is_dragged:
             return Gdk.DragAction.MOVE
 
         # Don't do anything while moving
@@ -170,38 +167,22 @@ class NavigationItem(Adw.Bin):
         drag = drop_target.get_current_drop().get_drag()
         icon = Gtk.DragIcon.get_for_drag(drag)
         value = icon.get_child()
-        _got_bounds, _x, _y, width, height = value.get_bounds()
+        _got_bounds, _x, _y, _width, visitor_height = value.get_bounds()
+        _got_bounds, _x, own_y, _width, own_height = self.get_bounds()
 
-        if y < height / 2:
-            prev_sibling = self.get_parent().get_prev_sibling()
-            if prev_sibling is not None:
-                if not prev_sibling.get_first_child().is_dragged:
-                    if self.push_state != State.PUSHED_DOWN:
-                        self._animate(State.PUSHED_DOWN, height)
-        else:
+        if y > (own_y + own_height / 2) and self.push_state != State.PUSHED:
             next_sibling = self.get_parent().get_next_sibling()
             if next_sibling is not None:
                 if not next_sibling.get_first_child().is_dragged:
-                    if self.push_state != State.PUSHED_UP:
-                        self._animate(State.PUSHED_UP, height)
+                    self._animate(State.PUSHED, visitor_height)
 
     def on_animate_step(self, value, target_state, offset):
         box = self.content
 
-        if target_state == State.PUSHED_DOWN:
-            box.set_margin_top(int(value))
-            if self.push_state == State.PUSHED_UP:
-                box.set_margin_bottom(BASE_MARGIN + offset - int(value))
-
-        elif target_state == State.PUSHED_UP:
+        if target_state == State.PUSHED:
             box.set_margin_bottom(int(value))
-            if self.push_state == State.PUSHED_DOWN:
-                box.set_margin_top(BASE_MARGIN + offset - int(value))
-
         elif target_state == State.NEUTRAL:
-            if self.push_state == State.PUSHED_DOWN:
-                box.set_margin_top(BASE_MARGIN + offset - int(value))
-            elif self.push_state == State.PUSHED_UP:
+            if self.push_state == State.PUSHED:
                 box.set_margin_bottom(BASE_MARGIN + offset - int(value))
 
     def on_animation_done(self, _animation, target_state, offset):
@@ -210,12 +191,9 @@ class NavigationItem(Adw.Bin):
         if target_state == State.NEUTRAL:
             box.set_margin_top(BASE_MARGIN)
             box.set_margin_bottom(BASE_MARGIN)
-        elif target_state == State.PUSHED_UP:
+        elif target_state == State.PUSHED:
             box.set_margin_top(BASE_MARGIN)
             box.set_margin_bottom(offset)
-        elif target_state == State.PUSHED_DOWN:
-            box.set_margin_top(offset)
-            box.set_margin_bottom(BASE_MARGIN)
 
         self.push_state = target_state
         self.is_animated = False
@@ -233,7 +211,7 @@ class NavigationItem(Adw.Bin):
         animation = Adw.TimedAnimation.new(
             self.content,
             BASE_MARGIN, offset,
-            150,
+            250,
             animation_target
             )
         self.is_animated = True
