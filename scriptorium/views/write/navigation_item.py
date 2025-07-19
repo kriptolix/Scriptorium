@@ -16,9 +16,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Gtk, GObject, Gdk, Adw, Gio, GLib
+from gi.repository import Gtk, GObject, Gdk, Adw, Gio
 from scriptorium.globals import BASE
-from scriptorium.models import Chapter, Scene, Resource, Manuscript
+from scriptorium.models import Resource, Manuscript
 import enum
 
 import logging
@@ -26,12 +26,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 DRAGGING_OPACITY = 0.4
-BASE_MARGIN = 12
+BASE_MARGIN = 3
+ANIMATION_SPEED = 200
 
 class State(enum.IntEnum):
     NEUTRAL = 0
     PUSHED = 1
-
 
 @Gtk.Template(resource_path=f"{BASE}/views/write/navigation_item.ui")
 class NavigationItem(Adw.Bin):
@@ -42,11 +42,12 @@ class NavigationItem(Adw.Bin):
     is_dragged = GObject.Property(type=bool, default=False)
     is_animated = GObject.Property(type=bool, default=False)
     push_state = GObject.Property(type=int, default=State.NEUTRAL)
-    is_visited = GObject.Property(type=bool, default=False)
+    hovering = GObject.Property(type=bool, default=False)
 
     content = Gtk.Template.Child()
     expander = Gtk.Template.Child()
     label = Gtk.Template.Child()
+    menu_button = Gtk.Template.Child()
 
     def __init__(self):
         super().__init__()
@@ -69,8 +70,12 @@ class NavigationItem(Adw.Bin):
         drop_target.connect("drop", self.on_drop)
         drop_target.connect("enter", self.on_enter)
         drop_target.connect("leave", self.on_leave)
-        drop_target.connect("motion", self.on_motion)
         self.add_controller(drop_target)
+
+        motion_controler = Gtk.EventControllerMotion()
+        motion_controler.connect("enter", self.on_motion_enter)
+        motion_controler.connect("leave", self.on_motion_leave)
+        self.add_controller(motion_controler)
 
     def on_drag_prepare(self, _source, _x, _y):
         """Prepare for a DnD event by attaching the element being grabbed."""
@@ -84,97 +89,82 @@ class NavigationItem(Adw.Bin):
 
     def on_drag_begin(self, source, drag):
         """Attach a widget to the drag icon."""
-        # Take a snaphot of ourselves and set that as the icon
+        # If we are expanded collapse first
+        list_row = self.expander.get_list_row()
+        if list_row.is_expandable() and list_row.get_expanded():
+            list_row.set_expanded(False)
+
+        # Create a drag widget with just our label
         widget = Gtk.ListBox()
         widget.add_css_class("navigation-sidebar")
         entry = Gtk.Label(label=self.label.get_label())
         widget.append(entry)
         widget.select_row(widget.get_row_at_index(0))
-
-        #widget = Gtk.Label(label="Move")
-        #widget.show()
         icon = Gtk.DragIcon.get_for_drag(drag)
         icon.set_child(widget)
-        #drag.set_hotspot(-20, 0)
 
+        # Update the state of the widget to show it being dragged
         self.is_dragged = True
         self.set_opacity(DRAGGING_OPACITY)
 
     def on_drag_end(self, source, drag, _):
+        """Return the widget to a normal state."""
         self.is_dragged = False
         self.set_opacity(1)
 
     def on_drop(self, _drop, item, _x, _y):
-        logger.info(f"Drop {item} {_x} {_y}")
+        """Drop item after ourselves."""
 
-    def on_accept(self, _src, drop):
-        return True
+        # Remove the resource from its original location
+        found_item, position_item = item.parent_model.find(item.resource)
+        item.parent_model.remove(position_item)
 
-        # We accept a drag of the same type of ourselves
-        if drop.get_formats().contain_gtype(type(self.resource)):
-            return True
+        # Check if we are a container and currently expanded
+        list_row = self.expander.get_list_row()
+        if list_row.is_expandable() and list_row.get_expanded():
+            # If we are an open container the user will see a space under the
+            # expander and expect the item to land there, that is as the first
+            # item of the list
+            own_model = list_row.get_children()
+            own_model.insert(0, item.resource)
+        else:
+            # Find our position in the parent model
+            found_self, position_self = self.parent_model.find(self.resource)
+            self.parent_model.insert(position_self + 1, item.resource)
 
-        # If we are a Chapter we accept Scene
-        if isinstance(self.resource, Chapter):
-            if drop.get_formats().contain_gtype(Scene):
-                return True
 
-        # If we are a Manuscript we accept Scene and Chapter
-        if isinstance(self.resource, Manuscript):
-            if drop.get_formats().contain_gtype(Scene):
-                return True
-            if drop.get_formats().contain_gtype(Chapter):
-                return True
+    def on_motion_enter(self, drop_target, motion_x, motion_y):
+        self.menu_button.set_opacity(1)
 
-        # Reject all other cases
-        return False
-
-    def on_enter(self, drop_target, enter_x, enter_y):
-        # Ignore the entry if we are the line dragged
-        if self.is_dragged:
-            return Gdk.DragAction.MOVE
-
-        # Don't do anything while moving
-        if self.is_animated:
-            return Gdk.DragAction.MOVE
-
-        self._set_margins(drop_target, enter_y)
-        return Gdk.DragAction.MOVE
-
-    def get_children(self):
-        return self.expander.get_list_row().get_children()
+    def on_motion_leave(self, _source):
+        self.menu_button.set_opacity(0)
 
     def on_leave(self, _source):
-        logger.info("Leave")
         self._animate(State.NEUTRAL, BASE_MARGIN)
-        #self.content.set_margin_top(BASE_MARGIN)
-        #self.content.set_margin_bottom(BASE_MARGIN)
-        #self.push_state = State.NEUTRAL
 
-    def on_motion(self, drop_target, motion_x, motion_y):
-        # Ignore the entry if we are the line dragged
+        self.menu_button.set_opacity(0)
+
+    def on_enter(self, drop_target, motion_x, motion_y):
+        # Ignore the visit if we are the line dragged
         if self.is_dragged:
             return Gdk.DragAction.MOVE
 
-        # Don't do anything while moving
-        if self.is_animated:
+        # Don't do anything while moving or if we are already pushed
+        if self.is_animated or self.push_state == State.PUSHED:
             return Gdk.DragAction.MOVE
 
-        self._set_margins(drop_target, motion_y)
-        return Gdk.DragAction.MOVE
-
-    def _set_margins(self, drop_target, y):
         drag = drop_target.get_current_drop().get_drag()
         icon = Gtk.DragIcon.get_for_drag(drag)
         value = icon.get_child()
         _got_bounds, _x, _y, _width, visitor_height = value.get_bounds()
         _got_bounds, _x, own_y, _width, own_height = self.get_bounds()
 
-        if y > (own_y + own_height / 2) and self.push_state != State.PUSHED:
-            next_sibling = self.get_parent().get_next_sibling()
-            if next_sibling is not None:
-                if not next_sibling.get_first_child().is_dragged:
-                    self._animate(State.PUSHED, visitor_height)
+        next_sibling = self.get_parent().get_next_sibling()
+        if next_sibling is not None:
+            if not next_sibling.get_first_child().is_dragged:
+                self._animate(State.PUSHED, visitor_height)
+
+        return Gdk.DragAction.MOVE
 
     def on_animate_step(self, value, target_state, offset):
         box = self.content
@@ -186,24 +176,10 @@ class NavigationItem(Adw.Bin):
                 box.set_margin_bottom(BASE_MARGIN + offset - int(value))
 
     def on_animation_done(self, _animation, target_state, offset):
-        box = self.content
-
-        if target_state == State.NEUTRAL:
-            box.set_margin_top(BASE_MARGIN)
-            box.set_margin_bottom(BASE_MARGIN)
-        elif target_state == State.PUSHED:
-            box.set_margin_top(BASE_MARGIN)
-            box.set_margin_bottom(offset)
-
         self.push_state = target_state
         self.is_animated = False
 
     def _animate(self, target_state, offset):
-        # Depending on target_state move up or down until offset
-        # Connect "done" to set the target status
-        # Set to status = moving when starting animation
-        logger.info(f"Start {self.push_state} => {target_state}")
-
         animation_target = Adw.CallbackAnimationTarget.new(
             self.on_animate_step,
             target_state, offset
@@ -211,13 +187,12 @@ class NavigationItem(Adw.Bin):
         animation = Adw.TimedAnimation.new(
             self.content,
             BASE_MARGIN, offset,
-            250,
+            ANIMATION_SPEED,
             animation_target
             )
         self.is_animated = True
         animation.play()
         animation.connect("done", self.on_animation_done, target_state, offset)
-
 
     def set_label(self, item):
         """Use the property title of the item to set the label of the row."""
@@ -230,4 +205,3 @@ class NavigationItem(Adw.Bin):
             "label",
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
-

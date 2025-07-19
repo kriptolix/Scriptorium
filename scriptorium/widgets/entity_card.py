@@ -19,31 +19,36 @@ class EntityCard(Adw.Bin):
     prefixes = Gtk.Template.Child()
     avatar = Gtk.Template.Child()
 
-    def __init__(self, entity: Entity, can_activate: bool = False, can_move: bool = False):
+    def __init__(
+        self, entity: Entity, can_activate: bool = False, can_move: bool = False
+    ):
         super().__init__()
         self._entity = entity
 
         # Configure the information for the entity
         entity.bind_property(
-            "title", self, "title",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+            "title",
+            self,
+            "title",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
         entity.bind_property(
-            "synopsis", self, "synopsis",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+            "synopsis",
+            self,
+            "synopsis",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
         # Connect the title to the avatar
         entity.bind_property(
-            "title", self.avatar, "text",
-            GObject.BindingFlags.SYNC_CREATE
+            "title", self.avatar, "text", GObject.BindingFlags.SYNC_CREATE
         )
 
         # Adjust the display of drag and activation extra
         self.prefixes.set_visible(can_move)
         self.suffixes.set_visible(can_activate)
 
-
     @GObject.Property(type=Entity)
     def entity(self):
         return self._entity
+

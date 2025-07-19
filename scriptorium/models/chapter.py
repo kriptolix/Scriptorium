@@ -41,7 +41,7 @@ class Chapter(Resource):
     def __init__(self, project, identifier):
         """Create a new instance of Chapter."""
         super().__init__(project, identifier)
-        self.content = Gio.ListStore.new(item_type=Scene)
+        self.content = Gio.ListStore.new(item_type=Resource)
 
     def remove_scene(self, scene: Scene):
         """Remove a scene from the chapter."""

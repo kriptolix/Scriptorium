@@ -14,9 +14,11 @@ listview {
   background-color: transparent;
 }
 
+/*
 .navigation-sidebar > row  {
   margin-bottom: 0px;
 }
+*/
 
 .multiline_content {
   background-color: transparent;
