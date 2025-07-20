@@ -18,14 +18,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 
+import logging
+
 from gi.repository import Adw, Gtk
-from scriptorium.widgets import EntityCard
+
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.globals import BASE
-from .editor_entities_details import ScrptEntitiesDetailsPanel
 from scriptorium.models import Entity
+from scriptorium.widgets import EntityCard
 
-import logging
+from .editor_entities_details import ScrptEntitiesDetailsPanel
 
 logger = logging.getLogger(__name__)
 

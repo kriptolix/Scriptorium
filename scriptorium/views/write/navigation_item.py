@@ -16,12 +16,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Gtk, GObject, Gdk, Adw, Gio
-from scriptorium.globals import BASE
-from scriptorium.models import Resource, Manuscript
 import enum
-
 import logging
+
+from gi.repository import Adw, Gdk, Gio, GObject, Gtk
+
+from scriptorium.globals import BASE
+from scriptorium.models import Manuscript, Resource
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +133,6 @@ class NavigationItem(Adw.Bin):
             found_self, position_self = self.parent_model.find(self.resource)
             self.parent_model.insert(position_self + 1, item.resource)
 
-
     def on_motion_enter(self, drop_target, motion_x, motion_y):
         self.menu_button.set_opacity(1)
 
@@ -141,8 +141,6 @@ class NavigationItem(Adw.Bin):
 
     def on_leave(self, _source):
         self._animate(State.NEUTRAL, BASE_MARGIN)
-
-        self.menu_button.set_opacity(0)
 
     def on_enter(self, drop_target, motion_x, motion_y):
         # Ignore the visit if we are the line dragged
@@ -181,15 +179,11 @@ class NavigationItem(Adw.Bin):
 
     def _animate(self, target_state, offset):
         animation_target = Adw.CallbackAnimationTarget.new(
-            self.on_animate_step,
-            target_state, offset
+            self.on_animate_step, target_state, offset
         )
         animation = Adw.TimedAnimation.new(
-            self.content,
-            BASE_MARGIN, offset,
-            ANIMATION_SPEED,
-            animation_target
-            )
+            self.content, BASE_MARGIN, offset, ANIMATION_SPEED, animation_target
+        )
         self.is_animated = True
         animation.play()
         animation.connect("done", self.on_animation_done, target_state, offset)
@@ -205,3 +199,4 @@ class NavigationItem(Adw.Bin):
             "label",
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
+

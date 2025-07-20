@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject
+from gi.repository import Adw, Gtk
 from scriptorium.widgets import ChapterColumn
 
 import logging

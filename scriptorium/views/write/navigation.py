@@ -16,12 +16,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Gtk, Graphene, Gio
-from scriptorium.globals import BASE
-from scriptorium.models import Chapter, Scene, Manuscript
-from .navigation_item import NavigationItem
-
 import logging
+
+from gi.repository import Gio, Graphene, Gtk
+
+from scriptorium.globals import BASE
+from scriptorium.models import Chapter, Manuscript, Scene
+
+from .navigation_item import NavigationItem
 
 logger = logging.getLogger(__name__)
 
