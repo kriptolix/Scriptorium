@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 # Mutex to avoid having to matches callback edit the buffer at the same time
 text_buffer_lock = threading.Lock()
 
+
 @Gtk.Template(resource_path=f"{BASE}/views/write/page.ui")
 class WritePage(Adw.Bin):
     __gtype_name__ = "WritePage"
@@ -288,37 +289,13 @@ class WritePage(Adw.Bin):
 
         self._idle_timeout_id = GLib.timeout_add(200, self.on_editor_idle)
 
-    #@Gtk.Template.Callback()
-    def on_writer_opened(self, _dialog):
-        """Switch to editing the scene that has been selected."""
-        logger.info(f"Open editor for {self._scene.title}")
 
-
-        # Set the editor title to the title of the scene
-        self.set_title(self._scene.title)
-
-        # Load the content of the scene
-        text_buffer = self.text_view.get_buffer()
-        self._scene.load_into_buffer(text_buffer)
-
-    #@Gtk.Template.Callback()
-    def on_writer_closed(self, _dialog):
-        """Perform any action needed when closing the editor."""
-        logger.info(f"Close editor for {self._scene.title}")
-
-        if self._idle_timeout_id:
-            GLib.source_remove(self._idle_timeout_id)
+#        if self._idle_timeout_id:
+#            GLib.source_remove(self._idle_timeout_id)
 
         # Remove the styling
-        Gtk.StyleContext.remove_provider_for_display(
-            Gdk.Display.get_default(),
-            self.css_provider
-        )
-
-        # Remove all the language check annotations
-        self.clear_annotations()
-
-        # Save the content of the buffer
-        self._scene.save_from_buffer(text_buffer)
-
+#        Gtk.StyleContext.remove_provider_for_display(
+#            Gdk.Display.get_default(),
+#            self.css_provider
+#        )
 

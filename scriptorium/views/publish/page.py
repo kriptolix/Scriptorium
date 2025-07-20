@@ -18,8 +18,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-from gi.repository import Adw, Gtk, Gio
-from scriptorium.models import Chapter
+from gi.repository import Adw, Gtk, Gio, GObject
+from scriptorium.models import Project, Chapter
 from scriptorium.globals import BASE
 
 try:
@@ -30,23 +30,28 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+class NavigationRow(Gtk.Box):
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_formatting.ui")
-class ScrptFormattingPanel(Adw.NavigationPage):
+    content = GObject.Property(type=str)
 
-    __gtype_name__ = "ScrptFormattingPanel"
+    def __init__(self, title):
+        super().__init__(margin_top=6)
+        label = Gtk.Label(label = title)
+        self.append(label)
+
+@Gtk.Template(resource_path=f"{BASE}/views/publish/page.ui")
+class PublishPage(Adw.Bin):
+
+    __gtype_name__ = "PublishPage"
     __title__ = "Formatting"
     __icon_name__ = "open-book-symbolic"
     __description__ = "Preview and modify the formatting"
 
     web_view_placeholder = Gtk.Template.Child()
-    button_next = Gtk.Template.Child()
-    button_previous = Gtk.Template.Child()
-    chapters_drop_down = Gtk.Template.Child()
+    chapters_list = Gtk.Template.Child()
 
-    def __init__(self, editor, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._editor = editor
 
         # If we have WebKit set the component, otherwise show placeholder
         if HAVE_WEBKIT:
@@ -62,46 +67,53 @@ class ScrptFormattingPanel(Adw.NavigationPage):
             self.web_view_placeholder.append(self.web_view)
         else:
             widget = Adw.StatusPage(
-                title = "Not available",
-                icon_name = "process-stop-symbolic",
-                description = "This feature is not available on your operating system"
+                title="Not available",
+                icon_name="process-stop-symbolic",
+                description="This feature is not available on your operating system"
             )
             widget.set_vexpand(True)
             widget.set_hexpand(True)
             self.web_view_placeholder.append(widget)
 
-
-        self.chapters_drop_down.connect(
-            "notify::selected-item",
-            self.on_selected_item
+        self.chapters_list.connect(
+             "row-selected",
+             self.on_selected_item
         )
 
-        list_store_expression = Gtk.PropertyExpression.new(
-            Chapter,
-            None,
-            "title",
-        )
-        self.chapters_drop_down.set_expression(list_store_expression)
-        self.chapters_drop_down.set_model(editor.project.manuscript.chapters)
+        # list_store_expression = Gtk.PropertyExpression.new(
+        #     Chapter,
+        #     None,
+        #     "title",
+        # )
+        # self.chapters_drop_down.set_expression(list_store_expression)
+        # self.chapters_drop_down.set_model(editor.project.manuscript.chapters)
 
-        self._position = 0
+        # self._position = 0
 
+    def connect_to_project(self, project):
+        logger.info("Project changed")
+        self.chapters_list.remove_all()
 
-    def on_selected_item(self, _drop_down, _selected_item):
-        selected_chapter = _drop_down.get_selected_item()
-        if selected_chapter is None:
-            self.button_previous.set_sensitive(False)
-            self.button_next.set_sensitive(False)
+        book_parts = project.manuscript.get_content()
+        for title, content in book_parts:
+            widget = NavigationRow(title)
+            widget.content = content
+            self.chapters_list.insert(widget, -1)
+
+    def on_selected_item(self, _src, _selected_item):
+        selected_row = self.chapters_list.get_selected_row()
+        if selected_row is None:
             return
 
-        logger.info(f"Chapter selected: {selected_chapter.title}")
+        selected_chapter = selected_row.get_child()
+        logger.info(f"Chapter selected: {selected_chapter}")
 
         # Get all the HTML content from the model
-        content = selected_chapter.to_html()
+        content = selected_chapter.content
 
         # Instantiate the template for the rendering
         emulator_html = Gio.File.new_for_uri(
-            "resource://com/github/cgueret/Scriptorium/views/editor_formatting.html"
+            f"resource:/{BASE}/views/publish/page.html"
         )
         html_content = emulator_html.load_contents()[1].decode()
         html_content = html_content.replace("{content}", content)
@@ -110,21 +122,4 @@ class ScrptFormattingPanel(Adw.NavigationPage):
         if HAVE_WEBKIT:
             self.web_view.load_html(html_content)
 
-        # Find the position of the chapter
-        chapters = self._editor.project.manuscript.chapters
-        found, self._position = chapters.find(selected_chapter)
-
-        # Enable the buttons
-        self.button_previous.set_sensitive(self._position > 0)
-        self.button_next.set_sensitive(self._position < chapters.get_n_items() - 1)
-
-    @Gtk.Template.Callback()
-    def on_button_next_clicked(self, _button):
-        logger.info("Move to next chapter")
-        self.chapters_drop_down.set_selected(self._position + 1)
-
-    @Gtk.Template.Callback()
-    def on_button_previous_clicked(self, _button):
-        logger.info("Move to previous chapter")
-        self.chapters_drop_down.set_selected(self._position - 1)
 

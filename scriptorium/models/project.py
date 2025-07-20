@@ -23,6 +23,7 @@ CLASSES = {
     "Manuscript": Manuscript
 }
 
+
 class Project(GObject.Object):
     __gtype_name__ = "Project"
 

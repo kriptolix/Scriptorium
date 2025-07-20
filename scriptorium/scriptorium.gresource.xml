@@ -13,11 +13,9 @@
     <file preprocess="xml-stripblanks">views/editor_chapters_details.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes_details.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_formatting.ui</file>
     <file preprocess="xml-stripblanks">views/editor_manuscript.ui</file>
     <file preprocess="xml-stripblanks">views/editor_entities.ui</file>
     <file preprocess="xml-stripblanks">views/editor_entities_details.ui</file>
-    <file>views/editor_formatting.html</file>
 
     <!-- Custom widgets -->
     <file preprocess="xml-stripblanks">widgets/scene.ui</file>
@@ -41,6 +39,10 @@
     <file preprocess="xml-stripblanks">views/write/page.ui</file>
     <file preprocess="xml-stripblanks">views/write/navigation.ui</file>
     <file preprocess="xml-stripblanks">views/write/navigation_item.ui</file>
+
+    <!-- Publish -->
+    <file preprocess="xml-stripblanks">views/publish/page.ui</file>
+    <file>views/publish/page.html</file>
   </gresource>
 
   <!-- Assets -->

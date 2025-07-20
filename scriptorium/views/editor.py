@@ -25,13 +25,13 @@ from scriptorium.widgets import ThemeSelector
 from scriptorium.models import Project
 
 from scriptorium.views.write import WritePage
+from scriptorium.views.publish import PublishPage
 
 from .editor_scenes import ScrptWritingPanel
 from .editor_entities import ScrptEntityPanel
 from .editor_overview import ScrptOverviewPanel
 from .editor_manuscript import ScrptManuscriptPanel
 from .editor_chapters import ScrptChaptersPanel
-from .editor_formatting import ScrptFormattingPanel
 
 import logging
 
@@ -51,8 +51,6 @@ PANELS = [
     ("header", "Write"),
     ("scenes", ScrptWritingPanel),
     # TODO: Special pages
-    ("header", "Edit"),
-    ("formatting", ScrptFormattingPanel),
     # TODO: Export
 ]
 
@@ -73,6 +71,7 @@ class ScrptEditorView(Adw.NavigationPage):
     #panels_sidebar = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
     write_page = Gtk.Template.Child()
+    publish_page = Gtk.Template.Child()
 
     def __init__(self, window, project: Project):
         """Create a new instance of the editor."""
@@ -100,6 +99,7 @@ class ScrptEditorView(Adw.NavigationPage):
                 #self.panels_navigation.select_row(row)
 
         self.write_page.connect_to_project(project)
+        self.publish_page.connect_to_project(project)
 
     def create_action(self, window, name, callback, shortcuts=None):
         """Add an application action.

@@ -21,7 +21,7 @@
 import logging
 
 from pathlib import Path
-from gi.repository import GObject, Gio
+from gi.repository import GObject, Gio, Gtk
 from .chapter import Chapter
 from .scene import Scene
 from .resource import Resource
@@ -76,4 +76,55 @@ class Manuscript(Resource):
         self.content.remove(source_position)
         self.content.insert(target_position, source_chapter)
 
+    def get_content(self) -> list:
+        """Return the content of the manuscript as a list of HTML chapters."""
+
+        # Prepare the output
+        output = []
+
+        # Create a tree model to iterate over the content
+        model = Gtk.TreeListModel.new(
+            self.content, False, True,
+            lambda item:
+            item.content if isinstance(item, (Manuscript, Chapter)) else None
+        )
+
+        # Iterate on each row
+        previous_resource = None
+        previous_depth = None
+        chapter_index = 1
+        for idx in range(0, model.get_n_items()):
+            # See what we have on that row
+            row = model.get_row(idx)
+            resource = row.get_item()
+            depth = row.get_depth()
+
+            # We start something new
+            if row.get_depth() == 0:
+                if isinstance(resource, Chapter):
+                    output.append([f"Chapter {chapter_index}", ""])
+                elif isinstance(resource, Scene):
+                    # We stitch together the scenes at root level as long as
+                    # they come in a sequence
+                    logger.info(f"{resource.title} has prev {previous_resource.title}")
+                    if not isinstance(previous_resource, Scene) or previous_depth != depth:
+                        output.append([f"Chapter {chapter_index}", ""])
+                chapter_index += 1
+
+            # Now add the content to the last part of the output
+            if isinstance(resource, Scene):
+                # If the previous thing was a scene we add a scene separator
+                if isinstance(previous_resource, Scene) and previous_depth == depth:
+                    output[-1][1] += "<span>...</span>"
+                # Add the content of the scene
+                output[-1][1] += resource.to_html()
+            elif isinstance(resource, Chapter):
+                d = row.get_depth()
+                output[-1][1] += f"<h{d+1}>{resource.title}</h{d+1}>"
+
+            # Set the previous item as the current one
+            previous_resource = resource
+            previous_depth = depth
+
+        return output
 

@@ -46,10 +46,10 @@ template $ScrptEditorView: Adw.NavigationPage {
         name: "publish_page";
         title: _("Publish");
         icon-name: "dictionary-symbolic";
-        child: Adw.StatusPage {};
+        child: $PublishPage publish_page {};
       }
 
-      visible-child-name: "write_page";
+      visible-child-name: "publish_page";
     };
   };
 }
