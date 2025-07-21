@@ -1,4 +1,4 @@
-# editor_entity.py
+# views/plan/editor_entity.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -33,13 +33,13 @@ logger = logging.getLogger(__name__)
 
 # TODO: When adding a new element offer to pick a template to pre-populate attrs
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_entities.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_entities.ui")
 class ScrptEntityPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptEntityPanel"
 
-    __title__ = "Elements"
+    __title__ = "Story elements"
     __icon_name__ = "find-location-symbolic"
-    __description__ = "Set the key entities of the story"
+    __description__ = "Set the key elements of the story"
 
     entities_list = Gtk.Template.Child()
     navigation = Gtk.Template.Child()

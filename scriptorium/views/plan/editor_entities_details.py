@@ -1,4 +1,4 @@
-# views/editor_entities_details.py
+# views/plan/editor_entities_details.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -27,7 +27,7 @@ from scriptorium.globals import BASE
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_entities_details.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_entities_details.ui")
 class ScrptEntitiesDetailsPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptEntitiesDetailsPanel"
 

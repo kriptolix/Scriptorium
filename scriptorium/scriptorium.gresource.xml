@@ -14,8 +14,6 @@
     <file preprocess="xml-stripblanks">views/editor_scenes.ui</file>
     <file preprocess="xml-stripblanks">views/editor_scenes_details.ui</file>
     <file preprocess="xml-stripblanks">views/editor_manuscript.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_entities.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_entities_details.ui</file>
 
     <!-- Custom widgets -->
     <file preprocess="xml-stripblanks">widgets/scene.ui</file>
@@ -34,6 +32,11 @@
     <file preprocess="xml-stripblanks">dialogs/select_scenes.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_entities.ui</file>
     <file preprocess="xml-stripblanks">dialogs/preferences.ui</file>
+
+    <!-- Plan -->
+    <file preprocess="xml-stripblanks">views/plan/page.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_entities.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_entities_details.ui</file>
 
     <!-- Write -->
     <file preprocess="xml-stripblanks">views/write/page.ui</file>

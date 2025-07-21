@@ -1,4 +1,4 @@
-# editor.py
+# views/plan/page.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -20,53 +20,47 @@
 from gi.repository import Adw, Gtk, GObject, Gio, GLib
 
 from scriptorium.globals import BASE
-from scriptorium.dialogs import ScrptAddDialog
-from scriptorium.widgets import ThemeSelector
 from scriptorium.models import Project
-
-import scriptorium.views.write
-import scriptorium.views.publish
-import scriptorium.views.plan
+from .editor_entities import ScrptEntityPanel
 
 import logging
 
 logger = logging.getLogger(__name__)
 
+PANELS = [
+    ("header", "Manuscript"),
+    # ("manuscript", ScrptManuscriptPanel),
+    # Background research
+    # Writting goals
+    ("header", "Story line"),
+    ("entities", ScrptEntityPanel),
+    #("overview", ScrptOverviewPanel),
+    # Timeline
+    #("chapters", ScrptChaptersPanel),
+    # Plot lines
+    ("header", "Additional resources"),
+    #("scenes", ScrptWritingPanel),
+    # Special pages
+    # Image gallery
+    # Export
+]
+
+DEFAULT = "manuscript"
 
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor.ui")
-class ScrptEditorView(Adw.NavigationPage):
-    """The editor is the main view to modify a manuscript."""
+@Gtk.Template(resource_path=f"{BASE}/views/plan/page.ui")
+class PlanPage(Adw.Bin):
+    __gtype_name__ = "PlanPage"
 
-    __gtype_name__ = "ScrptEditorView"
+    panels_list = Gtk.Template.Child()
+    panels = Gtk.Template.Child()
 
-    project = GObject.Property(type=Project)
-
-    #panels_navigation = Gtk.Template.Child()
-    #panels = Gtk.Template.Child()
-    #split_view = Gtk.Template.Child()
-    #panels_sidebar = Gtk.Template.Child()
-    win_menu = Gtk.Template.Child()
-    write_page = Gtk.Template.Child()
-    publish_page = Gtk.Template.Child()
-
-    def __init__(self, window, project: Project):
-        """Create a new instance of the editor."""
+    def __init__(self):
+        """Create a new instance of the planning page."""
         super().__init__()
 
-        # We're a view not a stand alone window so we get the pointer to the
-        # actual window to create the actions
-        self.window = window
-
-        # Keep track of the project the editor is associated to
-        self.project = project
-
-        # Connect an instance of the theme button to the menu
-        popover = self.win_menu.get_popover()
-        popover.add_child(ThemeSelector(), "theme")
-
         # Setup all the panels
-        # self.initialise_panels()
+        self.initialise_panels()
 
         # Open the default panel
         row = None
@@ -75,29 +69,8 @@ class ScrptEditorView(Adw.NavigationPage):
                 #row = self.panels_navigation.get_row_at_index(index)
                 #self.panels_navigation.select_row(row)
 
-        self.write_page.connect_to_project(project)
-        self.publish_page.connect_to_project(project)
-
-    def create_action(self, window, name, callback, shortcuts=None):
-        """Add an application action.
-
-        Args:
-            name: the name of the action
-            callback: the function to be called when the action is
-              activated
-            shortcuts: an optional list of accelerators
-        """
-        logger.info("Create action")
-        action = Gio.SimpleAction.new(name=name, parameter_type=GLib.VariantType("s"))
-        action.connect("activate", callback)
-        window.add_action(action)
-        if shortcuts:
-            application = window.get_application()
-            application.set_accels_for_action(f"win.{name}('1')", shortcuts)
-
     def initialise_panels(self):
         """Add all the panels to the menu."""
-        self.panels_sidebar.set_title(self.project.manuscript.title)
 
         for panel_id, panel in PANELS:
             # Create a menu entry
@@ -118,22 +91,22 @@ class ScrptEditorView(Adw.NavigationPage):
 
             box.append(label)
 
-            self.panels_navigation.append(box)
+            self.panels_list.append(box)
 
             # Add the id and title to the box for easy retrieval later
             box.panel_id = panel_id
 
         # Deactivate all the headers
         index = 0
-        row = self.panels_navigation.get_row_at_index(index)
+        row = self.panels_list.get_row_at_index(index)
         while row is not None:
             if row.get_child().panel_id == "header":
                 row.set_activatable(False)
                 row.set_selectable(False)
             index += 1
-            row = self.panels_navigation.get_row_at_index(index)
+            row = self.panels_list.get_row_at_index(index)
 
-    #@Gtk.Template.Callback()
+    @Gtk.Template.Callback()
     def on_listbox_row_selected(self, _list_box, _selected_item):
         """Change the panel currently displayed."""
         selection = _selected_item.get_child()
@@ -150,28 +123,6 @@ class ScrptEditorView(Adw.NavigationPage):
                 self.add_close_sidebar_widget(header_bars[0])
 
         self.panels.replace([p])
-
-    def find_header_bars(self, root):
-        header_bars = []
-        child = root.get_first_child()
-        while child:
-            if isinstance(child, Adw.HeaderBar):
-                header_bars.append(child)
-            # Correct: merge returned lists into the parent list
-            header_bars.extend(self.find_header_bars(child))
-            child = child.get_next_sibling()
-        return header_bars
-
-    def add_close_sidebar_widget(self, header_bar):
-        show_sidebar_button = Gtk.ToggleButton(icon_name="sidebar-show-symbolic")
-        header_bar.pack_start(show_sidebar_button)
-
-        self.split_view.bind_property(
-            "show_sidebar",
-            show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
-        )
 
     @Gtk.Template.Callback()
     def on_editorview_closed(self, _editorview):

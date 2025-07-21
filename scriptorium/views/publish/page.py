@@ -80,21 +80,19 @@ class PublishPage(Adw.Bin):
              self.on_selected_item
         )
 
-        # list_store_expression = Gtk.PropertyExpression.new(
-        #     Chapter,
-        #     None,
-        #     "title",
-        # )
-        # self.chapters_drop_down.set_expression(list_store_expression)
-        # self.chapters_drop_down.set_model(editor.project.manuscript.chapters)
-
-        # self._position = 0
+    @Gtk.Template.Callback()
+    def on_publishpage_map(self, _src):
+        self.reload_book()
 
     def connect_to_project(self, project):
         logger.info("Project changed")
+        self._project = project
+        self.reload_book()
+
+    def reload_book(self):
         self.chapters_list.remove_all()
 
-        book_parts = project.manuscript.get_content()
+        book_parts = self._project.manuscript.get_content()
         for title, content in book_parts:
             widget = NavigationRow(title)
             widget.content = content
