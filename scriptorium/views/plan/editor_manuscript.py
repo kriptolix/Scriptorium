@@ -28,7 +28,7 @@ from scriptorium.globals import BASE
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_manuscript.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_manuscript.ui")
 class ScrptManuscriptPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptManuscriptPanel"
     __title__ = "Manuscript"

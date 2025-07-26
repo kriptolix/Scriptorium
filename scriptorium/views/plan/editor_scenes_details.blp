@@ -1,20 +1,20 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptWritingDetailsPanel: Adw.NavigationPage {
+template $ScrptScenesDetailsPanel: Adw.NavigationPage {
   title: "Scene details";
 
   child: Adw.ToolbarView {
-    [top]
+    [bottom]
     Adw.HeaderBar {
-      show-title: true;
+      show-title: false;
       show-back-button: true;
+      show-end-title-buttons: false;
     }
 
     content: ScrolledWindow {
       vexpand: true;
       child: Adw.PreferencesPage {
-
         Adw.PreferencesGroup {
           title: "Summary";
 
@@ -40,7 +40,7 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
             $MultiLineEntryRow edit_synopsis {
               header: "Synopsis";
             }
-
+            /*
             Adw.ButtonRow open_editor {
               title: "Open text editor";
               end-icon-name: "go-next-symbolic";
@@ -49,6 +49,7 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
               ]
               activated => $on_open_editor_activated();
             }
+            */
           }
         }
 
@@ -63,7 +64,7 @@ template $ScrptWritingDetailsPanel: Adw.NavigationPage {
 
                   Adw.ButtonContent {
                     icon-name: "object-select-symbolic";
-                    label: "Connect elements ...";
+                    label: "Connect story elements ...";
                   }
               };
             }

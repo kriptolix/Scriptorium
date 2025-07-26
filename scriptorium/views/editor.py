@@ -49,6 +49,7 @@ class ScrptEditorView(Adw.NavigationPage):
     win_menu = Gtk.Template.Child()
     write_page = Gtk.Template.Child()
     publish_page = Gtk.Template.Child()
+    plan_page = Gtk.Template.Child()
 
     def __init__(self, window, project: Project):
         """Create a new instance of the editor."""
@@ -77,6 +78,7 @@ class ScrptEditorView(Adw.NavigationPage):
 
         self.write_page.connect_to_project(project)
         self.publish_page.connect_to_project(project)
+        self.plan_page.connect_to_project(project)
 
     def create_action(self, window, name, callback, shortcuts=None):
         """Add an application action.

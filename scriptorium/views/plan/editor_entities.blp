@@ -9,10 +9,11 @@ template $ScrptEntityPanel: Adw.NavigationPage {
       title: "Entities";
 
       child: Adw.ToolbarView {
-        [top]
+        [bottom]
         Adw.HeaderBar {
-          show-title: true;
+          show-title: false;
           show-back-button: false;
+          show-end-title-buttons: false;
         }
 
         content: ScrolledWindow  {

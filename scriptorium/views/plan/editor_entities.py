@@ -51,7 +51,7 @@ class ScrptEntityPanel(Adw.NavigationPage):
 
         # Connect to the entities of the manuscript
         self.entities_list.bind_model(
-            editor.project.entities,
+            self._editor.project.entities,
             lambda entity: EntityCard(entity, can_activate=True)
         )
 

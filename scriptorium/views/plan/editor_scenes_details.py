@@ -20,7 +20,7 @@
 
 import logging
 
-from gi.repository import Adw, Gtk, Pango, GObject, GLib
+from gi.repository import Adw, Gtk, GObject
 
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptSelectEntitiesDialog
@@ -29,13 +29,13 @@ from scriptorium.widgets import EntityCard
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_scenes_details.ui")
-class ScrptWritingDetailsPanel(Adw.NavigationPage):
-    __gtype_name__ = "ScrptWritingDetailsPanel"
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_scenes_details.ui")
+class ScrptScenesDetailsPanel(Adw.NavigationPage):
+    __gtype_name__ = "ScrptScenesDetailsPanel"
 
     edit_title = Gtk.Template.Child()
     edit_synopsis = Gtk.Template.Child()
-    open_editor = Gtk.Template.Child()
+    #open_editor = Gtk.Template.Child()
     identifier = Gtk.Template.Child()
     history_list = Gtk.Template.Child()
     entities_list = Gtk.Template.Child()
@@ -96,10 +96,10 @@ class ScrptWritingDetailsPanel(Adw.NavigationPage):
         message_entry.set_subtitle(message.message)
         return message_entry
 
-    @Gtk.Template.Callback()
-    def on_open_editor_activated(self, _button):
-        """Open the scene editor."""
-        logger.info(f"Open text editor for {self._scene.title}")
+    #@Gtk.Template.Callback()
+    #def on_open_editor_activated(self, _button):
+    #    """Open the scene editor."""
+    #    logger.info(f"Open text editor for {self._scene.title}")
         #writer = Writer(self._scene)
         #writer.present(self)
 

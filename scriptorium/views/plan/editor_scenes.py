@@ -25,19 +25,19 @@ from gi.repository import Adw, Gtk
 from scriptorium.globals import BASE
 from scriptorium.widgets import SceneCard
 from scriptorium.dialogs import ScrptAddDialog
-from .editor_scenes_details import ScrptWritingDetailsPanel
 from scriptorium.models import Scene
 
+from .editor_scenes_details import ScrptScenesDetailsPanel
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_scenes.ui")
-class ScrptWritingPanel(Adw.NavigationPage):
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_scenes.ui")
+class ScrptScenesPanel(Adw.NavigationPage):
     """Panel to list all the scenes and edit their content."""
 
-    __gtype_name__ = "ScrptWritingPanel"
-    __title__ = "Scenes"
+    __gtype_name__ = "ScrptScenesPanel"
+    __title__ = "Scenes list"
     __icon_name__ = "edit-symbolic"
     __description__ = "Edit the content of the scenes"
 
@@ -47,11 +47,10 @@ class ScrptWritingPanel(Adw.NavigationPage):
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
         super().__init__(**kwargs)
-
-        self.editor = editor
+        self._editor = editor
 
         self.scenes_list.bind_model(
-            self.editor.project.scenes,
+            self._editor.project.scenes,
             lambda scene: SceneCard(scene=scene, can_activate=True)
         )
 
@@ -61,8 +60,8 @@ class ScrptWritingPanel(Adw.NavigationPage):
         scene = row.get_child().scene
         logger.info(f"Open editor for {scene.title}")
 
-        writing_details = ScrptWritingDetailsPanel(scene)
-        self.navigation.push(writing_details)
+        details = ScrptScenesDetailsPanel(scene)
+        self.navigation.push(details)
 
     @Gtk.Template.Callback()
     def on_add_scene_clicked(self, _button):

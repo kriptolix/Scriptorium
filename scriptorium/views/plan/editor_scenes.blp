@@ -1,9 +1,8 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptWritingPanel: Adw.NavigationPage {
+template $ScrptScenesPanel: Adw.NavigationPage {
   title: "Scenes";
-  //tag: "scenes";
 
   child: Adw.NavigationView navigation {
     Adw.NavigationPage {
@@ -11,17 +10,19 @@ template $ScrptWritingPanel: Adw.NavigationPage {
       tag: "select_scene";
 
       child:Adw.ToolbarView {
-        [top]
+        [bottom]
         Adw.HeaderBar {
-          show-title: true;
+          show-title: false;
           show-back-button: false;
+          show-end-title-buttons: false;
         }
 
         content: ScrolledWindow {
+          vexpand: true;
           child: Adw.PreferencesPage {
             Adw.PreferencesGroup {
               title: "Scenes";
-              description: "This is the list of scenes in the manuscript";
+              description: "This is the list of all the scenes in your project";
               header-suffix: Button {
                 clicked => $on_add_scene_clicked();
 

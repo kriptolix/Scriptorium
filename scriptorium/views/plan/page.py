@@ -17,11 +17,13 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject, Gio, GLib
+from gi.repository import Adw, Gtk, GObject
 
 from scriptorium.globals import BASE
 from scriptorium.models import Project
 from .editor_entities import ScrptEntityPanel
+from .editor_scenes import ScrptScenesPanel
+from .editor_manuscript import ScrptManuscriptPanel
 
 import logging
 
@@ -29,23 +31,23 @@ logger = logging.getLogger(__name__)
 
 PANELS = [
     ("header", "Manuscript"),
-    # ("manuscript", ScrptManuscriptPanel),
+    ("manuscript", ScrptManuscriptPanel),
     # Background research
     # Writting goals
     ("header", "Story line"),
+    ("scenes", ScrptScenesPanel),
     ("entities", ScrptEntityPanel),
     #("overview", ScrptOverviewPanel),
     # Timeline
     #("chapters", ScrptChaptersPanel),
     # Plot lines
     ("header", "Additional resources"),
-    #("scenes", ScrptWritingPanel),
     # Special pages
     # Image gallery
     # Export
 ]
 
-DEFAULT = "manuscript"
+DEFAULT = "scenes"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/plan/page.ui")
@@ -55,6 +57,8 @@ class PlanPage(Adw.Bin):
     panels_list = Gtk.Template.Child()
     panels = Gtk.Template.Child()
 
+    project = GObject.Property(type=Project)
+
     def __init__(self):
         """Create a new instance of the planning page."""
         super().__init__()
@@ -63,11 +67,15 @@ class PlanPage(Adw.Bin):
         self.initialise_panels()
 
         # Open the default panel
-        row = None
-        #for index in range(len(PANELS)):
-            #if PANELS[index][0] == DEFAULT:
-                #row = self.panels_navigation.get_row_at_index(index)
-                #self.panels_navigation.select_row(row)
+        # row = None
+        # for index in range(len(PANELS)):
+        #     if PANELS[index][0] == DEFAULT:
+        #         row = self.panels_list.get_row_at_index(index)
+        #         self.panels_list.select_row(row)
+
+    def connect_to_project(self, project):
+        logger.info("Project changed")
+        self.project = project
 
     def initialise_panels(self):
         """Add all the panels to the menu."""
@@ -118,22 +126,7 @@ class PlanPage(Adw.Bin):
                 # Instantiate the panel
                 p = panel(self)
 
-                # Add a button to close the side bar
-                header_bars = self.find_header_bars(p)
-                self.add_close_sidebar_widget(header_bars[0])
-
         self.panels.replace([p])
-
-    @Gtk.Template.Callback()
-    def on_editorview_closed(self, _editorview):
-        """Handle a request to close the editor."""
-        if self.project is not None:
-            logger.info("Editor is closed, saving the manuscript")
-            self.project.save_to_disk()
-
-    def close_on_delete(self):
-        self.project = None
-        self.window.close_editor(self)
 
     def on_add_entity(self, _action, entity_type):
         target_type = entity_type.get_string()

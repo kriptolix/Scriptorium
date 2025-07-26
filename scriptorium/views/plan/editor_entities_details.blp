@@ -5,10 +5,11 @@ template $ScrptEntitiesDetailsPanel: Adw.NavigationPage {
   title: "Entity details";
 
   child: Adw.ToolbarView {
-    [top]
+    [bottom]
     Adw.HeaderBar {
-      show-title: true;
+      show-title: false;
       show-back-button: true;
+      show-end-title-buttons: false;
     }
 
     content: ScrolledWindow {
