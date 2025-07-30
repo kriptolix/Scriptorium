@@ -8,9 +8,6 @@
     <!-- Views -->
     <file preprocess="xml-stripblanks">views/library.ui</file>
     <file preprocess="xml-stripblanks">views/editor.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_overview.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_chapters.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_chapters_details.ui</file>
 
     <!-- Custom widgets -->
     <file preprocess="xml-stripblanks">widgets/scene.ui</file>
@@ -37,6 +34,8 @@
     <file preprocess="xml-stripblanks">views/plan/editor_scenes.ui</file>
     <file preprocess="xml-stripblanks">views/plan/editor_scenes_details.ui</file>
     <file preprocess="xml-stripblanks">views/plan/editor_manuscript.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_overview.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_overview_item.ui</file>
 
     <!-- Write -->
     <file preprocess="xml-stripblanks">views/write/page.ui</file>

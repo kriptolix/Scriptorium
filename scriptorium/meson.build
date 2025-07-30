@@ -42,9 +42,6 @@ blueprints = custom_target(
 
 		'views/library.blp',
 		'views/editor.blp',
-		'views/editor_overview.blp',
-		'views/editor_chapters.blp',
-		'views/editor_chapters_details.blp',
 
 		'views/plan/page.blp',
 		'views/plan/editor_entities.blp',
@@ -52,6 +49,8 @@ blueprints = custom_target(
 		'views/plan/editor_scenes.blp',
 		'views/plan/editor_scenes_details.blp',
 		'views/plan/editor_manuscript.blp',
+		'views/plan/editor_overview.blp',
+		'views/plan/editor_overview_item.blp',
 
 		'views/write/page.blp',
 		'views/write/navigation.blp',

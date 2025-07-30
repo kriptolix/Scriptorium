@@ -27,14 +27,14 @@ CLASSES = {
 class Project(GObject.Object):
     __gtype_name__ = "Project"
 
-    library = GObject.Property(type=GObject.Object)
+    manuscript = GObject.Property(type=Resource)
+    drafts = GObject.Property(type=Resource)
 
-    def __init__(self, library, manuscript_path):
+    def __init__(self, manuscript_path):
         """Create a resource."""
         super().__init__()
 
         # Keep track of the attributes
-        self.library = library
         self._base_directory = Path(manuscript_path)
 
         # All the resources
@@ -66,14 +66,6 @@ class Project(GObject.Object):
     def repo(self):
         """Return a pointer to the Git repository of the manuscript."""
         return self._repo
-
-    @property
-    def manuscript(self):
-        """Return the manuscript."""
-        for resource in self._resources:
-            if type(resource) is Manuscript:
-                return resource
-        return None
 
     @GObject.Property(type=Gio.ListStore)
     def scenes(self):
@@ -166,14 +158,25 @@ class Project(GObject.Object):
         with yaml_file.open("r") as file:
             yaml_data = yaml.safe_load(file)
 
-        # Load all the resources first
+        # Load all the resources
         for resource_data in yaml_data["resources"]:
             if resource_data["a"] == "Link":
                 continue
 
             self.get_resource(resource_data["identifier"], yaml_data)
 
+        # Load the pointer to the manuscript
+        manuscript_id = yaml_data["manuscript"]
+        self.manuscript = self.get_resource(manuscript_id, yaml_data)
+
+        # Load the pointer to the drafts
+        drafts_id = yaml_data["drafts"]
+        self.drafts = self.get_resource(drafts_id, yaml_data)
+
     def save_to_disk(self):
+        """Save all the content of the project to disk."""
+
+        # Serialize all the resources and their properties
         resources = []
         for resource in self._resources:
             cls = type(resource)
@@ -194,16 +197,21 @@ class Project(GObject.Object):
                         elif isinstance(value, Gio.ListStore):
                             values = [v.identifier for v in value]
                             entry[prop.name] = values
-
             resources.append(entry)
 
         # Save to disk
         yaml_file = self._base_directory / Path("manuscript.yml")
         with yaml_file.open(mode="w") as file:
             yaml.safe_dump(
-                {"resources": resources}, file, indent=2, sort_keys=True
+                {
+                    "version": 1,
+                    "manuscript": self.manuscript.identifier,
+                    "drafts": self.drafts.identifier,
+                    "resources": resources
+                }, file, indent=2, sort_keys=True
             )
 
+        # Return the name of the project file
         return yaml_file.resolve()
 
     def get_resource(self, identifier: str, yaml_data=None):

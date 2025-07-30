@@ -15,6 +15,10 @@ template $NavigationItem: Adw.Bin {
         indent-for-icon: false;
       }
 
+      Image icon {
+        visible: false;
+      }
+
       Label label {
         halign: start;
         ellipsize: end;
@@ -29,6 +33,7 @@ template $NavigationItem: Adw.Bin {
       ]
       margin-bottom: 0;
       icon-name: "view-more-horizontal-symbolic";
+      direction: right;
     }
   }
 }

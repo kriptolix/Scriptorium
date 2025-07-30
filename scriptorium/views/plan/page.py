@@ -24,6 +24,7 @@ from scriptorium.models import Project
 from .editor_entities import ScrptEntityPanel
 from .editor_scenes import ScrptScenesPanel
 from .editor_manuscript import ScrptManuscriptPanel
+from .editor_overview import ScrptOverviewPanel
 
 import logging
 
@@ -33,11 +34,11 @@ PANELS = [
     ("header", "Manuscript"),
     ("manuscript", ScrptManuscriptPanel),
     # Background research
-    # Writting goals
+    # Writing goals
     ("header", "Story line"),
+    ("overview", ScrptOverviewPanel),
     ("scenes", ScrptScenesPanel),
     ("entities", ScrptEntityPanel),
-    #("overview", ScrptOverviewPanel),
     # Timeline
     #("chapters", ScrptChaptersPanel),
     # Plot lines
@@ -47,7 +48,7 @@ PANELS = [
     # Export
 ]
 
-DEFAULT = "scenes"
+DEFAULT = "overview"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/plan/page.ui")
@@ -66,12 +67,15 @@ class PlanPage(Adw.Bin):
         # Setup all the panels
         self.initialise_panels()
 
-        # Open the default panel
-        # row = None
-        # for index in range(len(PANELS)):
-        #     if PANELS[index][0] == DEFAULT:
-        #         row = self.panels_list.get_row_at_index(index)
-        #         self.panels_list.select_row(row)
+        self.connect("map", self.on_map)
+
+    def on_map(self, _):
+        #Open the default panel
+        row = None
+        for index in range(len(PANELS)):
+            if PANELS[index][0] == DEFAULT:
+                row = self.panels_list.get_row_at_index(index)
+                self.panels_list.select_row(row)
 
     def connect_to_project(self, project):
         logger.info("Project changed")

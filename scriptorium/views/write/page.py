@@ -19,7 +19,7 @@
 from gi.repository import Adw, Gtk, Gdk, GLib, Gio, GObject
 from scriptorium.globals import BASE
 from scriptorium.widgets import AnnotationCard
-from scriptorium.models import Chapter, Scene
+from scriptorium.models import Scene
 from scriptorium.utils import switch_tag_for_selection
 
 import logging

@@ -6,5 +6,7 @@ scriptorium_sources_views = [
 	'editor_scenes.py',
 	'editor_scenes_details.py',
 	'editor_manuscript.py',
+	'editor_overview.py',
+	'editor_overview_item.py',
 ]
 install_data(scriptorium_sources_views, install_dir: moduledir / 'views' / 'plan')

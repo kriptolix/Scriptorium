@@ -49,7 +49,7 @@ class Library(GObject.Object):
         logger.info(f"Scanning content of {self._base_directory}")
         for directory in self._base_directory.iterdir():
             logger.info(f"Adding project {directory.name}")
-            project = Project(self, directory)
+            project = Project(directory)
             self.projects.append(project)
 
     @property
@@ -69,7 +69,7 @@ class Library(GObject.Object):
         path = self.base_directory / Path(identifier)
 
         # Create the project
-        project = Project(self, path)
+        project = Project(path)
 
         # Add a manuscript to it
         manuscript = project.create_resource(Manuscript, title, synopsis)

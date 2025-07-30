@@ -30,9 +30,16 @@ DRAGGING_OPACITY = 0.4
 BASE_MARGIN = 3
 ANIMATION_SPEED = 200
 
+
 class State(enum.IntEnum):
     NEUTRAL = 0
     PUSHED = 1
+
+
+class SpecialItem(enum.IntEnum):
+    MANUSCRIPT = 0
+    DRAFTS = 1
+
 
 @Gtk.Template(resource_path=f"{BASE}/views/write/navigation_item.ui")
 class NavigationItem(Adw.Bin):
@@ -49,6 +56,7 @@ class NavigationItem(Adw.Bin):
     expander = Gtk.Template.Child()
     label = Gtk.Template.Child()
     menu_button = Gtk.Template.Child()
+    icon = Gtk.Template.Child()
 
     def __init__(self):
         super().__init__()
@@ -77,6 +85,9 @@ class NavigationItem(Adw.Bin):
         motion_controler.connect("enter", self.on_motion_enter)
         motion_controler.connect("leave", self.on_motion_leave)
         self.add_controller(motion_controler)
+
+        self.connect("notify::resource", self.on_resource_set)
+        self.connect("notify::parent-model", self.on_parent_model_set)
 
     def on_drag_prepare(self, _source, _x, _y):
         """Prepare for a DnD event by attaching the element being grabbed."""
@@ -188,15 +199,59 @@ class NavigationItem(Adw.Bin):
         animation.play()
         animation.connect("done", self.on_animation_done, target_state, offset)
 
-    def set_label(self, item):
-        """Use the property title of the item to set the label of the row."""
+    def on_resource_set(self, _src, _value):
+        """Update the entry according to the resource that has been set."""
+
+        # Unbind previous label if there was a binding defined
         if self.label_binding is not None:
             self.label_binding.unbind()
 
-        self.label_binding = item.bind_property(
+        # Bind with the label of the resource, this is necessary in case the
+        # user modifies the label from the details panel
+        self.label_binding = self.resource.bind_property(
             "title",
             self.label,
             "label",
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
+
+    def on_parent_model_set(self, _src, _value):
+        """Update the popup menu according to the model that has been set."""
+
+        # Define the menu, Chapters can offer to add Chapter or Scene as child
+        # Both can propose to be deleted. Later on we will have more options
+        # (move to draft, flag as need re-work, ...)
+        menu = Gio.Menu()
+
+        # Add a menu to delete the resource, unless it's a root node
+        if not isinstance(self.resource, Manuscript):
+            dangerous_section = Gio.Menu()
+            dangerous_section.append(
+                label = "Delete",
+                detailed_action = "app.preferences"
+            )
+            menu.append_section(
+                label = None,
+                section = dangerous_section
+            )
+
+        self.menu_button.set_menu_model(menu)
+
+    def set_special_status(self, status: SpecialItem):
+        """Change the tree item to match the special type of node."""
+
+        # Unbind previous label if there was a binding defined
+        if self.label_binding is not None:
+            self.label_binding.unbind()
+            self.label_binding = None
+
+        # Set a fixed header name and add an icon
+        if status == SpecialItem.MANUSCRIPT:
+            self.label.set_label("Manuscript")
+            self.icon.set_from_icon_name("edit-symbolic")
+        elif status == SpecialItem.DRAFTS:
+            self.label.set_label("Drafts")
+            self.icon.set_from_icon_name("notepad-symbolic")
+
+        self.icon.set_visible(True)
 

@@ -1,22 +1,21 @@
 using Gtk 4.0;
+using Adw 1;
 
-template $WriteNavigation: Gtk.Box {
-  orientation: vertical;
+template $WriteNavigation: Adw.Bin {
+  child: Adw.ToolbarView {
+    content: ScrolledWindow {
+      vexpand: true;
 
-  // Note for later: versioning access could be through a stack here
-  // switch from selecting a scene to seeing and reverting to any version
-  ScrolledWindow {
-    vexpand: true;
+      child: ListView list_view {
+        styles [
+          "navigation-sidebar"
+        ]
 
-    child: ListView list_view {
-      styles [
-        "navigation-sidebar"
-      ]
-
-      factory: SignalListItemFactory factory {
-        setup => $on_list_item_setup();
-        bind => $on_list_item_bind();
+        factory: SignalListItemFactory factory {
+          setup => $on_list_item_setup();
+          bind => $on_list_item_bind();
+        };
       };
     };
-  }
+  };
 }

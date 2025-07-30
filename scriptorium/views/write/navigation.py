@@ -18,18 +18,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import logging
 
-from gi.repository import Gio, Graphene, Gtk
+from gi.repository import Gio, Graphene, Gtk, Adw, GObject
 
 from scriptorium.globals import BASE
 from scriptorium.models import Chapter, Manuscript, Scene
 
-from .navigation_item import NavigationItem
+from .navigation_item import NavigationItem, SpecialItem
 
 logger = logging.getLogger(__name__)
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/write/navigation.ui")
-class WriteNavigation(Gtk.Box):
+class WriteNavigation(Adw.Bin):
     __gtype_name__ = "WriteNavigation"
 
     factory = Gtk.Template.Child()
@@ -50,25 +50,34 @@ class WriteNavigation(Gtk.Box):
         # The list row
         list_row = list_item.get_item()
 
-        # The model item associated to the row
-        item = list_row.get_item()
+        # The resource associated to the row
+        resource = list_row.get_item()
 
         # The widget used to display this row
         widget = list_item.get_child()
 
         # Only scenes can be activated and selected
-        list_item.set_activatable(isinstance(item, Scene))
-        list_item.set_selectable(isinstance(item, Scene))
+        list_item.set_activatable(isinstance(resource, Scene))
+        list_item.set_selectable(isinstance(resource, Scene))
 
         # Set the content of the expander
         widget.expander.set_list_row(list_row)
 
-        # Set the label
-        widget.set_label(item)
-
         # Set the resource
-        widget.resource = item
+        widget.resource = resource
+
+        # Set the parent model
         widget.parent_model = list_row.get_parent().get_children() if list_row.get_parent() is not None else None
+
+        # Bit of a hack now, we check the position of the item to change how
+        # it is displayed. We expect two roots (manuscript and drafts) in that
+        # order
+        if list_row.get_depth() == 0:
+            position = list_row.get_position()
+            if position == 0:
+                widget.set_special_status(SpecialItem.MANUSCRIPT)
+            else:
+                widget.set_special_status(SpecialItem.DRAFTS)
 
     def connect_to(self, project):
         """Connect the navigation to the project and its contents."""
@@ -76,6 +85,10 @@ class WriteNavigation(Gtk.Box):
         # Turn the content into a tree, instance of Chapter may have children
         roots = Gio.ListStore.new(Manuscript)
         roots.append(project.manuscript)
+        roots.append(project.drafts)
+
+        # TODO Add a special Manuscript root called "Unused scenes"
+        # It is populated with all the scenes that are not assigned
 
         tree_list_model = Gtk.TreeListModel.new(
             roots, False, True,
