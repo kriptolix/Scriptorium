@@ -28,7 +28,6 @@ class Project(GObject.Object):
     __gtype_name__ = "Project"
 
     manuscript = GObject.Property(type=Resource)
-    drafts = GObject.Property(type=Resource)
 
     def __init__(self, manuscript_path):
         """Create a resource."""
@@ -169,10 +168,6 @@ class Project(GObject.Object):
         manuscript_id = yaml_data["manuscript"]
         self.manuscript = self.get_resource(manuscript_id, yaml_data)
 
-        # Load the pointer to the drafts
-        drafts_id = yaml_data["drafts"]
-        self.drafts = self.get_resource(drafts_id, yaml_data)
-
     def save_to_disk(self):
         """Save all the content of the project to disk."""
 
@@ -206,7 +201,6 @@ class Project(GObject.Object):
                 {
                     "version": 1,
                     "manuscript": self.manuscript.identifier,
-                    "drafts": self.drafts.identifier,
                     "resources": resources
                 }, file, indent=2, sort_keys=True
             )

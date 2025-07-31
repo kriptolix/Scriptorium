@@ -56,7 +56,6 @@ class NavigationItem(Adw.Bin):
     expander = Gtk.Template.Child()
     label = Gtk.Template.Child()
     menu_button = Gtk.Template.Child()
-    icon = Gtk.Template.Child()
 
     def __init__(self):
         super().__init__()
@@ -247,22 +246,4 @@ class NavigationItem(Adw.Bin):
             )
 
         self.menu_button.set_menu_model(menu)
-
-    def set_special_status(self, status: SpecialItem):
-        """Change the tree item to match the special type of node."""
-
-        # Unbind previous label if there was a binding defined
-        if self.label_binding is not None:
-            self.label_binding.unbind()
-            self.label_binding = None
-
-        # Set a fixed header name and add an icon
-        if status == SpecialItem.MANUSCRIPT:
-            self.label.set_label("Manuscript")
-            self.icon.set_from_icon_name("edit-symbolic")
-        elif status == SpecialItem.DRAFTS:
-            self.label.set_label("Drafts")
-            self.icon.set_from_icon_name("notepad-symbolic")
-
-        self.icon.set_visible(True)
 

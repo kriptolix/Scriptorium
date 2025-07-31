@@ -69,23 +69,12 @@ class WriteNavigation(Adw.Bin):
         # Set the parent model
         widget.parent_model = list_row.get_parent().get_children() if list_row.get_parent() is not None else None
 
-        # Bit of a hack now, we check the position of the item to change how
-        # it is displayed. We expect two roots (manuscript and drafts) in that
-        # order
-        if list_row.get_depth() == 0:
-            position = list_row.get_position()
-            if position == 0:
-                widget.set_special_status(SpecialItem.MANUSCRIPT)
-            else:
-                widget.set_special_status(SpecialItem.DRAFTS)
-
     def connect_to(self, project):
         """Connect the navigation to the project and its contents."""
 
         # Turn the content into a tree, instance of Chapter may have children
         roots = Gio.ListStore.new(Manuscript)
         roots.append(project.manuscript)
-        roots.append(project.drafts)
 
         # TODO Add a special Manuscript root called "Unused scenes"
         # It is populated with all the scenes that are not assigned

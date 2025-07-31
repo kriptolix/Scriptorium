@@ -73,9 +73,6 @@ class ScrptEditorView(Adw.NavigationPage):
         """Create application shortcuts."""
         window = self.props.root
 
-        # By default all the keyboard shortcuts will add things to drafts
-        drafts_id = self.project.drafts.identifier
-
         add_resource = Gio.SimpleAction.new(
             name="add_resource",
             parameter_type=GLib.VariantType("(ss)")
@@ -84,7 +81,7 @@ class ScrptEditorView(Adw.NavigationPage):
         window.add_action(add_resource)
         application = window.get_application()
         application.set_accels_for_action(
-            f"win.add_chapter(('Chapter','{drafts_id}'))",
+            f"win.add_chapter(('Chapter',''))",
             ["<Primary>1"]
         )
 
