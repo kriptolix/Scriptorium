@@ -54,49 +54,6 @@ template $ScrptEditorView: Adw.NavigationPage {
   };
 }
 
-/*
-  child: Adw.OverlaySplitView split_view {
-    sidebar: Adw.NavigationPage panels_sidebar {
-      title: _("Name of manuscript");
-      tag: "sidebar";
-
-      child: Adw.ToolbarView {
-          [top]
-          Adw.HeaderBar {
-            show-title: true;
-
-            [end]
-            MenuButton win_menu {
-              icon-name: "open-menu-symbolic";
-              tooltip-text: _("Main Menu");
-              primary: true;
-              menu-model: window_menu;
-            }
-          }
-
-          content: ListBox panels_navigation {
-            vexpand: true;
-            selection-mode: single;
-            activate-on-single-click: true;
-            row-selected => $on_listbox_row_selected();
-
-            styles [
-              "navigation-sidebar"
-            ]
-          };
-      };
-    };
-
-    content: Adw.NavigationPage {
-      title: "panels";
-
-      child: Adw.NavigationView panels {
-      };
-    };
-  };
-*/
-
-
 menu window_menu {
   section {
     item {

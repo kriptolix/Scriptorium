@@ -22,7 +22,7 @@ import logging
 from gi.repository import Adw, Gdk, Gio, GObject, Gtk
 
 from scriptorium.globals import BASE
-from scriptorium.models import Manuscript, Resource
+from scriptorium.models import Manuscript, Chapter, Scene, Resource
 
 logger = logging.getLogger(__name__)
 
@@ -222,6 +222,17 @@ class NavigationItem(Adw.Bin):
         # Both can propose to be deleted. Later on we will have more options
         # (move to draft, flag as need re-work, ...)
         menu = Gio.Menu()
+
+        # Main menu to add new Chapter or Scene for container nodes
+        if isinstance(self.resource, (Manuscript, Chapter)):
+            menu.append(
+                label = "Add Child Chapter ...",
+                detailed_action = "app.preferences"
+            )
+            menu.append(
+                label = "Add Child Scene ...",
+                detailed_action = "app.preferences"
+            )
 
         # Add a menu to delete the resource, unless it's a root node
         if not isinstance(self.resource, Manuscript):

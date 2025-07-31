@@ -33,7 +33,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 @Gtk.Template(resource_path=f"{BASE}/views/editor.ui")
 class ScrptEditorView(Adw.NavigationPage):
     """The editor is the main view to modify a manuscript."""
@@ -42,10 +41,6 @@ class ScrptEditorView(Adw.NavigationPage):
 
     project = GObject.Property(type=Project)
 
-    #panels_navigation = Gtk.Template.Child()
-    #panels = Gtk.Template.Child()
-    #split_view = Gtk.Template.Child()
-    #panels_sidebar = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
     write_page = Gtk.Template.Child()
     publish_page = Gtk.Template.Child()
@@ -66,113 +61,31 @@ class ScrptEditorView(Adw.NavigationPage):
         popover = self.win_menu.get_popover()
         popover.add_child(ThemeSelector(), "theme")
 
-        # Setup all the panels
-        # self.initialise_panels()
-
-        # Open the default panel
-        row = None
-        #for index in range(len(PANELS)):
-            #if PANELS[index][0] == DEFAULT:
-                #row = self.panels_navigation.get_row_at_index(index)
-                #self.panels_navigation.select_row(row)
+        logger.info(self.props.root)
 
         self.write_page.connect_to_project(project)
         self.publish_page.connect_to_project(project)
         self.plan_page.connect_to_project(project)
 
-    def create_action(self, window, name, callback, shortcuts=None):
-        """Add an application action.
+        self.connect("map", self._init_shortcuts)
 
-        Args:
-            name: the name of the action
-            callback: the function to be called when the action is
-              activated
-            shortcuts: an optional list of accelerators
-        """
-        logger.info("Create action")
-        action = Gio.SimpleAction.new(name=name, parameter_type=GLib.VariantType("s"))
-        action.connect("activate", callback)
-        window.add_action(action)
-        if shortcuts:
-            application = window.get_application()
-            application.set_accels_for_action(f"win.{name}('1')", shortcuts)
+    def _init_shortcuts(self, _src):
+        """Create application shortcuts."""
+        window = self.props.root
 
-    def initialise_panels(self):
-        """Add all the panels to the menu."""
-        self.panels_sidebar.set_title(self.project.manuscript.title)
+        # By default all the keyboard shortcuts will add things to drafts
+        drafts_id = self.project.drafts.identifier
 
-        for panel_id, panel in PANELS:
-            # Create a menu entry
-            box = Gtk.Box.new(spacing=12, orientation=Gtk.Orientation.HORIZONTAL)
-            box.set_margin_start(6)
-            box.set_margin_end(6)
-            box.set_margin_top(12)
-
-            if panel_id == "header":
-                box.set_margin_bottom(6)
-                label = Gtk.Label(label=panel)
-                label.add_css_class("dim-label")
-            else:
-                box.set_margin_bottom(12)
-                image = Gtk.Image.new_from_icon_name(icon_name=panel.__icon_name__)
-                box.append(image)
-                label = Gtk.Label.new(panel.__title__)
-
-            box.append(label)
-
-            self.panels_navigation.append(box)
-
-            # Add the id and title to the box for easy retrieval later
-            box.panel_id = panel_id
-
-        # Deactivate all the headers
-        index = 0
-        row = self.panels_navigation.get_row_at_index(index)
-        while row is not None:
-            if row.get_child().panel_id == "header":
-                row.set_activatable(False)
-                row.set_selectable(False)
-            index += 1
-            row = self.panels_navigation.get_row_at_index(index)
-
-    #@Gtk.Template.Callback()
-    def on_listbox_row_selected(self, _list_box, _selected_item):
-        """Change the panel currently displayed."""
-        selection = _selected_item.get_child()
-        logger.info(f"Switching to panel {selection.panel_id}")
-
-        p = None
-        for panel_id, panel in PANELS:
-            if panel_id == selection.panel_id:
-                # Instantiate the panel
-                p = panel(self)
-
-                # Add a button to close the side bar
-                header_bars = self.find_header_bars(p)
-                self.add_close_sidebar_widget(header_bars[0])
-
-        self.panels.replace([p])
-
-    def find_header_bars(self, root):
-        header_bars = []
-        child = root.get_first_child()
-        while child:
-            if isinstance(child, Adw.HeaderBar):
-                header_bars.append(child)
-            # Correct: merge returned lists into the parent list
-            header_bars.extend(self.find_header_bars(child))
-            child = child.get_next_sibling()
-        return header_bars
-
-    def add_close_sidebar_widget(self, header_bar):
-        show_sidebar_button = Gtk.ToggleButton(icon_name="sidebar-show-symbolic")
-        header_bar.pack_start(show_sidebar_button)
-
-        self.split_view.bind_property(
-            "show_sidebar",
-            show_sidebar_button,
-            "active",
-            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
+        add_resource = Gio.SimpleAction.new(
+            name="add_resource",
+            parameter_type=GLib.VariantType("(ss)")
+        )
+        add_resource.connect("activate", self.on_add_resource)
+        window.add_action(add_resource)
+        application = window.get_application()
+        application.set_accels_for_action(
+            f"win.add_chapter(('Chapter','{drafts_id}'))",
+            ["<Primary>1"]
         )
 
     @Gtk.Template.Callback()
@@ -186,9 +99,11 @@ class ScrptEditorView(Adw.NavigationPage):
         self.project = None
         self.window.close_editor(self)
 
-    def on_add_entity(self, _action, entity_type):
+    def on_add_resource(self, _action, parameters):
+        entity_type, root_node = parameters.unpack()
+        logger.info(entity_type)
+        logger.info(root_node)
         target_type = entity_type.get_string()
-        logger.info(f"Add {target_type}")
         dialog = ScrptAddDialog(target_type)
 
         def handle_response(dialog, task):
