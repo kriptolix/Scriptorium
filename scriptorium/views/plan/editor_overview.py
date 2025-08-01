@@ -17,23 +17,24 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk, GObject
+from gi.repository import Adw, Gtk
 from scriptorium.widgets import ChapterColumn
+from scriptorium.globals import BASE
+from .editor_overview_item import ScrptOverviewPanelItem
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/views/editor_overview.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_overview.ui")
 class ScrptOverviewPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptOverviewPanel"
     __icon_name__ = "view-columns-symbolic"
     __description__ = "Overview of all the content"
     __title__ = "Outline"
 
-    chapter_columns = Gtk.Template.Child()
-    chapter_column_factory = Gtk.Template.Child()
+    main_content = Gtk.Template.Child()
 
     def __init__(self, editor, **kwargs):
         """Create an instance of the panel."""
@@ -41,11 +42,10 @@ class ScrptOverviewPanel(Adw.NavigationPage):
 
         self._editor = editor
 
-        self.chapter_column_factory.connect("setup", self.on_setup_item)
-        self.chapter_column_factory.connect("bind", self.on_bind_item)
+        manuscript_item = ScrptOverviewPanelItem()
+        manuscript_item.bind_to_resource(self._editor.project.manuscript)
 
-        selection_model = Gtk.NoSelection(model=editor.project.manuscript.chapters)
-        self.chapter_columns.set_model(selection_model)
+        self.main_content.add(manuscript_item)
 
     def bind_chapter(self, chapter):
         """Bind a scene card to a scene."""

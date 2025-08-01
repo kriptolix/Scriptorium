@@ -1,0 +1,64 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PublishPage: Adw.Bin {
+  map => $on_publishpage_map();
+
+  Adw.OverlaySplitView {
+    sidebar-position: start;
+
+    sidebar: ScrolledWindow {
+      vexpand: true;
+
+      child: ListBox chapters_list {
+        styles [
+          "navigation-sidebar"
+        ]
+      };
+    };
+
+    content: Box {
+      orientation: vertical;
+
+      Adw.Clamp {
+        maximum-size: 600;
+        hexpand: false;
+        Box {
+          orientation: vertical;
+          margin-top: 12;
+          margin-bottom: 12;
+          margin-start: 12;
+          margin-end: 12;
+
+          Box web_view_placeholder {
+            styles [
+              "card",
+            ]
+          }
+        }
+      }
+
+      CenterBox controls {
+        margin-top: 6;
+        margin-bottom: 6;
+        margin-start: 6;
+        margin-end: 6;
+
+        [end]
+        Box {
+          spacing: 12;
+
+          Button  {
+            icon-name: "pan-end-symbolic";
+            tooltip-text: _("Publish");
+            label: _("Publish");
+            styles [
+              "suggested-action"
+            ]
+            sensitive: false;
+          }
+        }
+      }
+    };
+  }
+}

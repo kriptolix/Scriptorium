@@ -90,3 +90,21 @@ def get_child_at(widget, position):
 
     return child
 
+def switch_tag_for_selection(text_buffer, tag_name):
+    if not text_buffer.get_has_selection():
+        return
+    tag = text_buffer.get_tag_table().lookup(tag_name)
+    start, end = text_buffer.get_selection_bounds()
+
+    iter_ = start.copy()
+    full_tagged = True
+
+    while iter_.compare(end) < 0 and full_tagged:
+        full_tagged = full_tagged & iter_.has_tag(tag)
+        iter_.forward_char()
+
+    if full_tagged:
+        text_buffer.remove_tag(tag, start, end)
+    else:
+        text_buffer.apply_tag(tag, start, end)
+

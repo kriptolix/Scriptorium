@@ -20,18 +20,18 @@
 
 import logging
 
-from gi.repository import Adw, Gtk, Pango, GObject, GLib
+from gi.repository import Adw, Gtk, GObject
 
 from scriptorium.globals import BASE
-from scriptorium.dialogs import Writer
+
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path=f"{BASE}/views/editor_manuscript.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/plan/editor_manuscript.ui")
 class ScrptManuscriptPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptManuscriptPanel"
-    __title__ = "Manuscript"
+    __title__ = "Manuscript details"
     __icon_name__ = "dictionary-symbolic"
     __description__ = "Edit the information about the manuscript"
 

@@ -1,0 +1,17 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptOverviewPanel: Adw.NavigationPage {
+  title: "Outine";
+
+  child: ScrolledWindow {
+    Adw.PreferencesPage {
+      vexpand: true;
+      hexpand: true;
+      Adw.PreferencesGroup main_content {
+        title: "Overview";
+        description: "Outline of the story per chapters and scenes";
+      }
+    }
+  };
+}

@@ -23,17 +23,17 @@ CLASSES = {
     "Manuscript": Manuscript
 }
 
+
 class Project(GObject.Object):
     __gtype_name__ = "Project"
 
-    library = GObject.Property(type=GObject.Object)
+    manuscript = GObject.Property(type=Resource)
 
-    def __init__(self, library, manuscript_path):
+    def __init__(self, manuscript_path):
         """Create a resource."""
         super().__init__()
 
         # Keep track of the attributes
-        self.library = library
         self._base_directory = Path(manuscript_path)
 
         # All the resources
@@ -65,14 +65,6 @@ class Project(GObject.Object):
     def repo(self):
         """Return a pointer to the Git repository of the manuscript."""
         return self._repo
-
-    @property
-    def manuscript(self):
-        """Return the manuscript."""
-        for resource in self._resources:
-            if type(resource) is Manuscript:
-                return resource
-        return None
 
     @GObject.Property(type=Gio.ListStore)
     def scenes(self):
@@ -124,6 +116,7 @@ class Project(GObject.Object):
 
     def delete_resource(self, resource):
         """Delete the resource."""
+        logger.info(f"Delete {resource}")
 
         # Find it
         found, position = self._resources.find(resource)
@@ -137,15 +130,19 @@ class Project(GObject.Object):
         for other in self._resources:
             for prop in GObject.list_properties(type(other)):
                 if isinstance(prop, GObject.ParamSpecObject):
+                    # If it was a direct assignment, set it to None instead
                     if prop.value_type == Resource.__gtype__:
                         if other.get_property(prop.name) == resource:
                             other.set_property(prop.name, None)
+                    # If the resource was in a list, remove it from it
                     elif prop.value_type == Gio.ListStore.__gtype__:
-                        store = other.get_property(prop.name)
-                        if store.get_item_type() == resource.__gtype__:
-                            found, position = store.find(resource)
+                        list_store = other.get_property(prop.name)
+                        accepted_item_type = list_store.get_item_type()
+                        resource_type = resource.__gtype__
+                        if resource_type.is_a(accepted_item_type):
+                            found, position = list_store.find(resource)
                             if found:
-                                store.remove(position)
+                                list_store.remove(position)
 
         # Delete the file on disk (if any)
         for data_file in resource.data_files:
@@ -165,14 +162,21 @@ class Project(GObject.Object):
         with yaml_file.open("r") as file:
             yaml_data = yaml.safe_load(file)
 
-        # Load all the resources first
+        # Load all the resources
         for resource_data in yaml_data["resources"]:
             if resource_data["a"] == "Link":
                 continue
 
             self.get_resource(resource_data["identifier"], yaml_data)
 
+        # Load the pointer to the manuscript
+        manuscript_id = yaml_data["manuscript"]
+        self.manuscript = self.get_resource(manuscript_id, yaml_data)
+
     def save_to_disk(self):
+        """Save all the content of the project to disk."""
+
+        # Serialize all the resources and their properties
         resources = []
         for resource in self._resources:
             cls = type(resource)
@@ -193,16 +197,20 @@ class Project(GObject.Object):
                         elif isinstance(value, Gio.ListStore):
                             values = [v.identifier for v in value]
                             entry[prop.name] = values
-
             resources.append(entry)
 
         # Save to disk
         yaml_file = self._base_directory / Path("manuscript.yml")
         with yaml_file.open(mode="w") as file:
             yaml.safe_dump(
-                {"resources": resources}, file, indent=2, sort_keys=True
+                {
+                    "version": 1,
+                    "manuscript": self.manuscript.identifier,
+                    "resources": resources
+                }, file, indent=2, sort_keys=True
             )
 
+        # Return the name of the project file
         return yaml_file.resolve()
 
     def get_resource(self, identifier: str, yaml_data=None):

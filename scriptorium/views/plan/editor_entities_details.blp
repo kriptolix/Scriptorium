@@ -1,14 +1,15 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptManuscriptPanel: Adw.NavigationPage {
-  title: "Manuscript details";
+template $ScrptEntitiesDetailsPanel: Adw.NavigationPage {
+  title: "Entity details";
 
   child: Adw.ToolbarView {
-    [top]
+    [bottom]
     Adw.HeaderBar {
-      show-title: true;
-      show-back-button: false;
+      show-title: false;
+      show-back-button: true;
+      show-end-title-buttons: false;
     }
 
     content: ScrolledWindow {
@@ -18,10 +19,10 @@ template $ScrptManuscriptPanel: Adw.NavigationPage {
 
         Box {
           orientation: vertical;
-          spacing: 12;
+          spacing: 24;
 
           Adw.PreferencesGroup {
-            title: "Summary";
+            title: "Overview";
 
             ListBox {
               selection-mode: none;
@@ -29,14 +30,6 @@ template $ScrptManuscriptPanel: Adw.NavigationPage {
               styles [
                 "boxed-list",
               ]
-
-              Adw.ActionRow identifier {
-                title: "Identifier";
-                subtitle: "uuid";
-                styles [
-                  "property", "dim-label"
-                ]
-              }
 
               Adw.EntryRow edit_title {
                 title: "Title";
@@ -58,13 +51,13 @@ template $ScrptManuscriptPanel: Adw.NavigationPage {
                 "boxed-list-separate",
               ]
 
-              Adw.ButtonRow delete_manuscript {
-                title: "Delete manuscript";
+              Adw.ButtonRow delete_element {
+                title: "Delete story element";
                 end-icon-name: "edit-delete-symbolic";
                 styles [
                   "destructive-action"
                 ]
-                activated => $on_delete_manuscript_activated();
+                activated => $on_delete_entity_activated();
               }
             }
           }

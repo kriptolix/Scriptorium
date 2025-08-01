@@ -4,6 +4,12 @@ using Adw 1;
 template $ScrptWindow: Adw.ApplicationWindow {
   title: _("Scriptorium");
 
+  content: Adw.NavigationView navigation {
+    $ScrptLibraryView library_panel {}
+    $ScrptEditorView editor_panel {}
+  };
+
+
   ShortcutController {
     Shortcut {
       trigger: "<Ctrl>q";
@@ -14,9 +20,5 @@ template $ScrptWindow: Adw.ApplicationWindow {
       action: "action(app.preferences)";
     }
   }
-
-  content: Adw.NavigationView navigation {
-
-  };
 }
 

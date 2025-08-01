@@ -1,0 +1,26 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PlanPage: Adw.Bin {
+
+  Adw.OverlaySplitView {
+    sidebar-position: start;
+
+    sidebar: ScrolledWindow {
+      vexpand: true;
+
+      child: ListBox panels_list {
+        styles [
+          "navigation-sidebar"
+        ]
+
+        row-selected => $on_listbox_row_selected();
+      };
+    };
+
+    content: Adw.NavigationPage {
+      title: "panels";
+      child: Adw.NavigationView panels {};
+    };
+  }
+}

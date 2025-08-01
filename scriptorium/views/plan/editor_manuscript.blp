@@ -1,0 +1,58 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptManuscriptPanel: Adw.NavigationPage {
+  title: "Manuscript details";
+
+  child: Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      title: "Summary";
+
+      ListBox {
+        selection-mode: none;
+
+        styles [
+          "boxed-list",
+        ]
+
+        Adw.ActionRow identifier {
+          title: "Identifier";
+          subtitle: "uuid";
+          styles [
+            "property", "dim-label"
+          ]
+        }
+
+        Adw.EntryRow edit_title {
+          title: "Title";
+        }
+
+        $MultiLineEntryRow edit_synopsis {
+          header: "Synopsis";
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: "Actions";
+
+      ListBox {
+        selection-mode: none;
+
+        styles [
+          "boxed-list-separate",
+        ]
+
+        Adw.ButtonRow delete_manuscript {
+          title: "Delete manuscript";
+          end-icon-name: "edit-delete-symbolic";
+          styles [
+            "destructive-action"
+          ]
+          activated => $on_delete_manuscript_activated();
+        }
+      }
+    }
+  };
+}
+

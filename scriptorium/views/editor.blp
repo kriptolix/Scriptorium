@@ -6,43 +6,50 @@ template $ScrptEditorView: Adw.NavigationPage {
   tag: "editor";
   unrealize => $on_editorview_closed();
 
-  child: Adw.OverlaySplitView split_view {
-    sidebar: Adw.NavigationPage panels_sidebar {
-      title: _("Name of manuscript");
-      tag: "sidebar";
+  child: Adw.ToolbarView {
+    top-bar-style: raised_border;
+    bottom-bar-style: raised_border;
 
-      child: Adw.ToolbarView {
-          [top]
-          Adw.HeaderBar {
-            show-title: true;
-
-            [end]
-            MenuButton win_menu {
-              icon-name: "open-menu-symbolic";
-              tooltip-text: _("Main Menu");
-              primary: true;
-              menu-model: window_menu;
-            }
-          }
-
-          content: ListBox panels_navigation {
-            vexpand: true;
-            selection-mode: single;
-            activate-on-single-click: true;
-            row-selected => $on_listbox_row_selected();
-
-            styles [
-              "navigation-sidebar"
-            ]
-          };
+    [top]
+    Adw.HeaderBar {
+      title-widget: Adw.ViewSwitcher {
+        stack: phases_stack;
+        policy: wide;
       };
-    };
 
-    content: Adw.NavigationPage {
-      title: "panels";
+      [end]
+      MenuButton win_menu {
+        icon-name: "open-menu-symbolic";
+        tooltip-text: _("Main Menu");
+        primary: true;
+        menu-model: window_menu;
+      }
+    }
 
-      child: Adw.NavigationView panels {
-      };
+    content: Adw.ViewStack phases_stack {
+
+      Adw.ViewStackPage {
+        name: "plan_page";
+        title: _("Plan");
+        icon-name: "notepad-symbolic";
+        child: $PlanPage plan_page {};
+      }
+
+      Adw.ViewStackPage {
+        name: "write_page";
+        title: _("Write");
+        icon-name: "edit-symbolic";
+        child: $WritePage write_page {};
+      }
+
+      Adw.ViewStackPage {
+        name: "publish_page";
+        title: _("Publish");
+        icon-name: "dictionary-symbolic";
+        child: $PublishPage publish_page {};
+      }
+
+      visible-child-name: "write_page";
     };
   };
 }

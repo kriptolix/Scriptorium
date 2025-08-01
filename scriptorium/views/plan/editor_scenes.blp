@@ -1,27 +1,30 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ScrptChaptersPanel: Adw.NavigationPage {
-  title: "Chapters";
+template $ScrptScenesPanel: Adw.NavigationPage {
+  title: "Scenes";
 
   child: Adw.NavigationView navigation {
     Adw.NavigationPage {
-      title: "Chapters";
+      title: "Scenes";
+      tag: "select_scene";
 
       child:Adw.ToolbarView {
-        [top]
+        [bottom]
         Adw.HeaderBar {
-          show-title: true;
+          show-title: false;
           show-back-button: false;
+          show-end-title-buttons: false;
         }
 
-        content: ScrolledWindow  {
+        content: ScrolledWindow {
+          vexpand: true;
           child: Adw.PreferencesPage {
             Adw.PreferencesGroup {
-              title: "Chapters";
-              description: "This is the list of chapters in the manuscript";
+              title: "Scenes";
+              description: "This is the list of all the scenes in your project";
               header-suffix: Button {
-                clicked => $on_add_chapter_clicked();
+                clicked => $on_add_scene_clicked();
 
                 Adw.ButtonContent {
                   icon-name: "list-add-symbolic";
@@ -29,20 +32,20 @@ template $ScrptChaptersPanel: Adw.NavigationPage {
                 }
               };
 
-              ListBox chapters_list {
+              ListBox scenes_list {
                 selection-mode: none;
 
                 styles [
                   "boxed-list-separate",
                 ]
 
-                row-activated => $on_listbox_row_activated();
-
                 [placeholder]
                 Adw.StatusPage {
                   icon-name: "item-missing-symbolic";
-                  description: "Nothing here. Click on the button to add some chapters";
+                  description: "Add a first scene and start writing";
                 }
+
+                row-activated => $on_listbox_row_activated();
               }
             }
           };

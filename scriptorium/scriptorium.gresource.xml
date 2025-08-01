@@ -8,16 +8,6 @@
     <!-- Views -->
     <file preprocess="xml-stripblanks">views/library.ui</file>
     <file preprocess="xml-stripblanks">views/editor.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_overview.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_chapters.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_chapters_details.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_scenes.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_scenes_details.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_formatting.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_manuscript.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_entities.ui</file>
-    <file preprocess="xml-stripblanks">views/editor_entities_details.ui</file>
-    <file>views/editor_formatting.html</file>
 
     <!-- Custom widgets -->
     <file preprocess="xml-stripblanks">widgets/scene.ui</file>
@@ -33,10 +23,28 @@
 
     <!-- Dialogs -->
     <file preprocess="xml-stripblanks">dialogs/dialog_add.ui</file>
-    <file preprocess="xml-stripblanks">dialogs/writer.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_scenes.ui</file>
     <file preprocess="xml-stripblanks">dialogs/select_entities.ui</file>
     <file preprocess="xml-stripblanks">dialogs/preferences.ui</file>
+
+    <!-- Plan -->
+    <file preprocess="xml-stripblanks">views/plan/page.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_entities.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_entities_details.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_scenes.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_scenes_details.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_manuscript.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_overview.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_overview_item.ui</file>
+
+    <!-- Write -->
+    <file preprocess="xml-stripblanks">views/write/page.ui</file>
+    <file preprocess="xml-stripblanks">views/write/navigation.ui</file>
+    <file preprocess="xml-stripblanks">views/write/navigation_item.ui</file>
+
+    <!-- Publish -->
+    <file preprocess="xml-stripblanks">views/publish/page.ui</file>
+    <file>views/publish/page.html</file>
   </gresource>
 
   <!-- Assets -->
