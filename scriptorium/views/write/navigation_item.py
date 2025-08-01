@@ -55,7 +55,6 @@ class NavigationItem(Adw.Bin):
     content = Gtk.Template.Child()
     expander = Gtk.Template.Child()
     label = Gtk.Template.Child()
-    menu_button = Gtk.Template.Child()
 
     def __init__(self):
         super().__init__()
@@ -80,13 +79,12 @@ class NavigationItem(Adw.Bin):
         drop_target.connect("leave", self.on_leave)
         self.add_controller(drop_target)
 
-        motion_controler = Gtk.EventControllerMotion()
-        motion_controler.connect("enter", self.on_motion_enter)
-        motion_controler.connect("leave", self.on_motion_leave)
-        self.add_controller(motion_controler)
+        gesture = Gtk.GestureClick.new()
+        gesture.set_button(3)  # Right-click
+        gesture.connect("pressed", self.on_right_click)
+        self.add_controller(gesture)
 
         self.connect("notify::resource", self.on_resource_set)
-        self.connect("notify::parent-model", self.on_parent_model_set)
 
     def on_drag_prepare(self, _source, _x, _y):
         """Prepare for a DnD event by attaching the element being grabbed."""
@@ -142,12 +140,6 @@ class NavigationItem(Adw.Bin):
             # Find our position in the parent model
             found_self, position_self = self.parent_model.find(self.resource)
             self.parent_model.insert(position_self + 1, item.resource)
-
-    def on_motion_enter(self, drop_target, motion_x, motion_y):
-        self.menu_button.set_opacity(1)
-
-    def on_motion_leave(self, _source):
-        self.menu_button.set_opacity(0)
 
     def on_leave(self, _source):
         self._animate(State.NEUTRAL, BASE_MARGIN)
@@ -214,8 +206,8 @@ class NavigationItem(Adw.Bin):
             GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE,
         )
 
-    def on_parent_model_set(self, _src, _value):
-        """Update the popup menu according to the model that has been set."""
+    def on_right_click(self, src, _n_press, _x, _y):
+        """Show a popover menu for relevant actions."""
 
         # Define the menu, Chapters can offer to add Chapter or Scene as child
         # Both can propose to be deleted. Later on we will have more options
@@ -224,13 +216,14 @@ class NavigationItem(Adw.Bin):
 
         # Main menu to add new Chapter or Scene for container nodes
         if isinstance(self.resource, (Manuscript, Chapter)):
+            id = self.resource.identifier
             menu.append(
-                label = "Add Child Chapter ...",
-                detailed_action = "app.preferences"
+                label = "Add new child Chapter",
+                detailed_action = f"editor.add_resource(('Chapter', '{id}'))"
             )
             menu.append(
-                label = "Add Child Scene ...",
-                detailed_action = "app.preferences"
+                label = "Add new child Scene",
+                detailed_action = f"editor.add_resource(('Scene', '{id}'))"
             )
 
         # Add a menu to delete the resource, unless it's a root node
@@ -245,5 +238,9 @@ class NavigationItem(Adw.Bin):
                 section = dangerous_section
             )
 
-        self.menu_button.set_menu_model(menu)
-
+        # PopoverMenu
+        popover = Gtk.PopoverMenu.new_from_model(menu)
+        popover.set_parent(self)
+        popover.set_autohide(True)
+        popover.set_position(Gtk.PositionType.RIGHT)
+        popover.popup()

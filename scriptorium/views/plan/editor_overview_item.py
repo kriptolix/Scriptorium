@@ -39,7 +39,6 @@ class ScrptOverviewPanelItem(Adw.Bin):
         """Connect this item to an instance of Resource"""
         # Keep a pointer to the resource
         self._resource = resource
-        logger.info(resource)
 
         # Set the title and synopsis
         self.title.set_label(self._resource.title)

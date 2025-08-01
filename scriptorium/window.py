@@ -35,6 +35,8 @@ class ScrptWindow(Adw.ApplicationWindow):
 
     navigation = Gtk.Template.Child()
     #library = Gtk.Template.Child()
+    library_panel = Gtk.Template.Child()
+    editor_panel = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -55,11 +57,14 @@ class ScrptWindow(Adw.ApplicationWindow):
 
         # Bind the settings related to the window
         self.settings.bind("window-width", self, "default-width",
-            Gio.SettingsBindFlags.DEFAULT)
+            Gio.SettingsBindFlags.DEFAULT
+        )
         self.settings.bind("window-height", self, "default-height",
-            Gio.SettingsBindFlags.DEFAULT)
+            Gio.SettingsBindFlags.DEFAULT
+        )
         self.settings.bind("window-maximized", self, "maximized",
-            Gio.SettingsBindFlags.DEFAULT)
+            Gio.SettingsBindFlags.DEFAULT
+        )
 
         # TODO Implement the setting for data folder
 
@@ -73,9 +78,9 @@ class ScrptWindow(Adw.ApplicationWindow):
 
     def _open_library(self):
         # Get a reference to the library panel
-        self._library_panel = ScrptLibraryView()
-        self.navigation.replace([self._library_panel])
-        self._library_panel.connect('notify::selected-project',
+        #self._library_panel = ScrptLibraryView()
+        #self.navigation.replace([self._library_panel])
+        self.library_panel.connect('notify::selected-project',
             self.on_selected_project_changed)
 
         # Set the data folder
@@ -83,7 +88,7 @@ class ScrptWindow(Adw.ApplicationWindow):
         if not manuscript_path.exists():
             manuscript_path.mkdir()
         logger.info(f'Data location: {manuscript_path}')
-        self._library_panel.set_property('manuscripts_base_path',
+        self.library_panel.set_property('manuscripts_base_path',
                                     manuscript_path.resolve())
 
         #last_opened = self.settings.get_string("last-manuscript-name")
@@ -99,11 +104,14 @@ class ScrptWindow(Adw.ApplicationWindow):
         #        manuscripts_model.select_item(index, True)
 
     def on_selected_project_changed(self, _navigation, _other):
-        project = self._library_panel.selected_project
+        project = self.library_panel.selected_project
         logger.info(f"Create and open editor for {project.manuscript.title}")
 
-        editor_view = ScrptEditorView(self, project)
-        self.navigation.push(editor_view)
+        self.editor_panel.connect_to_project(project)
+
+        #editor_view = ScrptEditorView(self, project)
+        #self.navigation.push(editor_view)
+        self.navigation.push_by_tag("editor")
 
     def close_editor(self, editor_view):
         self.navigation.pop()
