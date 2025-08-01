@@ -209,6 +209,9 @@ class NavigationItem(Adw.Bin):
     def on_right_click(self, src, _n_press, _x, _y):
         """Show a popover menu for relevant actions."""
 
+        # We will need the identifier of our resource
+        id = self.resource.identifier
+
         # Define the menu, Chapters can offer to add Chapter or Scene as child
         # Both can propose to be deleted. Later on we will have more options
         # (move to draft, flag as need re-work, ...)
@@ -216,7 +219,6 @@ class NavigationItem(Adw.Bin):
 
         # Main menu to add new Chapter or Scene for container nodes
         if isinstance(self.resource, (Manuscript, Chapter)):
-            id = self.resource.identifier
             menu.append(
                 label = "Add new child Chapter",
                 detailed_action = f"editor.add_resource(('Chapter', '{id}'))"
@@ -231,16 +233,17 @@ class NavigationItem(Adw.Bin):
             dangerous_section = Gio.Menu()
             dangerous_section.append(
                 label = "Delete",
-                detailed_action = "app.preferences"
+                detailed_action = f"editor.delete_resource('{id}')"
             )
             menu.append_section(
                 label = None,
                 section = dangerous_section
             )
 
-        # PopoverMenu
+        # Create the popover menu and make it pop up
         popover = Gtk.PopoverMenu.new_from_model(menu)
         popover.set_parent(self)
         popover.set_autohide(True)
         popover.set_position(Gtk.PositionType.RIGHT)
         popover.popup()
+

@@ -2,6 +2,7 @@ from gi.repository import GObject
 from pathlib import Path
 
 class Resource(GObject.Object):
+    __gtype_name__ = "Resource"
 
     # The unique identifier of the resource
     identifier = GObject.Property(type=str)

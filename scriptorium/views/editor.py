@@ -54,17 +54,25 @@ class ScrptEditorView(Adw.NavigationPage):
         popover = self.win_menu.get_popover()
         popover.add_child(ThemeSelector(), "theme")
 
+        # Create the custom action group for the editor
+        group = Gio.SimpleActionGroup()
+        self.insert_action_group("editor", group)
+
         # Create the action to add a new resource
         action = Gio.SimpleAction.new(
             name="add_resource",
             parameter_type=GLib.VariantType.new("(ss)")
             )
         action.connect("activate", self.on_add_resource)
-
-        group = Gio.SimpleActionGroup()
         group.add_action(action)
 
-        self.insert_action_group("editor", group)
+        # Create the action to delete a resource
+        action = Gio.SimpleAction.new(
+            name="delete_resource",
+            parameter_type=GLib.VariantType.new("s")
+            )
+        action.connect("activate", self.on_delete_resource)
+        group.add_action(action)
 
     def connect_to_project(self, project: Project):
         # Keep track of the project the editor is associated to
@@ -86,7 +94,11 @@ class ScrptEditorView(Adw.NavigationPage):
         self.window.close_editor(self)
 
     def on_add_resource(self, _action, parameters):
+        """Add a new resource to the project."""
+
+        # We have two parameters, the target type and an optional parent
         target_type, parent = parameters.unpack()
+
         logger.info(f"Add a new {target_type} as child of {parent}")
 
         dialog = ScrptAddDialog(target_type)
@@ -104,4 +116,32 @@ class ScrptEditorView(Adw.NavigationPage):
                     parent_resource.content.append(resource)
 
         dialog.choose(self, None, handle_response)
+
+
+    def on_delete_resource(self, _action, parameter):
+        """Delete a resource from the project."""
+
+        resource_identifier = parameter.get_string()
+        resource = self.project.get_resource(resource_identifier)
+
+        logger.info(f"Delete {resource.title}")
+
+        dialog = Adw.AlertDialog(
+            heading=f"Delete {resource.__gtype_name__}",
+            body=f'This action can not be undone! Are you sure you want to delete "{resource.title}" ?',
+            close_response="cancel",
+        )
+        dialog.add_response("cancel", "Cancel")
+        dialog.add_response("delete", "Delete")
+
+        dialog.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
+
+        def handle_response(dialog, task):
+            response = dialog.choose_finish(task)
+            if response == "delete":
+                # Delete the resource
+                self.project.delete_resource(resource)
+
+        dialog.choose(self, None, handle_response)
+
 

@@ -116,6 +116,7 @@ class Project(GObject.Object):
 
     def delete_resource(self, resource):
         """Delete the resource."""
+        logger.info(f"Delete {resource}")
 
         # Find it
         found, position = self._resources.find(resource)
@@ -129,15 +130,19 @@ class Project(GObject.Object):
         for other in self._resources:
             for prop in GObject.list_properties(type(other)):
                 if isinstance(prop, GObject.ParamSpecObject):
+                    # If it was a direct assignment, set it to None instead
                     if prop.value_type == Resource.__gtype__:
                         if other.get_property(prop.name) == resource:
                             other.set_property(prop.name, None)
+                    # If the resource was in a list, remove it from it
                     elif prop.value_type == Gio.ListStore.__gtype__:
-                        store = other.get_property(prop.name)
-                        if store.get_item_type() == resource.__gtype__:
-                            found, position = store.find(resource)
+                        list_store = other.get_property(prop.name)
+                        accepted_item_type = list_store.get_item_type()
+                        resource_type = resource.__gtype__
+                        if resource_type.is_a(accepted_item_type):
+                            found, position = list_store.find(resource)
                             if found:
-                                store.remove(position)
+                                list_store.remove(position)
 
         # Delete the file on disk (if any)
         for data_file in resource.data_files:
