@@ -18,39 +18,51 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-from gi.repository import Adw
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import Gio
-from gi.repository import GLib
+from gi.repository import Gtk, Adw, GObject, Gdk, Gio, GLib
 from pathlib import Path
-from scriptorium.views import ScrptEditorView, ScrptLibraryView
+
+# It seems Builder won't find the widgets unless we import them?
+import scriptorium.views
+
+from scriptorium.models import Project
+from scriptorium.globals import BASE
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path='/com/github/cgueret/Scriptorium/window.ui')
+@Gtk.Template(resource_path=f'{BASE}/window.ui')
 class ScrptWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'ScrptWindow'
 
     navigation = Gtk.Template.Child()
-    #library = Gtk.Template.Child()
     library_panel = Gtk.Template.Child()
     editor_panel = Gtk.Template.Child()
+    toast_overlay = Gtk.Template.Child()
+
+    # This is a pointer to the currently open project, defaults to None
+    project = GObject.Property(type=Project, default=None)
+
+    # The base path of all the manuscripts
+    projects_base_path = GObject.Property(type=str)
+
+    # This is the identifier of the manuscript that was last opened
+    last_manuscript_name = GObject.Property(type=str, default=None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         # Load custom CSS
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_file(Gio.File.new_for_uri("resource://com/github/cgueret/Scriptorium/style.css"))
+        css_provider.load_from_file(
+            Gio.File.new_for_uri(f"resource:/{BASE}/style.css")
+        )
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(),
             css_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # Load custom icons
         theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
-        theme.add_resource_path("/com/github/cgueret/Scriptorium/icons")
+        theme.add_resource_path(f"{BASE}/icons")
 
         # Load the settings up
         self.settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
@@ -66,20 +78,52 @@ class ScrptWindow(Adw.ApplicationWindow):
             Gio.SettingsBindFlags.DEFAULT
         )
 
-        # TODO Implement the setting for data folder
+        self.settings.bind("last-manuscript-name", self, "last-manuscript-name",
+            Gio.SettingsBindFlags.DEFAULT
+        )
 
-        # Connect to save the name of the last edited project
-        self.connect("close-request", self.on_close_request)
+        # Create a property for last open project and connect that to a setting
+        # Notify for changes here; check if correct version before pushing
+        # if all fine push to editor
+        # If notify indicate the current project is None push library view
 
-        self._open_library()
+        # When editor is closed it sets the open project to None
 
+        # When an item is clicked in the library the project is set to the value
+
+        # self._open_library()
+
+        # The library is where a project is selected by the user. We keep an
+        # eye on actions there
+        self.connect(
+            'notify::project',
+            self.on_project_changed
+        )
+
+        # Connect a callback in the library to keep an eye on projects base path
+        self.connect(
+            'notify::projects-base-path',
+            self.library_panel.on_projects_base_path_changed
+        )
+
+        # Open the default data directory
+        # (TODO Implement the setting for data folder)
+        projects_path = Path(GLib.get_user_data_dir()) / Path('manuscripts')
+        if not projects_path.exists():
+            projects_path.mkdir()
+        self.projects_base_path = projects_path.resolve()
+
+    @Gtk.Template.Callback()
     def on_close_request(self, event):
         logger.info("Window close requested")
+        # Save the name of the last edited project
+
+    @Gtk.Template.Callback()
+    def on_map(self, _):
+        logger.info("Map")
 
     def _open_library(self):
         # Get a reference to the library panel
-        #self._library_panel = ScrptLibraryView()
-        #self.navigation.replace([self._library_panel])
         self.library_panel.connect('notify::selected-project',
             self.on_selected_project_changed)
 
@@ -103,15 +147,31 @@ class ScrptWindow(Adw.ApplicationWindow):
         #                index = i
         #        manuscripts_model.select_item(index, True)
 
-    def on_selected_project_changed(self, _navigation, _other):
-        project = self.library_panel.selected_project
-        logger.info(f"Create and open editor for {project.manuscript.title}")
+    def on_project_changed(self, _navigation, _other):
+        """Handle a change in the selected project."""
+        logger.info(f"Change currently edited project to {self.project}")
 
-        self.editor_panel.connect_to_project(project)
+        # If we did select something, open the editor
+        if self.project is not None:
+            if not self.project.is_opened:
+                self.project.open()
+            logger.info(f"Open editor for {self.project.manuscript.title}")
 
-        #editor_view = ScrptEditorView(self, project)
-        #self.navigation.push(editor_view)
-        self.navigation.push_by_tag("editor")
+            self.editor_panel.connect_to_project(self.project)
+
+            self.navigation.push_by_tag("editor")
+
+        # Keep track of the last manuscript selected
+        settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
+        settings.set_string(
+            "last-manuscript-name",
+            self.project.identifier if self.project is not None else ""
+        )
 
     def close_editor(self, editor_view):
         self.navigation.pop()
+
+    def inform(self, message: str):
+        toast = Adw.Toast.new(title=message)
+        toast.set_timeout(3)
+        self.toast_overlay.add_toast(toast)

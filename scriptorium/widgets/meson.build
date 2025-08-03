@@ -1,7 +1,6 @@
 scriptorium_sources_widgets = [
 	'__init__.py',
 	'chapter_column.py',
-	'manuscript.py',
 	'scene.py',
 	'chapter.py',
 	'multiline_entry_row.py',

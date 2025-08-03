@@ -7,6 +7,7 @@
 
     <!-- Views -->
     <file preprocess="xml-stripblanks">views/library.ui</file>
+    <file preprocess="xml-stripblanks">views/library_item.ui</file>
     <file preprocess="xml-stripblanks">views/editor.ui</file>
 
     <!-- Custom widgets -->
@@ -14,7 +15,6 @@
     <file preprocess="xml-stripblanks">widgets/chapter.ui</file>
     <file preprocess="xml-stripblanks">widgets/chapter_column.ui</file>
     <file preprocess="xml-stripblanks">widgets/entity_card.ui</file>
-    <file preprocess="xml-stripblanks">widgets/manuscript.ui</file>
     <file preprocess="xml-stripblanks">widgets/multiline_entry_row.ui</file>
     <file preprocess="xml-stripblanks">widgets/cards_list.ui</file>
     <file preprocess="xml-stripblanks">widgets/theme_selector.ui</file>

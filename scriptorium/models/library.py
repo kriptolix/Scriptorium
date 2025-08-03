@@ -35,18 +35,20 @@ class Library(GObject.Object):
 
     projects: GObject.Property = GObject.Property(type=Gio.ListStore)
 
-    def __init__(self, base_directory: str):
+    def __init__(self, ):
         """Create an instance of the library for the target folder."""
         super().__init__()
-
-        # Keep track of attributes
-        self._base_directory = Path(base_directory)
 
         # List of manuscripts
         self.projects = Gio.ListStore(item_type=Project)
 
+    def open_folder(self, base_directory: str):
+        # Keep track of attributes
+        self._base_directory = Path(base_directory)
+
         # Create one manuscript entry per directory
         logger.info(f"Scanning content of {self._base_directory}")
+        self.projects.remove_all()
         for directory in self._base_directory.iterdir():
             logger.info(f"Adding project {directory.name}")
             project = Project(directory)

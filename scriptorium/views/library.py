@@ -19,22 +19,23 @@
 
 from gi.repository import Adw, GObject, Gio, Gtk
 
+from scriptorium.globals import BASE
 from scriptorium.models import Library, Project
-from scriptorium.widgets import ManuscriptItem
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.widgets import ThemeSelector
+from .library_item import LibraryItem
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/views/library.ui")
+@Gtk.Template(resource_path=f"{BASE}/views/library.ui")
 class ScrptLibraryView(Adw.NavigationPage):
     __gtype_name__ = "ScrptLibraryView"
 
-    # The library
-    library: Library
+    # The Library is the data model holding the list of projects
+    library: Library = Library()
 
     selected_project = GObject.Property(type=Project)
 
@@ -42,10 +43,11 @@ class ScrptLibraryView(Adw.NavigationPage):
     manuscripts_base_path = GObject.Property(type=str)
 
     # Objects of the templace
-    manuscripts_grid = Gtk.Template.Child()
+    projects_grid = Gtk.Template.Child()
     item_factory = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
     grid_stack = Gtk.Template.Child()
+    migrate_dialog = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -53,12 +55,30 @@ class ScrptLibraryView(Adw.NavigationPage):
         # Keep an eye for changes to the manuscript base path
         self.connect("notify::manuscripts-base-path", self.on_base_path_changed)
 
-        self.item_factory.connect("setup", self.on_setup_item)
-        self.item_factory.connect("bind", self.on_bind_item)
-
         # Connect an instance of the theme button to the menu
         popover = self.win_menu.get_popover()
         popover.add_child(ThemeSelector(), "theme")
+
+        # Connect a signal to the list model to detect when content is available
+        self.library.projects.connect("items-changed", self.on_grid_content_changed)
+
+        # Connect the model to the grid, don't select anything by default
+        selection_model = Gtk.SingleSelection(model=self.library.projects)
+        selection_model.set_autoselect(False)
+        selection_model.set_can_unselect(True)
+        selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
+        selection_model.connect("selection-changed", self.on_selection_changed)
+        self.projects_grid.set_model(selection_model)
+
+    @Gtk.Template.Callback()
+    def on_scrptlibraryview_shown(self, _src):
+        logger.info("Hello there")
+        selection_model = self.projects_grid.get_model()
+        selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
+
+        window = self.props.root
+        if window is not None:
+            window.project = None
 
     @Gtk.Template.Callback()
     def on_add_manuscript_clicked(self, _button):
@@ -74,16 +94,15 @@ class ScrptLibraryView(Adw.NavigationPage):
             logger.info(f"Add project {dialog.title}: {dialog.synopsis}")
             self.library.create_project(dialog.title, dialog.synopsis)
 
+    @Gtk.Template.Callback()
     def on_setup_item(self, _, list_item):
-        list_item.set_child(ManuscriptItem())
+        list_item.set_child(LibraryItem())
 
+    @Gtk.Template.Callback()
     def on_bind_item(self, _, list_item):
         project = list_item.get_item()
-        manuscript_item = list_item.get_child()
-        manuscript_item.set_property("title", project.manuscript.title)
-
-        # Set the path of the cover image
-        manuscript_item.set_property("cover", project.manuscript.get_cover_path())
+        library_item = list_item.get_child()
+        library_item.bind(project)
 
     def on_base_path_changed(self, _base_path, _other):
         """
@@ -91,8 +110,8 @@ class ScrptLibraryView(Adw.NavigationPage):
         """
         logger.info(f"Loading library from {self.manuscripts_base_path}")
 
-        # Load up an instance of the library
-        self.library = Library(self.manuscripts_base_path)
+        # Connect the library to the folder
+        self.library.open_folder(self.manuscripts_base_path)
 
         # Connect the model to the grid, don't select anything by default
         selection_model = Gtk.SingleSelection(model=self.library.projects)
@@ -100,10 +119,7 @@ class ScrptLibraryView(Adw.NavigationPage):
         selection_model.set_can_unselect(True)
         selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
         selection_model.connect("selection-changed", self.on_selection_changed)
-        self.manuscripts_grid.set_model(selection_model)
-
-        # Connect a signal to the list model to detect when content is available
-        self.library.projects.connect("items-changed", self.on_grid_content_changed)
+        self.projects_grid.set_model(selection_model)
 
         # Manually trigger it
         self.on_grid_content_changed(self.library.projects, 0, 0, 0)
@@ -114,27 +130,26 @@ class ScrptLibraryView(Adw.NavigationPage):
     def on_grid_content_changed(self, list_model, _position, _added, _removed):
         n_items = list_model.get_n_items()
         if n_items > 0:
-            self.grid_stack.set_visible_child_name("manuscripts")
+            self.grid_stack.set_visible_child_name("projects")
         else:
             self.grid_stack.set_visible_child_name("empty_folder")
 
-    def on_selection_changed(self, selection, position, n_items):
+    def on_selection_changed(self, selection_model, position, n_items):
         """
         Called when a manuscript is selected
         """
-        # Get the select manuscript and unselect it
-        selected_item = selection.get_selected_item()
+        # Get the selected project
+        selected_item = selection_model.get_selected_item()
         if selected_item is not None:
-            self.selected_project = selection.get_selected_item()
-            manuscript = self.selected_project.manuscript
-
-            logger.info(f"Selected manuscript {manuscript.title}")
-            settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
-            settings.set_string(
-                "last-manuscript-name",
-                self.selected_project.identifier
-            )
-            selection.set_selected(Gtk.INVALID_LIST_POSITION)
+            selected_project = selection_model.get_selected_item()
+            logger.info(f"Selected project {selected_project.identifier}")
+            if not selected_project.can_be_opened:
+                self.migrate_dialog.choose(self)
+                #selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
+            else:
+                # Open the project
+                window = self.props.root
+                window.project = selected_project
 
     def open_last_project(self):
         """Check if we need to open the last project."""
@@ -148,11 +163,54 @@ class ScrptLibraryView(Adw.NavigationPage):
 
         logger.info(f"Trigger open for last opened: {last_opened}")
 
-        model = self.manuscripts_grid.get_model()
-        if len(model) > 0:
-            index = 0
-            for i in range(len(model)):
-                if model[i].identifier == last_opened:
-                    index = i
-            model.select_item(index, True)
+        model = self.projects_grid.get_model()
+
+        # Look for the project with the target identifier
+        index = None
+        for i in range(len(model)):
+            if model[i].identifier == last_opened:
+                index = i
+
+        # If we found it and if it can be open go for it
+        if index is not None:
+            if model[index].can_be_opened:
+                model.select_item(index, True)
+
+    def on_projects_base_path_changed(self, window, parameter):
+        base_path = window.get_property(parameter.name)
+        logger.info(f"Opening library at {base_path}")
+
+        # Connect the library to the folder
+        self.library.open_folder(base_path)
+
+    @Gtk.Template.Callback()
+    def on_migrate_dialog_response(self, _dialog, response):
+        """Handle a response to migrating a project."""
+
+        # The outcome will alter what is selected in the grid
+        selection_model = self.projects_grid.get_model()
+
+        if response == "migrate":
+            # Get the selected project
+            selected_project = selection_model.get_selected_item()
+
+            # Try to migrate the project
+            logger.info(f"Try to migrate {selected_project.identifier}")
+            worked = selected_project.migrate()
+            window = self.props.root
+
+            if worked:
+                window.inform("Project successfuly migrated!")
+
+                # Open the project right away
+                window.project = selected_project
+            else:
+                window.inform("Something went wrong. See logs for details")
+
+                # Seems like we won't open that thing...
+                selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
+
+        else:
+            # Nevermind then
+            selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
 
