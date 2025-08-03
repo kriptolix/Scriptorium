@@ -41,6 +41,7 @@ blueprints = custom_target(
 		'dialogs/preferences.blp',
 
 		'views/library.blp',
+		'views/library_item.blp',
 		'views/editor.blp',
 
 		'views/plan/page.blp',
@@ -62,7 +63,6 @@ blueprints = custom_target(
 		'widgets/scene.blp',
 		'widgets/chapter.blp',
 		'widgets/entity_card.blp',
-		'widgets/manuscript.blp',
 		'widgets/multiline_entry_row.blp',
 		'widgets/cards_list.blp',
 		'widgets/theme_selector.blp',

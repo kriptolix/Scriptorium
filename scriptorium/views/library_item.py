@@ -18,14 +18,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Gtk
 from gi.repository import GObject
+from scriptorium.globals import BASE
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-@Gtk.Template(resource_path="/com/github/cgueret/Scriptorium/widgets/manuscript.ui")
-class ManuscriptItem(Gtk.Box):
-    __gtype_name__ = "ManuscriptItem"
+@Gtk.Template(resource_path=f"{BASE}/views/library_item.ui")
+class LibraryItem(Gtk.Box):
+    __gtype_name__ = "LibraryItem"
 
     cover_picture = Gtk.Template.Child()
     cover_label = Gtk.Template.Child()
@@ -34,10 +36,32 @@ class ManuscriptItem(Gtk.Box):
     cover = GObject.Property(type=str)
     title = GObject.Property(type=str)
 
+    _can_be_opened_handler_id = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.connect("notify::cover", self.on_cover_changed)
+    def bind(self, project):
+        self._project = project
+
+        # Connect a handler to update the icon when the project can be opened
+        if self._can_be_opened_handler_id is not None:
+            project.disconnect(self._can_be_opened_handler_id)
+        self._can_be_opened_handler_id = project.connect(
+            "notify::can-be-opened",
+            lambda _src, _value: self.refresh_display()
+        )
+
+        # Set the icon now
+        self.refresh_display()
+
+    def refresh_display(self):
+        self.title = self._project.title
+
+        if not self._project.can_be_opened:
+            self.stack.set_visible_child_name("broken")
+        else:
+            self.stack.set_visible_child_name("ok")
 
     def on_cover_changed(self, _cover, _other):
         if self.cover is not None:

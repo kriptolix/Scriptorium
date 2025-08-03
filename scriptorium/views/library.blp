@@ -5,6 +5,8 @@ template $ScrptLibraryView: Adw.NavigationPage {
   title: _("Library");
   tag: "library";
 
+  shown => $on_scrptlibraryview_shown();
+
   child: Adw.ToolbarView {
     [top]
     Adw.HeaderBar {
@@ -27,12 +29,15 @@ template $ScrptLibraryView: Adw.NavigationPage {
     content: ScrolledWindow {
       Stack grid_stack {
         StackPage {
-          name: "manuscripts";
-          child: GridView manuscripts_grid {
+          name: "projects";
+          child: GridView projects_grid {
             min-columns: 1;
             max-columns: 10;
             vexpand: false;
-            factory: SignalListItemFactory item_factory {};
+            factory: SignalListItemFactory item_factory {
+              setup => $on_setup_item();
+              bind => $on_bind_item();
+            };
           };
         }
         StackPage {
@@ -49,7 +54,16 @@ template $ScrptLibraryView: Adw.NavigationPage {
   };
 }
 
-Adw.AlertDialog {
+Adw.AlertDialog migrate_dialog {
+  heading: "Migrate project ?";
+  body: "This project was created with a previous version of Scriptorium. It needs to be migrated to the new version to be opened. This is not reversible!";
+  default-response: "migrate";
+  response => $on_migrate_dialog_response();
+
+  responses [
+    cancel: _("Cancel"),
+    migrate: _("Migrate") destructive
+  ]
 }
 
 menu window_menu {

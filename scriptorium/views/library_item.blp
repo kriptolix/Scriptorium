@@ -1,12 +1,12 @@
 using Gtk 4.0;
 
-template $ManuscriptItem: Box {
+template $LibraryItem: Box {
   orientation: vertical;
   width-request: 100;
   halign: center;
   valign: end;
-  margin-start: 12;
-  margin-end: 12;
+  margin-start: 6;
+  margin-end: 6;
   margin-top: 6;
   margin-bottom: 6;
   hexpand: false;
@@ -30,6 +30,18 @@ template $ManuscriptItem: Box {
       name: 'label';
       child: Label cover_label {
         wrap: true;
+      };
+    }
+    StackPage {
+      name: 'broken';
+      child: Image {
+        icon-name: "action-unavailable-symbolic";
+      };
+    }
+    StackPage {
+      name: 'ok';
+      child: Image {
+        icon-name: "dictionary-symbolic";
       };
     }
   }
