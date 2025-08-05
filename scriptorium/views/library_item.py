@@ -30,7 +30,6 @@ class LibraryItem(Gtk.Box):
     __gtype_name__ = "LibraryItem"
 
     cover_picture = Gtk.Template.Child()
-    cover_label = Gtk.Template.Child()
     stack = Gtk.Template.Child()
 
     cover = GObject.Property(type=str)
@@ -52,16 +51,35 @@ class LibraryItem(Gtk.Box):
             lambda _src, _value: self.refresh_display()
         )
 
-        # Set the icon now
+        # Set the icon now and keep an eye on cover changes
         self.refresh_display()
 
     def refresh_display(self):
+        # Update the title of the project
         self.title = self._project.title
 
+        # See if we can display a cover or not (to signal a broken project)
         if not self._project.can_be_opened:
             self.stack.set_visible_child_name("broken")
         else:
-            self.stack.set_visible_child_name("ok")
+            # We need to open the project to be able to see the cover
+            if not self._project.is_opened:
+                self._project.open()
+
+            # Connect a notification in case the cover is changed
+            self._project.manuscript.connect(
+                "notify::cover", lambda _src, _val: self.refresh_display()
+            )
+
+            cover = self._project.manuscript.cover
+            if cover is not None and cover != '':
+                cover_image = self._project.get_resource(cover)
+                self.cover_picture.set_paintable(cover_image.texture)
+                self.stack.set_visible_child_name("cover")
+            else:
+                self.stack.set_visible_child_name("ok")
+
+        # Finally see if we have a cover to show
 
     def on_cover_changed(self, _cover, _other):
         if self.cover is not None:

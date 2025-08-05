@@ -18,11 +18,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import Adw, Gtk, GObject, Gio, GLib
+from pathlib import Path
 
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.widgets import ThemeSelector
-from scriptorium.models import Project, Scene, Chapter
+from scriptorium.models import Project, Scene, Chapter, Image
 
 import scriptorium.views.write
 import scriptorium.views.publish
@@ -45,6 +46,7 @@ class ScrptEditorView(Adw.NavigationPage):
     write_page = Gtk.Template.Child()
     publish_page = Gtk.Template.Child()
     plan_page = Gtk.Template.Child()
+    file_filter_image = Gtk.Template.Child()
 
     def __init__(self):
         """Create a new instance of the editor."""
@@ -72,6 +74,30 @@ class ScrptEditorView(Adw.NavigationPage):
             parameter_type=GLib.VariantType.new("s")
             )
         action.connect("activate", self.on_delete_resource)
+        group.add_action(action)
+
+        # Create the action to import an image into the project
+        action = Gio.SimpleAction.new(
+            name="import_image",
+            parameter_type=None
+            )
+        action.connect("activate", self.on_import_image)
+        group.add_action(action)
+
+        # Create the action set the cover of the project
+        action = Gio.SimpleAction.new(
+            name="set_cover",
+            parameter_type=GLib.VariantType.new("s")
+            )
+        action.connect("activate", self.on_set_cover)
+        group.add_action(action)
+
+        # Create the action to import a new cover and set it
+        action = Gio.SimpleAction.new(
+            name="import_cover",
+            parameter_type=None
+            )
+        action.connect("activate", self.on_import_cover)
         group.add_action(action)
 
     def connect_to_project(self, project: Project):
@@ -117,7 +143,6 @@ class ScrptEditorView(Adw.NavigationPage):
 
         dialog.choose(self, None, handle_response)
 
-
     def on_delete_resource(self, _action, parameter):
         """Delete a resource from the project."""
 
@@ -144,4 +169,57 @@ class ScrptEditorView(Adw.NavigationPage):
 
         dialog.choose(self, None, handle_response)
 
+    def on_import_image(self, _action, parameters):
+        """Import an image into the project."""
+        logger.info(f"Import image")
+        self._import_image(None)
+
+    def on_import_cover(self, _action, parameters):
+        """Import an image into the project."""
+        logger.info(f"Import image as cover")
+        self._import_image(self._set_cover)
+
+    def on_set_cover(self, _action, parameter):
+        logger.info(f"Set cover")
+        self._set_cover(parameter.get_string())
+
+    def _import_image(self, action = None) -> str:
+        """Import an image into the project. Return the resource identifier."""
+
+        # Callback
+        def on_image_opened(file_dialog, result, action_callback):
+            try:
+                # Get the file path
+                file = file_dialog.open_finish(result)
+                file_path = Path(file.get_path())
+
+                # Get the file name
+                info = file.query_info(
+                    "standard::name", Gio.FileQueryInfoFlags.NONE, None
+                )
+                file_name = info.get_name()
+
+                # Create the resource and set the content
+                resource = self.project.create_resource(Image, file_name)
+                resource.set_content_from_path(file_path)
+
+                logger.info(f"Loaded image as {resource.identifier}")
+                action_callback(resource.identifier)
+            except GLib.GError:
+                logger.info("Error or no file selected")
+
+        # Create and show the dialog
+        file_dialog = Gtk.FileDialog(default_filter=self.file_filter_image)
+        file_dialog.open(
+            self.props.root, None, on_image_opened, action
+        )
+
+    def _set_cover(self, resource_identifier):
+        """Set the cover for the manuscript."""
+        if resource_identifier is not None and resource_identifier != '':
+            logger.info(f"Set cover to {resource_identifier}")
+            resource = self.project.get_resource(resource_identifier)
+            self.project.manuscript.cover = resource.identifier
+        else:
+            self.project.manuscript.cover = ''
 

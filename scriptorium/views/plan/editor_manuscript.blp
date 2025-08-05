@@ -4,55 +4,75 @@ using Adw 1;
 template $ScrptManuscriptPanel: Adw.NavigationPage {
   title: "Manuscript details";
 
-  child: Adw.PreferencesPage {
-    Adw.PreferencesGroup {
-      title: "Summary";
+  child: ScrolledWindow {
+    Adw.PreferencesPage {
+      Adw.PreferencesGroup {
+        title: "Summary";
 
-      ListBox {
-        selection-mode: none;
+        ListBox {
+          selection-mode: none;
 
-        styles [
-          "boxed-list",
-        ]
-
-        Adw.ActionRow identifier {
-          title: "Identifier";
-          subtitle: "uuid";
           styles [
-            "property", "dim-label"
+            "boxed-list",
           ]
-        }
 
-        Adw.EntryRow edit_title {
-          title: "Title";
-        }
+          Adw.ActionRow identifier {
+            title: "Identifier";
+            subtitle: "uuid";
+            styles [
+              "property", "dim-label"
+            ]
+          }
 
-        $MultiLineEntryRow edit_synopsis {
-          header: "Synopsis";
+          Adw.EntryRow edit_title {
+            title: "Title";
+          }
+
+          $MultiLineEntryRow edit_synopsis {
+            header: "Synopsis";
+          }
         }
       }
-    }
 
-    Adw.PreferencesGroup {
-      title: "Actions";
+      Adw.PreferencesGroup {
+        title: "Cover";
 
-      ListBox {
-        selection-mode: none;
+        header-suffix: Adw.SplitButton cover_edit_button {
 
-        styles [
-          "boxed-list-separate",
-        ]
+          action-name: "editor.import_cover";
 
-        Adw.ButtonRow delete_manuscript {
-          title: "Delete manuscript";
-          end-icon-name: "edit-delete-symbolic";
+          Adw.ButtonContent {
+            icon-name: "list-add-symbolic";
+          }
+        };
+
+        Stack cover_stack {
+          height-request: 280;
           styles [
-            "destructive-action"
+            "card",
           ]
-          activated => $on_delete_manuscript_activated();
+
+          StackPage {
+            name: "no_image_set";
+
+            child: Adw.StatusPage {
+              icon-name: "item-missing-symbolic";
+              description: _("No cover selected");
+            };
+          }
+
+          StackPage {
+            name: "image_set";
+
+            child: Picture cover_picture {
+              margin-top: 6;
+              margin-bottom: 6;
+            };
+          }
+
+          visible-child-name: "no_image_set";
         }
       }
     }
   };
 }
-

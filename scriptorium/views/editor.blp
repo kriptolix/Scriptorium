@@ -49,7 +49,7 @@ template $ScrptEditorView: Adw.NavigationPage {
         child: $PublishPage publish_page {};
       }
 
-      visible-child-name: "write_page";
+      visible-child-name: "plan_page";
     };
   };
 }
@@ -71,3 +71,13 @@ menu window_menu {
     }
   }
 }
+
+
+FileFilter file_filter_image {
+  name: _("Images");
+  mime-types [
+    "image/png",
+    "image/jpeg"
+  ]
+}
+
