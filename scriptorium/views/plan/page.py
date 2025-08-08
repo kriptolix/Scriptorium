@@ -48,7 +48,7 @@ PANELS = [
     # Export
 ]
 
-DEFAULT = "overview"
+DEFAULT = "manuscript"
 
 
 @Gtk.Template(resource_path=f"{BASE}/views/plan/page.ui")

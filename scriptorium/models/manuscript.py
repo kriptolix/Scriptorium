@@ -35,6 +35,8 @@ class Manuscript(Resource):
 
     # Properties of the manuscript
     content = GObject.Property(type=Gio.ListStore)
+
+    # The identifier of the cover for the manuscript
     cover = GObject.Property(type=str)
 
     def __init__(self, project, identifier):

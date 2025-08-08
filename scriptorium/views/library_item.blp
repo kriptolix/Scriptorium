@@ -21,15 +21,13 @@ template $LibraryItem: Box {
     StackPage {
       name: 'cover';
       child: Picture cover_picture {
+          margin-top: 6;
+          margin-end: 6;
+          margin-start: 6;
+          margin-bottom: 6;
           valign: end;
-          content-fit: fill;
+          content-fit: cover;
           height-request: 160;
-      };
-    }
-    StackPage {
-      name: 'label';
-      child: Label cover_label {
-        wrap: true;
       };
     }
     StackPage {

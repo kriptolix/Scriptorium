@@ -52,9 +52,6 @@ class ScrptLibraryView(Adw.NavigationPage):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Keep an eye for changes to the manuscript base path
-        self.connect("notify::manuscripts-base-path", self.on_base_path_changed)
-
         # Connect an instance of the theme button to the menu
         popover = self.win_menu.get_popover()
         popover.add_child(ThemeSelector(), "theme")
@@ -103,29 +100,6 @@ class ScrptLibraryView(Adw.NavigationPage):
         project = list_item.get_item()
         library_item = list_item.get_child()
         library_item.bind(project)
-
-    def on_base_path_changed(self, _base_path, _other):
-        """
-        Called when the property of the base path is changed
-        """
-        logger.info(f"Loading library from {self.manuscripts_base_path}")
-
-        # Connect the library to the folder
-        self.library.open_folder(self.manuscripts_base_path)
-
-        # Connect the model to the grid, don't select anything by default
-        selection_model = Gtk.SingleSelection(model=self.library.projects)
-        selection_model.set_autoselect(False)
-        selection_model.set_can_unselect(True)
-        selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
-        selection_model.connect("selection-changed", self.on_selection_changed)
-        self.projects_grid.set_model(selection_model)
-
-        # Manually trigger it
-        self.on_grid_content_changed(self.library.projects, 0, 0, 0)
-
-        # See if we should open the last project
-        self.open_last_project()
 
     def on_grid_content_changed(self, list_model, _position, _added, _removed):
         n_items = list_model.get_n_items()
@@ -182,6 +156,8 @@ class ScrptLibraryView(Adw.NavigationPage):
 
         # Connect the library to the folder
         self.library.open_folder(base_path)
+
+        self.open_last_project()
 
     @Gtk.Template.Callback()
     def on_migrate_dialog_response(self, _dialog, response):

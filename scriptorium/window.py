@@ -22,13 +22,16 @@ from gi.repository import Gtk, Adw, GObject, Gdk, Gio, GLib
 from pathlib import Path
 
 # It seems Builder won't find the widgets unless we import them?
-import scriptorium.views
+from scriptorium.views import ScrptLibraryView, ScrptEditorView
 
 from scriptorium.models import Project
 from scriptorium.globals import BASE
 
 logger = logging.getLogger(__name__)
 
+# Design choice: we create and add the navigation panels for the editor as
+# they are activated and push. Later on we will be able to easily spawn them
+# as separate window instead if this is what the user would prefer
 
 @Gtk.Template(resource_path=f'{BASE}/window.ui')
 class ScrptWindow(Adw.ApplicationWindow):
@@ -36,7 +39,6 @@ class ScrptWindow(Adw.ApplicationWindow):
 
     navigation = Gtk.Template.Child()
     library_panel = Gtk.Template.Child()
-    editor_panel = Gtk.Template.Child()
     toast_overlay = Gtk.Template.Child()
 
     # This is a pointer to the currently open project, defaults to None
@@ -153,13 +155,14 @@ class ScrptWindow(Adw.ApplicationWindow):
 
         # If we did select something, open the editor
         if self.project is not None:
+            logger.info(f"\"{self.project.title}\": create and open editor")
+
+            # Create an editor navigation page and push it to the stack
+            editor_page = ScrptEditorView()
             if not self.project.is_opened:
                 self.project.open()
-            logger.info(f"Open editor for {self.project.manuscript.title}")
-
-            self.editor_panel.connect_to_project(self.project)
-
-            self.navigation.push_by_tag("editor")
+            editor_page.connect_to_project(self.project)
+            self.navigation.push(editor_page)
 
         # Keep track of the last manuscript selected
         settings = Gio.Settings(schema_id="io.github.cgueret.Scriptorium")
