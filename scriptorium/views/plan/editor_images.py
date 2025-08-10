@@ -25,12 +25,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 @Gtk.Template(resource_path=f"{BASE}/views/plan/editor_images.ui")
 class ScrptImagesPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptImagesPanel"
     __icon_name__ = "image-x-generic-symbolic"
     __description__ = "Overview of all the content"
-    __title__ = "Images"
+    __title__ = "Gallery"
 
     images_box = Gtk.Template.Child()
 

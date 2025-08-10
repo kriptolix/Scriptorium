@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 ANIMATION_DURATION = 100
 
+
 def animate_opacity(widget, from_value, to_value):
     animation_target = Adw.PropertyAnimationTarget.new(
         widget, "opacity"
@@ -36,6 +37,7 @@ def animate_opacity(widget, from_value, to_value):
         animation_target
     )
     animation.play()
+
 
 @Gtk.Template(resource_path=f"{BASE}/views/plan/editor_images_item.ui")
 class ImageItem(Gtk.Overlay):
