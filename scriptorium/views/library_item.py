@@ -71,15 +71,15 @@ class LibraryItem(Gtk.Box):
                 "notify::cover", lambda _src, _val: self.refresh_display()
             )
 
-            cover = self._project.manuscript.cover
-            if cover is not None and cover != '':
-                cover_image = self._project.get_resource(cover)
+            # Finally see if we have a cover to show
+            cover_image = self._project.manuscript.cover
+            if cover_image is not None:
                 self.cover_picture.set_paintable(cover_image.texture)
                 self.stack.set_visible_child_name("cover")
             else:
+                self.cover_picture.set_paintable(None)
                 self.stack.set_visible_child_name("ok")
 
-        # Finally see if we have a cover to show
 
     def on_cover_changed(self, _cover, _other):
         if self.cover is not None:

@@ -25,6 +25,7 @@ from gi.repository import GObject, Gio, Gtk
 from .chapter import Chapter
 from .scene import Scene
 from .resource import Resource
+from .image import Image
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +37,8 @@ class Manuscript(Resource):
     # Properties of the manuscript
     content = GObject.Property(type=Gio.ListStore)
 
-    # The identifier of the cover for the manuscript
-    cover = GObject.Property(type=str)
+    # The cover of the manuscript
+    cover = GObject.Property(type=Image)
 
     def __init__(self, project, identifier):
         """Create a new manuscript."""
@@ -45,13 +46,6 @@ class Manuscript(Resource):
 
         # Create the containers for all the content of the manuscript
         self.content = Gio.ListStore(item_type=Resource)
-
-    def get_cover_path(self):
-        if self.cover is None or self.cover == '':
-            return None
-
-        img_path = self._base_directory / Path("images") / Path(self.cover)
-        return img_path.resolve()
 
     def add_resource(self, resource: Resource, position: int = None) -> bool:
         """Add an existing resource to the manuscript."""

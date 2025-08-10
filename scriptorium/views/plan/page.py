@@ -25,27 +25,30 @@ from .editor_entities import ScrptEntityPanel
 from .editor_scenes import ScrptScenesPanel
 from .editor_manuscript import ScrptManuscriptPanel
 from .editor_overview import ScrptOverviewPanel
+from .editor_images import ScrptImagesPanel
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 PANELS = [
+    # Manuscript
     ("header", "Manuscript"),
     ("manuscript", ScrptManuscriptPanel),
     # Background research
     # Writing goals
+
+    # Story elements
     ("header", "Story line"),
     ("overview", ScrptOverviewPanel),
     ("scenes", ScrptScenesPanel),
     ("entities", ScrptEntityPanel),
-    # Timeline
-    #("chapters", ScrptChaptersPanel),
+    # Time line
     # Plot lines
-    ("header", "Additional resources"),
+
     # Special pages
-    # Image gallery
-    # Export
+    ("header", "Additional resources"),
+    ("images", ScrptImagesPanel),
 ]
 
 DEFAULT = "manuscript"

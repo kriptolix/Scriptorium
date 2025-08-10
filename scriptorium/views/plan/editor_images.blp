@@ -1,0 +1,37 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptImagesPanel: Adw.NavigationPage {
+  title: "Images";
+
+  child: ScrolledWindow {
+    Adw.PreferencesPage {
+      vexpand: true;
+      hexpand: true;
+      Adw.PreferencesGroup main_content {
+        title: "Images";
+        description: "These are all the images associated to your project";
+
+        Box {
+          styles [
+            "card"
+          ]
+
+          FlowBox images_box {
+            margin-top: 6;
+            margin-bottom: 6;
+            margin-start: 6;
+            margin-end: 6;
+
+            orientation: horizontal;
+            homogeneous: true;
+            max-children-per-line: 8;
+            min-children-per-line: 3;
+
+            selection-mode: none;
+          }
+        }
+      }
+    }
+  };
+}

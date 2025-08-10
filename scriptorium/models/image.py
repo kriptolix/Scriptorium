@@ -27,7 +27,7 @@ class Image(Resource):
     @property
     def data_files(self):
         """Return the file path for the image if it has been set."""
-        if self.file_name is not None:
+        if self.file_name is not None and self.file_name != '':
             return [self.base_directory / Path(self.file_name)]
         else:
             return []

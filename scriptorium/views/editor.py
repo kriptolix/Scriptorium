@@ -81,7 +81,10 @@ class ScrptEditorView(Adw.NavigationPage):
             name="import_image",
             parameter_type=None
             )
-        action.connect("activate", self.on_import_image)
+        action.connect(
+            "activate",
+            lambda _action, _param: self.on_import_image(None)
+        )
         group.add_action(action)
 
         # Create the action set the cover of the project
@@ -89,15 +92,21 @@ class ScrptEditorView(Adw.NavigationPage):
             name="set_cover",
             parameter_type=GLib.VariantType.new("s")
             )
-        action.connect("activate", self.on_set_cover)
+        action.connect(
+            "activate",
+            lambda _action, parameter: self.on__set_cover(parameter.get_string())
+        )
         group.add_action(action)
 
-        # Create the action to import a new cover and set it
+        # Create the action to import a new cover and then set it as cover
         action = Gio.SimpleAction.new(
             name="import_cover",
             parameter_type=None
             )
-        action.connect("activate", self.on_import_cover)
+        action.connect(
+            "activate",
+            lambda _action, _param: self.on_import_image(self.on_set_cover)
+        )
         group.add_action(action)
 
     def connect_to_project(self, project: Project):
@@ -169,21 +178,7 @@ class ScrptEditorView(Adw.NavigationPage):
 
         dialog.choose(self, None, handle_response)
 
-    def on_import_image(self, _action, parameters):
-        """Import an image into the project."""
-        logger.info(f"Import image")
-        self._import_image(None)
-
-    def on_import_cover(self, _action, parameters):
-        """Import an image into the project."""
-        logger.info(f"Import image as cover")
-        self._import_image(self._set_cover)
-
-    def on_set_cover(self, _action, parameter):
-        logger.info(f"Set cover")
-        self._set_cover(parameter.get_string())
-
-    def _import_image(self, action = None) -> str:
+    def on_import_image(self, action = None):
         """Import an image into the project. Return the resource identifier."""
 
         # Callback
@@ -214,12 +209,13 @@ class ScrptEditorView(Adw.NavigationPage):
             self.props.root, None, on_image_opened, action
         )
 
-    def _set_cover(self, resource_identifier):
+    def on_set_cover(self, resource_identifier: str):
         """Set the cover for the manuscript."""
+        logger.info(f"Set cover to {resource_identifier}")
+
         if resource_identifier is not None and resource_identifier != '':
-            logger.info(f"Set cover to {resource_identifier}")
             resource = self.project.get_resource(resource_identifier)
-            self.project.manuscript.cover = resource.identifier
+            self.project.manuscript.cover = resource
         else:
-            self.project.manuscript.cover = ''
+            self.project.manuscript.cover = None
 
