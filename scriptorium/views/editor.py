@@ -176,7 +176,7 @@ class ScrptEditorView(Adw.NavigationPage):
 
     def on_import_cover(self, _action, parameters):
         """Import an image into the project."""
-        logger.info(f"Import image as cover")
+        logger.info(f"Import image and set it as cover")
         self._import_image(self._set_cover)
 
     def on_set_cover(self, _action, parameter):
@@ -216,10 +216,11 @@ class ScrptEditorView(Adw.NavigationPage):
 
     def _set_cover(self, resource_identifier):
         """Set the cover for the manuscript."""
+        logger.info(f"Set cover to {resource_identifier}")
+
         if resource_identifier is not None and resource_identifier != '':
-            logger.info(f"Set cover to {resource_identifier}")
             resource = self.project.get_resource(resource_identifier)
-            self.project.manuscript.cover = resource.identifier
+            self.project.manuscript.cover = resource
         else:
-            self.project.manuscript.cover = ''
+            self.project.manuscript.cover = None
 

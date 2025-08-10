@@ -1,0 +1,37 @@
+using Gtk 4.0;
+
+template $ImageItem: Gtk.Overlay {
+  child: Picture picture {
+    can-shrink: true;
+    can-focus: false;
+    can-target: false;
+    content-fit: contain;
+    width-request: 100;
+    height-request: 100;
+  };
+
+  EventControllerMotion {
+    enter => $on_eventcontrollermotion_enter();
+    leave => $on_eventcontrollermotion_leave();
+  }
+
+  [overlay]
+  Button remove_image_button {
+      styles ["circular", "destructive-action"]
+      opacity: 0;
+      halign: end;
+      valign: start;
+      icon-name: "user-trash-symbolic";
+      tooltip-text: _("Remove this image from the project");
+  }
+
+  [overlay]
+  Button set_as_cover_button {
+      styles ["circular", "suggested-action"]
+      visible: false;
+      halign: end;
+      valign: end;
+      icon-name: "dictionary-symbolic";
+      tooltip-text: _("Use this image as cover");
+  }
+}

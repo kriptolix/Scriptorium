@@ -113,42 +113,6 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
 
     #     dialog.choose(self, None, self.on_delete_response_selected)
 
-    # @Gtk.Template.Callback()
-    # def on_open_cover_dialog(self, _button):
-    #     """Open the system file selection dialog to pick an image."""
-
-        # Callback
-    #     def on_image_opened(file_dialog, result):
-    #         try:
-                # Get the file path
-    #             file = file_dialog.open_finish(result)
-    #             file_path = Path(file.get_path())
-
-                # Get the file name
-    #             info = file.query_info(
-    #                 "standard::name", Gio.FileQueryInfoFlags.NONE, None
-    #             )
-    #             file_name = info.get_name()
-
-                # Obtain a pointer to the project currently open
-    #             project = self.props.root.project
-
-                # Create the resource and set the content
-    #             resource = project.create_resource(Image, file_name)
-    #             resource.set_content_from_path(file_path)
-
-                # Assign the cover to the manuscript
-    #             project.manuscript.cover = resource.identifier
-
-                # Update the cover
-    #             self.update_cover()
-    #         except GLib.GError:
-    #             logger.info("Error or no file selected")
-
-        # Create and show the dialog
-    #     file_dialog = Gtk.FileDialog(default_filter=self.file_filter_image)
-    #     file_dialog.open(self.props.root, None, on_image_opened)
-
     def on_delete_response_selected(self, _dialog, task):
         """Handle the response to the confirmation dialog."""
         response = _dialog.choose_finish(task)
@@ -162,15 +126,13 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
 
     def update_cover(self):
         """Update the display of the cover."""
-        logger.info("Update cover")
+        cover_image = self._editor.project.manuscript.cover
+        logger.info(f"Update cover to {cover_image}")
 
-        cover_id = self._editor.project.manuscript.cover
-        if cover_id is not None and cover_id != '':
-            self.cover_stack.set_visible_child_name("image_set")
-            cover_image = self._editor.project.get_resource(cover_id)
-
+        if cover_image is not None:
             self.cover_picture.set_paintable(cover_image.texture)
+            self.cover_stack.set_visible_child_name("image_set")
         else:
+            self.cover_picture.set_paintable(None)
             self.cover_stack.set_visible_child_name("no_image_set")
-
 

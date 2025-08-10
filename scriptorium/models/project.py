@@ -181,6 +181,11 @@ class Project(GObject.Object):
         """Return a pointer to the Git repository of the manuscript."""
         return self._repo
 
+    @property
+    def resources(self):
+        """Return a pointer to all the resources."""
+        return self._resources
+
     @GObject.Property(type=Gio.ListStore)
     def scenes(self):
         """The scenes of the manuscript."""
@@ -196,6 +201,15 @@ class Project(GObject.Object):
         model = Gtk.FilterListModel(
             model=self._resources,
             filter=Gtk.CustomFilter.new(lambda x: isinstance(x, Entity))
+        )
+        return model
+
+    @GObject.Property(type=Gio.ListStore)
+    def images(self):
+        """The instances of Image in the manuscript."""
+        model = Gtk.FilterListModel(
+            model=self._resources,
+            filter=Gtk.CustomFilter.new(lambda x: isinstance(x, Image))
         )
         return model
 
@@ -240,19 +254,22 @@ class Project(GObject.Object):
         # Remove the resource
         self._resources.remove(position)
 
-        # Remove all references to it
+        # Look at the type of the resource we just removed
+        resource_type = resource.__gtype__
+
+        # Remove all references to it from other resources
         for other in self._resources:
             for prop in GObject.list_properties(type(other)):
                 if isinstance(prop, GObject.ParamSpecObject):
                     # If it was a direct assignment, set it to None instead
-                    if prop.value_type == Resource.__gtype__:
+                    accepted_item_type = prop.value_type
+                    if resource_type.is_a(accepted_item_type):
                         if other.get_property(prop.name) == resource:
                             other.set_property(prop.name, None)
                     # If the resource was in a list, remove it from it
                     elif prop.value_type == Gio.ListStore.__gtype__:
                         list_store = other.get_property(prop.name)
                         accepted_item_type = list_store.get_item_type()
-                        resource_type = resource.__gtype__
                         if resource_type.is_a(accepted_item_type):
                             found, position = list_store.find(resource)
                             if found:
