@@ -1,5 +1,8 @@
+
+
 from gi.repository import Gtk
 from bs4 import BeautifulSoup
+
 import logging
 
 logger = logging.getLogger(__name__)

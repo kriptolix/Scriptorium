@@ -84,6 +84,7 @@
 		"python3-beautifulsoup4.json",
 		"python3-pyyaml.json",
 		"python3-GitPython.json",
+		"python3-Jinja2.json",
 		{
 			"name": "scriptorium",
 			"buildsystem": "meson",

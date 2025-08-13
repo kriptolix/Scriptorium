@@ -21,6 +21,7 @@ import logging
 from gi.repository import Adw, Gtk, Gio, GObject
 from scriptorium.models import Project, Chapter
 from scriptorium.globals import BASE
+from scriptorium.utils.publisher import Publisher
 
 try:
     from gi.repository import WebKit
@@ -80,23 +81,27 @@ class PublishPage(Adw.Bin):
              self.on_selected_item
         )
 
-    @Gtk.Template.Callback()
-    def on_publishpage_map(self, _src):
-        self.reload_book()
-
     def connect_to_project(self, project):
         logger.info("Project changed")
         self._project = project
+        self._publisher = Publisher(project.manuscript)
+        logger.info(self._publisher.table_of_contents())
         self.reload_book()
 
     def reload_book(self):
+        # Remove all the previous content
         self.chapters_list.remove_all()
 
-        book_parts = self._project.manuscript.get_content()
-        for title, content in book_parts:
-            widget = NavigationRow(title)
-            widget.content = content
-            self.chapters_list.insert(widget, -1)
+        # Load the new ToC
+        book_parts = self._publisher.table_of_contents()
+        for part in book_parts:
+            widget = NavigationRow(part.title)
+            widget.content = part.html
+            self.chapters_list.append(widget)
+
+        # Select the first item
+        row = self.chapters_list.get_row_at_index(0)
+        self.chapters_list.select_row(row)
 
     def on_selected_item(self, _src, _selected_item):
         selected_row = self.chapters_list.get_selected_row()
@@ -108,16 +113,17 @@ class PublishPage(Adw.Bin):
 
         # Get all the HTML content from the model
         content = selected_chapter.content
+        logger.info(content)
 
         # Instantiate the template for the rendering
-        emulator_html = Gio.File.new_for_uri(
-            f"resource:/{BASE}/views/publish/page.html"
-        )
-        html_content = emulator_html.load_contents()[1].decode()
-        html_content = html_content.replace("{content}", content)
+        #emulator_html = Gio.File.new_for_uri(
+        #    f"resource:/{BASE}/views/publish/page.html"
+        #)
+        #html_content = emulator_html.load_contents()[1].decode()
+        #html_content = html_content.replace("{content}", content)
 
         # Load the content
         if HAVE_WEBKIT:
-            self.web_view.load_html(html_content)
+            self.web_view.load_html(content, "file:///")
 
 
