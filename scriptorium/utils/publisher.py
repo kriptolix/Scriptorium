@@ -102,7 +102,6 @@ class Publisher(object):
                         "image_height": cover_img.height
                     }
                 ))
-                logger.info(self._toc[0].html)
         return self._toc
 
     def content(self) -> list:

@@ -21,7 +21,7 @@ import logging
 from gi.repository import Adw, Gtk, Gio, GObject
 from scriptorium.models import Project, Chapter
 from scriptorium.globals import BASE
-from scriptorium.utils.publisher import Publisher
+from scriptorium.utils.publisher import Publisher, PublisherSection
 
 try:
     from gi.repository import WebKit
@@ -33,12 +33,18 @@ logger = logging.getLogger(__name__)
 
 class NavigationRow(Gtk.Box):
 
-    content = GObject.Property(type=str)
+    part = GObject.Property(type=PublisherSection)
 
-    def __init__(self, title):
+    def __init__(self, part):
         super().__init__(margin_top=6)
-        label = Gtk.Label(label = title)
+
+        # Keep track of the book part
+        self.part = part
+
+        # Set the label
+        label = Gtk.Label(label = part.title)
         self.append(label)
+
 
 @Gtk.Template(resource_path=f"{BASE}/views/publish/page.ui")
 class PublishPage(Adw.Bin):
@@ -49,7 +55,7 @@ class PublishPage(Adw.Bin):
     __description__ = "Preview and modify the formatting"
 
     web_view_placeholder = Gtk.Template.Child()
-    chapters_list = Gtk.Template.Child()
+    toc = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -76,7 +82,7 @@ class PublishPage(Adw.Bin):
             widget.set_hexpand(True)
             self.web_view_placeholder.append(widget)
 
-        self.chapters_list.connect(
+        self.toc.connect(
              "row-selected",
              self.on_selected_item
         )
@@ -90,37 +96,28 @@ class PublishPage(Adw.Bin):
 
     def reload_book(self):
         # Remove all the previous content
-        self.chapters_list.remove_all()
+        self.toc.remove_all()
 
         # Load the new ToC
         book_parts = self._publisher.table_of_contents()
-        for part in book_parts:
-            widget = NavigationRow(part.title)
-            widget.content = part.html
-            self.chapters_list.append(widget)
+        for book_part in book_parts:
+            widget = NavigationRow(book_part)
+            self.toc.append(widget)
 
         # Select the first item
-        row = self.chapters_list.get_row_at_index(0)
-        self.chapters_list.select_row(row)
+        row = self.toc.get_row_at_index(0)
+        self.toc.select_row(row)
 
     def on_selected_item(self, _src, _selected_item):
-        selected_row = self.chapters_list.get_selected_row()
+        selected_row = self.toc.get_selected_row()
         if selected_row is None:
             return
 
-        selected_chapter = selected_row.get_child()
-        logger.info(f"Chapter selected: {selected_chapter}")
+        widget = selected_row.get_child()
+        logger.info(f"Chapter selected: {widget}")
 
         # Get all the HTML content from the model
-        content = selected_chapter.content
-        logger.info(content)
-
-        # Instantiate the template for the rendering
-        #emulator_html = Gio.File.new_for_uri(
-        #    f"resource:/{BASE}/views/publish/page.html"
-        #)
-        #html_content = emulator_html.load_contents()[1].decode()
-        #html_content = html_content.replace("{content}", content)
+        content = widget.part.html
 
         # Load the content
         if HAVE_WEBKIT:
