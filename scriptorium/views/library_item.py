@@ -80,7 +80,6 @@ class LibraryItem(Gtk.Box):
                 self.cover_picture.set_paintable(None)
                 self.stack.set_visible_child_name("ok")
 
-
     def on_cover_changed(self, _cover, _other):
         if self.cover is not None:
             # Load the image

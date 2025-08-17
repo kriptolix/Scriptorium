@@ -91,7 +91,6 @@ class PublishPage(Adw.Bin):
         logger.info("Project changed")
         self._project = project
         self._publisher = Publisher(project.manuscript)
-        logger.info(self._publisher.table_of_contents())
         self.reload_book()
 
     def reload_book(self):
@@ -99,7 +98,7 @@ class PublishPage(Adw.Bin):
         self.toc.remove_all()
 
         # Load the new ToC
-        book_parts = self._publisher.table_of_contents()
+        book_parts = self._publisher.table_of_contents
         for book_part in book_parts:
             widget = NavigationRow(book_part)
             self.toc.append(widget)

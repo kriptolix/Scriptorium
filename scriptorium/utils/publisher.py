@@ -17,10 +17,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Gtk, Gio, GObject
-from scriptorium.models import Manuscript, Chapter, Scene
+from scriptorium.models import Resource, Manuscript, Chapter, Scene
 from scriptorium.globals import BASE
 from jinja2 import Environment, PackageLoader, select_autoescape
 from ebooklib import epub
+import io
 
 import logging
 logger = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class PublisherSection(GObject.Object):
     template.
     https://pypi.org/project/EbookLib/
     """
+    __gtype_name__ = "PublisherSection"
 
     title = GObject.Property(type=str)
 
@@ -85,6 +87,7 @@ class Publisher(object):
 
         self._toc = None
 
+    @property
     def table_of_contents(self):
         if self._toc is None:
             self._toc = []
@@ -102,6 +105,19 @@ class Publisher(object):
                         "image_height": cover_img.height
                     }
                 ))
+
+            # Add all the chapters
+            index = 1
+            for entry in self._manuscript.content:
+                self._toc.append(PublisherSection(
+                    title=f"Part {index}",
+                    template=self._env.get_template("templates/content.xhtml"),
+                    parameters={
+                        "content": self._get_chapter_content(entry)
+                    }
+                ))
+                index += 1
+
         return self._toc
 
     def content(self) -> list:
@@ -170,4 +186,40 @@ class Publisher(object):
             # Set the previous item as the current one
             previous_resource = resource
             previous_depth = depth
-        
+
+    def _get_chapter_content(self, resource: Resource):
+        # Create the buffer if needed
+        buffer = io.StringIO()
+
+        # Recursively extract the content of the chapter/scenes tree
+        self._extract_content(resource, 1, buffer)
+
+        # Close and return the buffer
+        content = buffer.getvalue()
+        buffer.close()
+
+        # Add scene separators as post-processing: detect all the "first-paragraph" and see if their immediate preceding tag is a paragraph
+
+        return content
+
+    def _extract_content(self, resource: Resource, depth, buffer, previous_was_scene = False):
+        # If we just have a resource return that as is
+        if isinstance(resource, Scene):
+            # If what we wrote before was a scene, add a scene separator
+            if previous_was_scene:
+                buffer.write('<p class="separator">...</p>')
+            buffer.write(resource.to_html())
+
+        # If we are in a Chapter add the header and recurse into the content
+        if isinstance(resource, Chapter):
+            buffer.write(f"<h{depth}>{resource.title}</h{depth}>")
+
+            # We keep track of the content just before to place scene separators
+            previous_entry = None
+            for entry in resource.content:
+                self._extract_content(
+                    entry, depth+1, buffer,
+                    isinstance(previous_entry, Scene)
+                )
+                previous_entry = entry
+

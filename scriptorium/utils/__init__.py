@@ -3,6 +3,8 @@
 from gi.repository import Gtk
 from bs4 import BeautifulSoup
 
+import io
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -67,12 +69,18 @@ def buffer_to_html(buffer: Gtk.TextBuffer):
 
     # Split according to paragraphs
     paragraphs = ''.join(html_content).split('\n\n')
-    html_content = [
-        f'<p>{paragraph}</p>' for paragraph in paragraphs
-        if len(paragraph) > 1
-    ]
 
-    return '\n'.join(html_content)
+    buffer = io.StringIO()
+    first_paragraph = True
+    for paragraph in paragraphs:
+        cls = "first-paragraph" if first_paragraph else "paragraph"
+        buffer.write(f'<p class="{cls}">{paragraph}</p>\n')
+        if first_paragraph:
+            first_paragraph = False
+    content = buffer.getvalue()
+    buffer.close()
+
+    return content
 
 
 def get_child_at(widget, position):
