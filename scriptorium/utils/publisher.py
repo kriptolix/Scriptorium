@@ -19,48 +19,13 @@
 from gi.repository import Gtk, Gio, GObject
 from scriptorium.models import Resource, Manuscript, Chapter, Scene
 from scriptorium.globals import BASE
-from jinja2 import Environment, PackageLoader, select_autoescape
 from ebooklib import epub
+from typing import List
+
 import io
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-# Wrapper for epub.EpubHtml using lazy loading and cache
-class PublisherSection(GObject.Object):
-    """
-    A Section in a document. Calling render will return the instanciated
-    template.
-    https://pypi.org/project/EbookLib/
-    """
-    __gtype_name__ = "PublisherSection"
-
-    title = GObject.Property(type=str)
-
-    def __init__(self, title, template, parameters):
-        super().__init__()
-        self.title = title
-        self._template = template
-        self._parameters = parameters
-        self._html = None
-
-    @property
-    def html(self) -> str:
-        if self._html is None:
-            self._html = self._template.render(self._parameters)
-        return self._html
-
-    @property
-    def epub_html(self) -> epub.EpubHtml:
-        epub_html = epub.EpubHtml(
-                title=self._title,
-                file_name=f"{self._title.lower().replace(' ', '_')}.xhtml",
-                lang="en"
-            )
-        epub_html.content = self.html
-        return epub_html
-
 
 # Create instances of PublisherSection and return the toc. When asked to export
 # the book call the rest of the epub lib functions
@@ -78,114 +43,15 @@ class Publisher(object):
         # Keep a pointer to the manuscript
         self._manuscript = manuscript
 
-        # Load the templates
-        self._env = Environment(
-            loader=PackageLoader("scriptorium"),
-            autoescape=select_autoescape()
-        )
-        logger.info(self._env.list_templates())
-
-        self._toc = None
+        # The EBook built from the manuscript
+        self._book = None
 
     @property
     def table_of_contents(self):
-        if self._toc is None:
-            self._toc = []
+        if self._book is None:
+            self._build()
 
-            # Add the cover page
-            cover_img = self._manuscript.cover
-            if cover_img is not None:
-                logger.info(f"Cover => {cover_img.path}")
-                self._toc.append(PublisherSection(
-                    title="Cover",
-                    template=self._env.get_template("templates/cover.xhtml"),
-                    parameters={
-                        "image_path": f"file://{cover_img.path}",
-                        "image_width": cover_img.width,
-                        "image_height": cover_img.height
-                    }
-                ))
-
-            # Add all the chapters
-            index = 1
-            for entry in self._manuscript.content:
-                self._toc.append(PublisherSection(
-                    title=f"Part {index}",
-                    template=self._env.get_template("templates/content.xhtml"),
-                    parameters={
-                        "content": self._get_chapter_content(entry)
-                    }
-                ))
-                index += 1
-
-        return self._toc
-
-    def content(self) -> list:
-        """Return the content of the manuscript as a list of HTML chapters."""
-
-        # Prepare the output
-        output = []
-
-        # Add a cover page
-        self._add_cover(output)
-
-        # Add all the content
-        self._add_chapters(output)
-
-        return output
-
-    def _add_cover(self, output):
-        template = self._env.get_template("templates/cover.xhtml")
-        logger.info(template)
-
-    def _add_chapters(self, output):
-        """
-        Create the HTML pages for all the chapters and add them to the output.
-        """
-
-        # Create a tree model to iterate over the content
-        model = Gtk.TreeListModel.new(
-            self._manuscript.content, False, True,
-            lambda item:
-            item.content if isinstance(item, (Manuscript, Chapter)) else None
-        )
-
-        # Iterate on each row
-        previous_resource = None
-        previous_depth = None
-        chapter_index = 1
-        for idx in range(0, model.get_n_items()):
-            # See what we have on that row
-            row = model.get_row(idx)
-            resource = row.get_item()
-            depth = row.get_depth()
-
-            # We start something new
-            if row.get_depth() == 0:
-                if isinstance(resource, Chapter):
-                    output.append([f"Chapter {chapter_index}", ""])
-                elif isinstance(resource, Scene):
-                    # We stitch together the scenes at root level as long as
-                    # they come in a sequence
-                    logger.info(f"{resource.title} has prev {previous_resource.title}")
-                    if not isinstance(previous_resource, Scene) or previous_depth != depth:
-                        output.append([f"Chapter {chapter_index}", ""])
-                chapter_index += 1
-
-            # Now add the content to the last part of the output
-            if isinstance(resource, Scene):
-                # If the previous thing was a scene we add a scene separator
-                if isinstance(previous_resource, Scene) and previous_depth == depth:
-                    output[-1][1] += "<span>...</span>"
-                # Add the content of the scene
-                output[-1][1] += resource.to_html()
-            elif isinstance(resource, Chapter):
-                d = row.get_depth()
-                output[-1][1] += f"<h{d+1}>{resource.title}</h{d+1}>"
-
-            # Set the previous item as the current one
-            previous_resource = resource
-            previous_depth = depth
+        return self._book.toc
 
     def _get_chapter_content(self, resource: Resource):
         # Create the buffer if needed
@@ -198,8 +64,6 @@ class Publisher(object):
         content = buffer.getvalue()
         buffer.close()
 
-        # Add scene separators as post-processing: detect all the "first-paragraph" and see if their immediate preceding tag is a paragraph
-
         return content
 
     def _extract_content(self, resource: Resource, depth, buffer, previous_was_scene = False):
@@ -207,7 +71,7 @@ class Publisher(object):
         if isinstance(resource, Scene):
             # If what we wrote before was a scene, add a scene separator
             if previous_was_scene:
-                buffer.write('<p class="separator">...</p>')
+                buffer.write('<p class="separator">&nbsp;</p>')
             buffer.write(resource.to_html())
 
         # If we are in a Chapter add the header and recurse into the content
@@ -222,4 +86,46 @@ class Publisher(object):
                     isinstance(previous_entry, Scene)
                 )
                 previous_entry = entry
+
+    def save(self, target_file: str):
+        if self._book is None:
+            self._build()
+
+        epub.write_epub(target_file, self._book, {})
+
+    def _build(self):
+        """Build a EPUB from the content of the manuscript."""
+        self._book = epub.EpubBook()
+        self._book.set_identifier(self._manuscript.identifier)
+        self._book.set_title(self._manuscript.title)
+        self._book.set_language("en")
+
+        # Add the cover
+        cover_img = self._manuscript.cover
+        self._book.set_cover(
+            cover_img.path.name,
+            open(cover_img.path, 'rb').read()
+        )
+
+        # Add the content
+        self._book.toc = ()
+        for entry in self._manuscript.content:
+            slug = entry.title.lower().replace(' ', '_')
+            epub_html = epub.EpubHtml(
+                title=entry.title,
+                file_name=f"{slug}.xhtml",
+                lang="en"
+            )
+            epub_html.set_content(self._get_chapter_content(entry))
+            self._book.add_item(epub_html)
+            self._book.toc += (epub_html,)
+
+        # Define the spine
+        self._book.spine = ["nav"]
+        for part in self._book.toc:
+            self._book.spine.append(part)
+
+        # add default NCX and Nav file
+        self._book.add_item(epub.EpubNcx())
+        self._book.add_item(epub.EpubNav())
 

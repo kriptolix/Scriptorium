@@ -18,10 +18,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-from gi.repository import Adw, Gtk, Gio, GObject
+from gi.repository import Adw, Gtk, Gio, GObject, GLib
 from scriptorium.models import Project, Chapter
 from scriptorium.globals import BASE
-from scriptorium.utils.publisher import Publisher, PublisherSection
+from scriptorium.utils.publisher import Publisher
 
 try:
     from gi.repository import WebKit
@@ -33,18 +33,19 @@ logger = logging.getLogger(__name__)
 
 class NavigationRow(Gtk.Box):
 
-    part = GObject.Property(type=PublisherSection)
-
     def __init__(self, part):
         super().__init__(margin_top=6)
 
         # Keep track of the book part
-        self.part = part
+        self._part = part
 
         # Set the label
         label = Gtk.Label(label = part.title)
         self.append(label)
 
+    @property
+    def part(self):
+        return self._part
 
 @Gtk.Template(resource_path=f"{BASE}/views/publish/page.ui")
 class PublishPage(Adw.Bin):
@@ -107,6 +108,10 @@ class PublishPage(Adw.Bin):
         row = self.toc.get_row_at_index(0)
         self.toc.select_row(row)
 
+        # Export the book
+        logger.info(GLib.get_user_data_dir() + "/test.epub")
+        self._publisher.save(GLib.get_user_data_dir() + "/test.epub")
+
     def on_selected_item(self, _src, _selected_item):
         selected_row = self.toc.get_selected_row()
         if selected_row is None:
@@ -116,7 +121,7 @@ class PublishPage(Adw.Bin):
         logger.info(f"Chapter selected: {widget}")
 
         # Get all the HTML content from the model
-        content = widget.part.html
+        content = widget.part.get_content().decode()
 
         # Load the content
         if HAVE_WEBKIT:
