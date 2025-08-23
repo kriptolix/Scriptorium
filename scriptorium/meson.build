@@ -23,11 +23,13 @@ scriptorium_sources = [
 	'main.py',
 	'application.py',
 	'window.py',
-	'utils.py',
 	'globals.py',
 	'language_tool.py',
 ]
 install_data(scriptorium_sources, install_dir: moduledir)
+
+# Install all the templates
+install_subdir('templates', install_dir: moduledir / 'templates')
 
 
 blueprints = custom_target(
@@ -94,5 +96,6 @@ subdir('models')
 subdir('dialogs')
 subdir('widgets')
 subdir('views')
+subdir('utils')
 
 

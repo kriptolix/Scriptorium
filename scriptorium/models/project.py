@@ -300,6 +300,8 @@ class Project(GObject.Object):
                     self.manuscript = resource
 
             self.is_opened = True
+            logger.info(f"Loaded {len(self.resources)} resources")
+            logger.info(self.manuscript.cover)
 
     def save_to_disk(self):
         """Save all the content of the project to disk."""
@@ -375,7 +377,7 @@ class Project(GObject.Object):
             elif isinstance(prop, GObject.ParamSpecInt):
                 resource.set_property(prop.name, value)
             elif isinstance(prop, GObject.ParamSpecObject):
-                if prop.value_type == Resource.__gtype__:
+                if prop.value_type.is_a(Resource.__gtype__):
                     resource.set_property(
                         prop.name,
                         self.get_resource(value)

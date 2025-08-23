@@ -2,15 +2,13 @@ using Gtk 4.0;
 using Adw 1;
 
 template $PublishPage: Adw.Bin {
-  map => $on_publishpage_map();
-
   Adw.OverlaySplitView {
     sidebar-position: start;
 
     sidebar: ScrolledWindow {
       vexpand: true;
 
-      child: ListBox chapters_list {
+      child: ListBox toc {
         styles [
           "navigation-sidebar"
         ]
@@ -55,7 +53,8 @@ template $PublishPage: Adw.Bin {
             styles [
               "suggested-action"
             ]
-            sensitive: false;
+            sensitive: true;
+            clicked => $on_publish_clicked();
           }
         }
       }

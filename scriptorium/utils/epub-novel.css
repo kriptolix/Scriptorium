@@ -1,0 +1,60 @@
+/* ----- Base Setup ----- */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Georgia", "Literata", "Charis SIL", serif;
+  font-size: 1em;
+  line-height: 1.5;
+  text-align: justify;
+  widows: 2;
+  orphans: 2;
+  margin: 0 5%;
+}
+
+/* ----- Paragraphs ----- */
+p {
+  margin: 0 0 1em 0;
+}
+
+p.first-paragraph {
+  text-indent: 0;
+}
+
+p.first-paragraph:first-letter {
+  font-size: 1.2em;
+  font-weight: bold
+}
+
+p.separator {
+  text-align: center
+}
+
+/* ----- Headings ----- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Georgia", "Literata", "Charis SIL", serif;
+  font-weight: normal;
+  text-align: center;
+  margin: 2em 0 1em 0;
+  page-break-after: avoid;
+}
+
+.chapter-title {
+  font-size: 1.6em;
+  font-variant: small-caps;
+  margin-top: 3em;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  font-style: italic;
+  margin-bottom: 2em;
+}
+
+/* ----- Emphasis & Italics ----- */
+em, i {
+  font-style: italic;
+}
+

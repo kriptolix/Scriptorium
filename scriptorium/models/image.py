@@ -32,6 +32,18 @@ class Image(Resource):
         else:
             return []
 
+    @property
+    def path(self):
+        return self.data_files[0] if len(self.data_files) > 0 else None
+
+    @property
+    def width(self):
+        return self.texture.get_width()
+
+    @property
+    def height(self):
+        return self.texture.get_height()
+
     def set_content_from_path(self, file_path: Path):
         """Set the content of the image from the file path indicated."""
 
