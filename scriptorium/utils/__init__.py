@@ -73,10 +73,13 @@ def buffer_to_html(buffer: Gtk.TextBuffer):
     buffer = io.StringIO()
     first_paragraph = True
     for paragraph in paragraphs:
-        cls = "first-paragraph" if first_paragraph else "paragraph"
-        buffer.write(f'<p class="{cls}">{paragraph}</p>\n')
-        if first_paragraph:
-            first_paragraph = False
+        if paragraph != '':
+            if first_paragraph:
+                first_paragraph = False
+                buffer.write(f'<p class="first-paragraph">{paragraph}</p>\n')
+            else:
+                buffer.write(f'<p>{paragraph}</p>\n')
+
     content = buffer.getvalue()
     buffer.close()
 

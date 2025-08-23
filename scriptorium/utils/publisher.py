@@ -78,12 +78,15 @@ class Publisher(object):
         if isinstance(resource, Scene):
             # If what we wrote before was a scene, add a scene separator
             if previous_was_scene:
-                buffer.write('<p class="separator">&nbsp;</p>')
+                buffer.write('<p class="separator">&nbsp;</p>\n')
             buffer.write(resource.to_html())
 
         # If we are in a Chapter add the header and recurse into the content
         if isinstance(resource, Chapter):
-            buffer.write(f"<h{depth}>{resource.title}</h{depth}>")
+            if depth == 1:
+                buffer.write(f'<h{depth} class="chapter-title">{resource.title}</h{depth}>\n')
+            else:
+                buffer.write(f"<h{depth}>{resource.title}</h{depth}>\n")
 
             # We keep track of the content just before to place scene separators
             previous_entry = None

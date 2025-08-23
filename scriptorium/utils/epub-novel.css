@@ -1,8 +1,3 @@
-/* ============================
-   EPUB Default Stylesheet
-   For Novels / Narrative Text
-   ============================ */
-
 /* ----- Base Setup ----- */
 html, body {
   margin: 0;
@@ -11,7 +6,7 @@ html, body {
 
 body {
   font-family: "Georgia", "Literata", "Charis SIL", serif;
-  font-size: 1em;          /* device scalable */
+  font-size: 1em;
   line-height: 1.5;
   text-align: justify;
   widows: 2;
@@ -19,6 +14,7 @@ body {
   margin: 0 5%;
 }
 
+/* ----- Paragraphs ----- */
 p {
   margin: 0 0 1em 0;
 }
@@ -61,85 +57,4 @@ h1, h2, h3, h4, h5, h6 {
 em, i {
   font-style: italic;
 }
-
-/* Utility fallback */
-.italic {
-  font-style: italic;
-}
-
-/* Small caps */
-.smallcaps, .sc {
-  font-variant: small-caps;
-}
-
-/* Dropcap */
-.dropcap:first-letter {
-  float: left;
-  font-size: 2.5em;
-  line-height: 1;
-  margin-right: 0.1em;
-}
-
-/* ----- Block elements ----- */
-blockquote, .blockquote {
-  margin: 1.5em 10%;
-  font-style: italic;
-}
-
-.epigraph {
-  margin: 2em 10%;
-  font-style: italic;
-  text-align: right;
-}
-
-/* ----- Poetry / Verse ----- */
-.verse, .poetry {
-  margin: 1em 5%;
-  white-space: pre-wrap;
-  text-align: left;
-  font-style: italic;
-}
-
-/* ----- Captions / Figures ----- */
-.caption {
-  font-size: 0.9em;
-  text-align: center;
-  margin-top: 0.5em;
-}
-
-/* ----- Footnotes ----- */
-.footnote, .endnote {
-  font-size: 0.85em;
-  line-height: 1.4;
-}
-
-/* ----- Front/Back Matter ----- */
-.titlepage {
-  text-align: center;
-  margin-top: 30%;
-}
-
-.dedication {
-  text-align: center;
-  font-style: italic;
-  margin-top: 40%;
-}
-
-.copyright {
-  font-size: 0.8em;
-  text-align: center;
-  margin-top: 20%;
-}
-
-/* ----- Code / Monospace ----- */
-code, pre, .code {
-  font-family: "Courier New", "Source Code Pro", monospace;
-  font-size: 0.95em;
-  white-space: pre-wrap;
-}
-
-/* ----- Utility Classes ----- */
-.center { text-align: center; }
-.right { text-align: right; }
-.bold { font-weight: bold; }
 
