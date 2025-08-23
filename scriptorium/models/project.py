@@ -301,7 +301,6 @@ class Project(GObject.Object):
 
             self.is_opened = True
             logger.info(f"Loaded {len(self.resources)} resources")
-            logger.info(self.manuscript.cover)
 
     def save_to_disk(self):
         """Save all the content of the project to disk."""

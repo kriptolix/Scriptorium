@@ -2,6 +2,8 @@ using Gtk 4.0;
 using Adw 1;
 
 template $PublishPage: Adw.Bin {
+  map => $on_publishpage_map();
+
   Adw.OverlaySplitView {
     sidebar-position: start;
 

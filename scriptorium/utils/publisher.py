@@ -60,6 +60,9 @@ class Publisher(object):
 
         return self._book.toc
 
+    def rebuild(self):
+        self._build()
+
     def _get_chapter_content(self, resource: Resource):
         # Create the buffer if needed
         buffer = io.StringIO()

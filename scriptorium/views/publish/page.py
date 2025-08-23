@@ -95,11 +95,16 @@ class PublishPage(Adw.Bin):
         self._publisher = Publisher(project.manuscript)
         self.reload_book()
 
+    @Gtk.Template.Callback()
+    def on_publishpage_map(self, page):
+        self.reload_book()
+
     def reload_book(self):
         # Remove all the previous content
         self.toc.remove_all()
 
         # Load the new ToC
+        self._publisher.rebuild()
         book_parts = self._publisher.table_of_contents
         for book_part in book_parts:
             widget = NavigationRow(book_part)
@@ -108,10 +113,6 @@ class PublishPage(Adw.Bin):
         # Select the first item
         row = self.toc.get_row_at_index(0)
         self.toc.select_row(row)
-
-        # Export the book
-        logger.info(GLib.get_user_data_dir() + "/AAAA.epub")
-        self._publisher.save(GLib.get_user_data_dir() + "/AAAA.epub")
 
     def on_selected_item(self, _src, _selected_item):
         selected_row = self.toc.get_selected_row()
