@@ -21,6 +21,7 @@ from scriptorium.models import Resource, Manuscript, Chapter, Scene
 from scriptorium.globals import BASE
 from ebooklib import epub
 from typing import List
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 import io
 
@@ -45,6 +46,12 @@ class Publisher(object):
 
         # The EBook built from the manuscript
         self._book = None
+
+        # Load the templates
+        self._env = Environment(
+            loader=PackageLoader("scriptorium"),
+            autoescape=select_autoescape()
+        )
 
     @property
     def table_of_contents(self):
@@ -95,12 +102,14 @@ class Publisher(object):
 
     def _build(self):
         """Build a EPUB from the content of the manuscript."""
+        # Initialise the book
         self._book = epub.EpubBook()
         self._book.set_identifier(self._manuscript.identifier)
         self._book.set_title(self._manuscript.title)
         self._book.set_language("en")
+        self._book.toc = ()
 
-        # Add the cover
+        # Set the cover
         cover_img = self._manuscript.cover
         self._book.set_cover(
             cover_img.path.name,
@@ -108,7 +117,6 @@ class Publisher(object):
         )
 
         # Add the content
-        self._book.toc = ()
         for entry in self._manuscript.content:
             slug = entry.title.lower().replace(' ', '_')
             epub_html = epub.EpubHtml(
@@ -121,11 +129,29 @@ class Publisher(object):
             self._book.toc += (epub_html,)
 
         # Define the spine
-        self._book.spine = ["nav"]
+        self._book.spine = ["cover", "nav"]
         for part in self._book.toc:
             self._book.spine.append(part)
 
         # add default NCX and Nav file
         self._book.add_item(epub.EpubNcx())
         self._book.add_item(epub.EpubNav())
+
+        # define CSS style
+        style = Gio.File.new_for_uri(
+            f"resource:/{BASE}/utils/epub-novel.css"
+        ).load_contents()[1].decode()
+        nav_css = epub.EpubItem(
+            uid="style_nav",
+            file_name="style/nav.css",
+            media_type="text/css",
+            content=style,
+        )
+
+        # Add the CSS file to the book
+        self._book.add_item(nav_css)
+
+        # Connect it to all the parts
+        for part in self._book.toc:
+            part.add_item(nav_css)
 

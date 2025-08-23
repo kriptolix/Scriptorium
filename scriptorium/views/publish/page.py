@@ -22,6 +22,7 @@ from gi.repository import Adw, Gtk, Gio, GObject, GLib
 from scriptorium.models import Project, Chapter
 from scriptorium.globals import BASE
 from scriptorium.utils.publisher import Publisher
+from pathlib import Path
 
 try:
     from gi.repository import WebKit
@@ -109,8 +110,8 @@ class PublishPage(Adw.Bin):
         self.toc.select_row(row)
 
         # Export the book
-        logger.info(GLib.get_user_data_dir() + "/test.epub")
-        self._publisher.save(GLib.get_user_data_dir() + "/test.epub")
+        logger.info(GLib.get_user_data_dir() + "/AAAA.epub")
+        self._publisher.save(GLib.get_user_data_dir() + "/AAAA.epub")
 
     def on_selected_item(self, _src, _selected_item):
         selected_row = self.toc.get_selected_row()
@@ -123,8 +124,16 @@ class PublishPage(Adw.Bin):
         # Get all the HTML content from the model
         content = widget.part.get_content().decode()
 
+        # Save the CSS to disk to be able to load it
+        style = Gio.File.new_for_uri(
+            f"resource:/{BASE}/utils/epub-novel.css"
+        ).load_contents()[1].decode()
+        directory = Path(GLib.get_user_data_dir()) / Path('style')
+        directory.mkdir(exist_ok=True)
+        (directory / Path('nav.css')).write_text(style)
+
         # Load the content
         if HAVE_WEBKIT:
-            self.web_view.load_html(content, "file:///")
+            self.web_view.load_html(content, "file:///" + str(directory))
 
 
