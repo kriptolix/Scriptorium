@@ -144,17 +144,17 @@ class Publisher(object):
         style = Gio.File.new_for_uri(
             f"resource:/{BASE}/utils/epub-novel.css"
         ).load_contents()[1].decode()
-        nav_css = epub.EpubItem(
-            uid="style_nav",
-            file_name="style/nav.css",
+        style_css = epub.EpubItem(
+            uid="style_novel",
+            file_name="style/novel.css",
             media_type="text/css",
             content=style,
         )
 
         # Add the CSS file to the book
-        self._book.add_item(nav_css)
+        self._book.add_item(style_css)
 
         # Connect it to all the parts
         for part in self._book.toc:
-            part.add_item(nav_css)
+            part.add_item(style_css)
 

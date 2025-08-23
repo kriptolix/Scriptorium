@@ -53,7 +53,8 @@ template $PublishPage: Adw.Bin {
             styles [
               "suggested-action"
             ]
-            sensitive: false;
+            sensitive: true;
+            clicked => $on_publish_clicked();
           }
         }
       }

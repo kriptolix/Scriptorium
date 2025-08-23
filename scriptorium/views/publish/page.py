@@ -130,10 +130,27 @@ class PublishPage(Adw.Bin):
         ).load_contents()[1].decode()
         directory = Path(GLib.get_user_data_dir()) / Path('style')
         directory.mkdir(exist_ok=True)
-        (directory / Path('nav.css')).write_text(style)
+        (directory / Path('novel.css')).write_text(style)
 
         # Load the content
         if HAVE_WEBKIT:
             self.web_view.load_html(content, "file:///" + str(directory))
 
+    @Gtk.Template.Callback()
+    def on_publish_clicked(self, _button):
+        """Handle a click on the Publish button."""
+
+        # Define a default file name based on the project name
+        file_name = self._project.title + ".epub"
+
+        # Call back to save the file and inform the user
+        def save_path_selected(file_dialog, task, _):
+            file_name = file_dialog.save_finish(task)
+            self._publisher.save(file_name.get_path())
+            self.props.root.inform("File saved!")
+
+        # Create and present the dialog
+        file_dialog = Gtk.FileDialog.new()
+        file_dialog.set_initial_name(file_name)
+        file_dialog.save(self.props.root, None, save_path_selected, None)
 
