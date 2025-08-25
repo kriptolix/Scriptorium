@@ -44,9 +44,25 @@ template $LibraryItem: Box {
     }
   }
 
-  Inscription {
-    text-overflow: ellipsize_end;
-    min-lines: 2;
-    text: bind template.title;
+  Box {
+    orientation: horizontal;
+    hexpand: true;
+
+    Inscription {
+      hexpand: true;
+      text-overflow: ellipsize_end;
+      min-lines: 2;
+      text: bind template.title;
+    }
+
+    MenuButton menu_button {
+      styles [
+        "flat", "circular", "popup"
+      ]
+      icon-name: "view-more-symbolic";
+      tooltip-text: _("Menu");
+    }
   }
 }
+
+

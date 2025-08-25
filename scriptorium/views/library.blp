@@ -34,7 +34,7 @@ template $ScrptLibraryView: Adw.NavigationPage {
             min-columns: 1;
             max-columns: 10;
             vexpand: false;
-            factory: SignalListItemFactory item_factory {
+            factory: SignalListItemFactory {
               setup => $on_setup_item();
               bind => $on_bind_item();
             };
@@ -64,6 +64,29 @@ Adw.AlertDialog migrate_dialog {
     cancel: _("Cancel"),
     migrate: _("Migrate") destructive
   ]
+}
+
+Adw.Dialog about_dialog {
+  title: "About this project";
+  can-close: true;
+  width-request: 200;
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+
+    content: Adw.PreferencesPage {
+      Adw.PreferencesGroup {
+        Adw.EntryRow edit_title {
+          title: "Title";
+        }
+
+        $MultiLineEntryRow edit_synopsis {
+          header: "Synopsis";
+        }
+      }
+    };
+  };
 }
 
 menu window_menu {

@@ -73,8 +73,11 @@ class Library(GObject.Object):
         # Create the project
         project = Project(path)
 
-        # Add a manuscript to it
-        manuscript = project.create_resource(Manuscript, title, synopsis)
+        # Set the title of the project to the indicated title
+        project.title = title
+
+        # Add a manuscript to the project (that will trigger a save)
+        project.create_resource(Manuscript, title, synopsis)
 
         # Add it to the list
         self.projects.append(project)
@@ -90,3 +93,16 @@ class Library(GObject.Object):
             # Delete all the content on disk
             path = self.base_directory / Path(project.identifier)
             shutil.rmtree(path)
+
+    def get_project(self, identifier):
+        """Return a project based on a requested identifier."""
+
+        # Iterate until we find the correct project
+        for project in self.projects:
+            if project.identifier == identifier:
+                return project
+
+        # That does not seem to be here
+        logger.warning(f"Project not found: {identifier}")
+        return None
+
