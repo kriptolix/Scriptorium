@@ -33,11 +33,12 @@ class LibraryItem(Gtk.Box):
     cover_picture = Gtk.Template.Child()
     stack = Gtk.Template.Child()
     menu_button = Gtk.Template.Child()
+    inscription = Gtk.Template.Child()
 
     cover = GObject.Property(type=str)
-    title = GObject.Property(type=str)
 
     _can_be_opened_handler_id = None
+    _title_bind = None
 
     def bind(self, project):
         """Connect the entry to a project."""
@@ -57,8 +58,13 @@ class LibraryItem(Gtk.Box):
     def refresh_display(self):
         """Update the entry for the project in case something changes."""
 
-        # Update the title of the project
-        self.title = self._project.title
+        # Connect the title to the label
+        if self._title_bind is not None:
+            self._title_bind.unbind()
+        self._title_bind = self._project.bind_property(
+            "title", self.inscription, "text",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
 
         # See if we can display a cover or not (to signal a broken project)
         if not self._project.can_be_opened:
@@ -84,10 +90,11 @@ class LibraryItem(Gtk.Box):
 
         # Create and associate to the button a specific menu for this project
         menu = Gio.Menu()
-        menu.append(
-            label="About this project",
-            detailed_action=f"library.about('{self._project.identifier}')"
-        )
+        if self._project.can_be_opened:
+            menu.append(
+                label="About this project",
+                detailed_action=f"library.about('{self._project.identifier}')"
+            )
         menu.append(
             label="Delete",
             detailed_action=f"library.delete('{self._project.identifier}')"

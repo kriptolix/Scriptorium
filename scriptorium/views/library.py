@@ -50,6 +50,11 @@ class ScrptLibraryView(Adw.NavigationPage):
     migrate_dialog = Gtk.Template.Child()
     about_dialog = Gtk.Template.Child()
 
+    edit_title = Gtk.Template.Child()
+    edit_title_bind = None
+
+    identifier = Gtk.Template.Child()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -245,11 +250,32 @@ class ScrptLibraryView(Adw.NavigationPage):
     def on_about_project(self, _action, parameter):
         """Show the attributes of a project."""
 
+        # Get the instance of the project
         project_identifier = parameter.get_string()
         project = self.library.get_project(project_identifier)
         logger.info(f"About {project.title}")
 
-        child = self.about_dialog.get_template_child(Adw.EntryRow, "edit_title")
-        logger.info(child)
+        # Set the identifier
+        self.identifier.set_subtitle(project.identifier)
+
+        # Remove previous binding if applicable and connect the title
+        if self.edit_title_bind is not None:
+            self.edit_title_bind.unbind()
+        self.edit_title_bind = project.bind_property(
+            "title", self.edit_title, "text",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
 
         self.about_dialog.present(self)
+
+    @Gtk.Template.Callback()
+    def on_about_dialog_closed(self, _dialog):
+        logger.info("Closed")
+
+        # Get the instance of the project
+        project_identifier = self.identifier.get_subtitle()
+        project = self.library.get_project(project_identifier)
+        logger.info(f"About {project.title}")
+
+        # Save the project to keep the new title
+        project.save_to_disk()

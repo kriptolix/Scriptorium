@@ -48,11 +48,10 @@ template $LibraryItem: Box {
     orientation: horizontal;
     hexpand: true;
 
-    Inscription {
+    Inscription inscription {
       hexpand: true;
       text-overflow: ellipsize_end;
       min-lines: 2;
-      text: bind template.title;
     }
 
     MenuButton menu_button {

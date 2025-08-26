@@ -70,6 +70,7 @@ Adw.Dialog about_dialog {
   title: "About this project";
   can-close: true;
   width-request: 200;
+  closed => $on_about_dialog_closed();
 
   child: Adw.ToolbarView {
     [top]
@@ -77,12 +78,15 @@ Adw.Dialog about_dialog {
 
     content: Adw.PreferencesPage {
       Adw.PreferencesGroup {
-        Adw.EntryRow edit_title {
-          title: "Title";
+        Adw.ActionRow identifier {
+          title: "Identifier";
+          styles [
+            "property", "dim-label"
+          ]
         }
 
-        $MultiLineEntryRow edit_synopsis {
-          header: "Synopsis";
+        Adw.EntryRow edit_title {
+          title: "Title";
         }
       }
     };
