@@ -120,10 +120,6 @@ class ScrptWindow(Adw.ApplicationWindow):
         logger.info("Window close requested")
         # Save the name of the last edited project
 
-    @Gtk.Template.Callback()
-    def on_map(self, _):
-        logger.info("Map")
-
     def _open_library(self):
         # Get a reference to the library panel
         self.library_panel.connect('notify::selected-project',

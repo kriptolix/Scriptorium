@@ -60,6 +60,9 @@ class Publisher(object):
 
         return self._book.toc
 
+    def rebuild(self):
+        self._build()
+
     def _get_chapter_content(self, resource: Resource):
         # Create the buffer if needed
         buffer = io.StringIO()
@@ -114,10 +117,11 @@ class Publisher(object):
 
         # Set the cover
         cover_img = self._manuscript.cover
-        self._book.set_cover(
-            cover_img.path.name,
-            open(cover_img.path, 'rb').read()
-        )
+        if cover_img is not None:
+            self._book.set_cover(
+                cover_img.path.name,
+                open(cover_img.path, 'rb').read()
+            )
 
         # Add the content
         for entry in self._manuscript.content:
@@ -132,7 +136,10 @@ class Publisher(object):
             self._book.toc += (epub_html,)
 
         # Define the spine
-        self._book.spine = ["cover", "nav"]
+        self._book.spine = []
+        if cover_img is not None:
+            self._book.spine.append("cover")
+        self._book.spine.append("nav")
         for part in self._book.toc:
             self._book.spine.append(part)
 

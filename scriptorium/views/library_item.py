@@ -1,4 +1,4 @@
-# library/manuscript.py
+# views/library_item.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -18,6 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from gi.repository import Gtk
 from gi.repository import GObject
+from gi.repository import Gio
 from scriptorium.globals import BASE
 
 import logging
@@ -31,16 +32,16 @@ class LibraryItem(Gtk.Box):
 
     cover_picture = Gtk.Template.Child()
     stack = Gtk.Template.Child()
+    menu_button = Gtk.Template.Child()
+    inscription = Gtk.Template.Child()
 
     cover = GObject.Property(type=str)
-    title = GObject.Property(type=str)
 
     _can_be_opened_handler_id = None
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    _title_bind = None
 
     def bind(self, project):
+        """Connect the entry to a project."""
         self._project = project
 
         # Connect a handler to update the icon when the project can be opened
@@ -55,8 +56,15 @@ class LibraryItem(Gtk.Box):
         self.refresh_display()
 
     def refresh_display(self):
-        # Update the title of the project
-        self.title = self._project.title
+        """Update the entry for the project in case something changes."""
+
+        # Connect the title to the label
+        if self._title_bind is not None:
+            self._title_bind.unbind()
+        self._title_bind = self._project.bind_property(
+            "title", self.inscription, "text",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
 
         # See if we can display a cover or not (to signal a broken project)
         if not self._project.can_be_opened:
@@ -79,6 +87,19 @@ class LibraryItem(Gtk.Box):
             else:
                 self.cover_picture.set_paintable(None)
                 self.stack.set_visible_child_name("ok")
+
+        # Create and associate to the button a specific menu for this project
+        menu = Gio.Menu()
+        if self._project.can_be_opened:
+            menu.append(
+                label="About this project",
+                detailed_action=f"library.about('{self._project.identifier}')"
+            )
+        menu.append(
+            label="Delete",
+            detailed_action=f"library.delete('{self._project.identifier}')"
+        )
+        self.menu_button.set_menu_model(menu)
 
     def on_cover_changed(self, _cover, _other):
         if self.cover is not None:

@@ -49,16 +49,19 @@ class Scene(Resource):
             base_directory.mkdir()
 
         # The content of the scene
-        self._scene_content = base_directory / Path(f"{self.identifier}.html")
-        if not self._scene_content.exists():
-            self._scene_content.touch()
+        self._scene_content_path = base_directory / Path(f"{self.identifier}.html")
+        if not self._scene_content_path.exists():
+            self._scene_content_path.touch()
+
+        # Lazy loaded later
+        self._scene_content = None
 
         self._refresh_history()
 
     @property
     def data_files(self):
         # An eventual list of data files associated with the resource
-        return [self._scene_content]
+        return [self._scene_content_path]
 
     @property
     def history(self):
@@ -87,39 +90,40 @@ class Scene(Resource):
 
     def load_into_buffer(self, buffer: Gtk.TextBuffer):
         """Load the content of a text buffer from disk."""
-        logger.info(f"Loading info buffer from {self._scene_content}")
+        logger.info(f"{self.title}: Loading info buffer")
 
         # Load the content of the file and push to the buffer
-        html_content = self.to_html()
-        html_to_buffer(html_content, buffer)
+        html_to_buffer(self.to_html(), buffer)
 
     def save_from_buffer(self, buffer: Gtk.TextBuffer):
         """Save the content of a text buffer to disk."""
-        logger.info(f"Saving buffer to {self._scene_content}")
+        logger.info(f"{self.title}: Saving from buffer")
 
         # Write the content of the buffer
-        html_content = buffer_to_html(buffer)
-        Path(self._scene_content).write_text(html_content)
+        self._scene_content = buffer_to_html(buffer)
+        self._scene_content_path.write_text(self._scene_content)
 
         # Check if the file has been changed
         repo = self.project.repo
         for d in repo.index.diff(None):
-            if str(self._scene_content.resolve()).endswith(d.a_path):
-                repo.index.add(self._scene_content)
+            if str(self._scene_content_path.resolve()).endswith(d.a_path):
+                repo.index.add(self._scene_content_path)
                 repo.index.commit(f'Modified scene "{self.identifier}"')
                 # Trigger a refresh of the commit history
                 self._refresh_history()
 
     def to_html(self):
         """Return the HTML payload for the scene."""
-        logger.info(f"Loading raw HTML from {self._scene_content}")
-
         # Check if we can do that
-        if not Path(self._scene_content).exists():
-            raise FileNotFoundError(f"Could not open {self._scene_content}")
+        if not self._scene_content_path.exists():
+            raise FileNotFoundError(f"Could not open {self._scene_content_path}")
 
-        html_content = Path(self._scene_content).read_text()
-        return html_content
+        # Load from disk if we need to
+        if self._scene_content is None:
+            logger.info(f"Loading raw HTML from {self._scene_content_path}")
+            self._scene_content = Path(self._scene_content_path).read_text()
+
+        return self._scene_content
 
     def _refresh_history(self):
         self._history.remove_all()

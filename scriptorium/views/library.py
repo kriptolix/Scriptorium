@@ -18,6 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import Adw, GObject, Gio, Gtk
+from gi.repository import GLib
 
 from scriptorium.globals import BASE
 from scriptorium.models import Library, Project
@@ -44,10 +45,15 @@ class ScrptLibraryView(Adw.NavigationPage):
 
     # Objects of the templace
     projects_grid = Gtk.Template.Child()
-    item_factory = Gtk.Template.Child()
     win_menu = Gtk.Template.Child()
     grid_stack = Gtk.Template.Child()
     migrate_dialog = Gtk.Template.Child()
+    about_dialog = Gtk.Template.Child()
+
+    edit_title = Gtk.Template.Child()
+    edit_title_bind = None
+
+    identifier = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -56,8 +62,31 @@ class ScrptLibraryView(Adw.NavigationPage):
         popover = self.win_menu.get_popover()
         popover.add_child(ThemeSelector(), "theme")
 
-        # Connect a signal to the list model to detect when content is available
-        self.library.projects.connect("items-changed", self.on_grid_content_changed)
+        # Create an action group for the library
+        group = Gio.SimpleActionGroup()
+        self.insert_action_group("library", group)
+
+        # Create the action to edit the attributes of a project
+        action = Gio.SimpleAction.new(
+            name="about",
+            parameter_type=GLib.VariantType.new("s")
+            )
+        action.connect("activate", self.on_about_project)
+        group.add_action(action)
+
+        # Create the action to delete a project
+        action = Gio.SimpleAction.new(
+            name="delete",
+            parameter_type=GLib.VariantType.new("s")
+            )
+        action.connect("activate", self.on_delete_project)
+        group.add_action(action)
+
+        # Signal to the list model to detect when content is available
+        self.library.projects.connect(
+            "items-changed",
+            self.on_grid_content_changed
+        )
 
         # Connect the model to the grid, don't select anything by default
         selection_model = Gtk.SingleSelection(model=self.library.projects)
@@ -69,10 +98,13 @@ class ScrptLibraryView(Adw.NavigationPage):
 
     @Gtk.Template.Callback()
     def on_scrptlibraryview_shown(self, _src):
-        logger.info("Hello there")
+        """Update the selected project to None."""
+
+        # Disable the current selection
         selection_model = self.projects_grid.get_model()
         selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
 
+        # Set the window to no project opened
         window = self.props.root
         if window is not None:
             window.project = None
@@ -190,3 +222,60 @@ class ScrptLibraryView(Adw.NavigationPage):
             # Nevermind then
             selection_model.set_selected(Gtk.INVALID_LIST_POSITION)
 
+    def on_delete_project(self, _action, parameter):
+        """Delete a project from the library."""
+
+        project_identifier = parameter.get_string()
+        project = self.library.get_project(project_identifier)
+        logger.info(f"Delete {project.title}")
+
+        dialog = Adw.AlertDialog(
+            heading=f"Delete Project",
+            body=f'This action can not be undone! Are you sure you want to delete "{project.title}" ?',
+            close_response="cancel",
+        )
+        dialog.add_response("cancel", "Cancel")
+        dialog.add_response("delete", "Delete")
+
+        dialog.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
+
+        def handle_response(dialog, task):
+            response = dialog.choose_finish(task)
+            if response == "delete":
+                # Delete the resource
+                self.library.delete_project(project)
+
+        dialog.choose(self, None, handle_response)
+
+    def on_about_project(self, _action, parameter):
+        """Show the attributes of a project."""
+
+        # Get the instance of the project
+        project_identifier = parameter.get_string()
+        project = self.library.get_project(project_identifier)
+        logger.info(f"About {project.title}")
+
+        # Set the identifier
+        self.identifier.set_subtitle(project.identifier)
+
+        # Remove previous binding if applicable and connect the title
+        if self.edit_title_bind is not None:
+            self.edit_title_bind.unbind()
+        self.edit_title_bind = project.bind_property(
+            "title", self.edit_title, "text",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE
+        )
+
+        self.about_dialog.present(self)
+
+    @Gtk.Template.Callback()
+    def on_about_dialog_closed(self, _dialog):
+        logger.info("Closed")
+
+        # Get the instance of the project
+        project_identifier = self.identifier.get_subtitle()
+        project = self.library.get_project(project_identifier)
+        logger.info(f"About {project.title}")
+
+        # Save the project to keep the new title
+        project.save_to_disk()

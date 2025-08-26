@@ -78,8 +78,9 @@ class ScriptoriumApplication(Adw.Application):
             developers=['Christophe Guéret'],
             copyright='© 2025 Christophe Guéret'
         )
-        # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
-        #about.set_translator_credits(_('translator-credits'))
+        # Translators: Replace "translator-credits" with your name/username,
+        # and optionally an email or URL.
+        # about.set_translator_credits(_('translator-credits'))
         about.present(self.props.active_window)
 
     def on_preferences_action(self, widget, _):
@@ -107,16 +108,17 @@ class ScriptoriumApplication(Adw.Application):
         """
         Handle the application startup.
         """
+        # Create the basic application actions
         self.create_action('quit', lambda *_: self.quit())
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
 
+        # Check which theme should be applies
         self.settings = Gio.Settings(
             schema_id="io.github.cgueret.Scriptorium"
         )
         style_variant_action = self.settings.create_action("style-variant")
         self.add_action(style_variant_action)
-
         self.settings.connect(
             "changed::style-variant",
             self.change_color_scheme

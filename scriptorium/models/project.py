@@ -75,13 +75,12 @@ class Project(GObject.Object):
             self._yaml_data = {
                 "version": PROJECT_DESCRIPTION_VERSION,
                 "manuscript": None,
-                "title": 'New project',
+                "title": self.title,
                 "resources": []
             }
 
             # Do a first commit
             self._save_yaml()
-            self.repo.index.add(self._yaml_file_path)
             self.repo.index.commit("Created project")
 
         # See if we can open the project
@@ -301,7 +300,6 @@ class Project(GObject.Object):
 
             self.is_opened = True
             logger.info(f"Loaded {len(self.resources)} resources")
-            logger.info(self.manuscript.cover)
 
     def save_to_disk(self):
         """Save all the content of the project to disk."""

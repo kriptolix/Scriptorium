@@ -12,8 +12,6 @@ template $ScrptWindow: Adw.ApplicationWindow {
 
   close-request => $on_close_request();
 
-  map => $on_map();
-
   ShortcutController {
     Shortcut {
       trigger: "<Ctrl>q";
