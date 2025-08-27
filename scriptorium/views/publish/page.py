@@ -123,7 +123,9 @@ class PublishPage(Adw.Bin):
         logger.info(f"Chapter selected: {widget}")
 
         # Get all the HTML content from the model
-        content = widget.part.get_content().decode()
+        content = widget.part.get_content()
+        if isinstance(content, bytes):
+            content = content.decode()
 
         # Save the CSS to disk to be able to load it
         style = Gio.File.new_for_uri(

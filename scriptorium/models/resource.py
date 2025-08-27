@@ -13,6 +13,9 @@ class Resource(GObject.Object):
     # The description of the resource
     synopsis = GObject.Property(type=str)
 
+    # A signal to inform that the resource has been deleted
+    deleted = GObject.Signal()
+
     def __init__(self, project, identifier: str):
         """Create a resource."""
         super().__init__()

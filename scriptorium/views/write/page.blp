@@ -61,73 +61,91 @@ template $WritePage: Adw.Bin {
         }
       };
 
-      content: Adw.ToolbarView {
-        hexpand: true;
-        extend-content-to-top-edge: false;
-        reveal-top-bars: true;
-        top-bar-style: raised_border;
-        bottom-bar-style: raised_border;
-        margin-end: 12;
-        margin-top: 12;
-        margin-start: 12;
-        margin-bottom: 12;
-        styles [
-          "card"
-        ]
+      content: Stack stack {
+        StackPage {
+          name: "editor";
 
-        ScrolledWindow content {
-          $ScrptTextView text_view {
-            vexpand: true;
+          child: Adw.ToolbarView {
             hexpand: true;
-          }
+            extend-content-to-top-edge: false;
+            reveal-top-bars: true;
+            top-bar-style: raised_border;
+            bottom-bar-style: raised_border;
+            margin-end: 12;
+            margin-top: 12;
+            margin-start: 12;
+            margin-bottom: 12;
+            styles [
+              "card"
+            ]
+
+            ScrolledWindow content {
+              $ScrptTextView text_view {
+                vexpand: true;
+                hexpand: true;
+              }
+            }
+
+            [bottom]
+            ActionBar action_bar {
+              revealed: true;
+              valign: end;
+
+              [start]
+              Box {
+                spacing: 3;
+
+                Button format_bold {
+                  icon-name: "format-text-bold-symbolic";
+                  clicked => $do_toggle_bold();
+                  tooltip-text: _("Set the selection to strong (Ctrl+b)");
+                }
+
+                Button format_italic {
+                  icon-name: "format-text-italic-symbolic";
+                  clicked => $do_toggle_italics();
+                  tooltip-text: _("Set the selection to emphasis (Ctrl+i)");
+                }
+
+                ToggleButton show_annotations {
+                  active: true;
+                  icon-name: "tools-check-spelling-symbolic";
+                  toggled => $on_show_annotations_toggled();
+                  tooltip-text: _("Show annotations");
+                }
+
+                ToggleButton show_sidebar_button {
+                  icon-name: "info-outline-symbolic";
+                  tooltip-text: _("Show information panel");
+                  active: bind split_view.show-sidebar no-sync-create; // no-sync-create
+                }
+              }
+
+              [end]
+              Box {
+                spacing: 3;
+
+                Label label_words {}
+
+                Label {
+                  label: _("words ");
+                }
+              }
+            }
+          };
         }
 
-        [bottom]
-        ActionBar action_bar {
-          revealed: true;
-          valign: end;
+        StackPage {
+          name: "select_scene";
 
-          [start]
-          Box {
-            spacing: 3;
-
-            Button format_bold {
-              icon-name: "format-text-bold-symbolic";
-              clicked => $do_toggle_bold();
-              tooltip-text: _("Set the selection to strong (Ctrl+b)");
-            }
-
-            Button format_italic {
-              icon-name: "format-text-italic-symbolic";
-              clicked => $do_toggle_italics();
-              tooltip-text: _("Set the selection to emphasis (Ctrl+i)");
-            }
-
-            ToggleButton show_annotations {
-              active: true;
-              icon-name: "tools-check-spelling-symbolic";
-              toggled => $on_show_annotations_toggled();
-              tooltip-text: _("Show annotations");
-            }
-
-            ToggleButton show_sidebar_button {
-              icon-name: "info-outline-symbolic";
-              tooltip-text: _("Show information panel");
-              active: bind split_view.show-sidebar no-sync-create; // no-sync-create
-            }
-          }
-
-          [end]
-          Box {
-            spacing: 3;
-
-            Label label_words {}
-
-            Label {
-              label: _("words ");
-            }
-          }
+          child: Adw.StatusPage {
+            icon-name: "edit-symbolic";
+            title: "No scene selected";
+            description: "Create or select a scene to write its content";
+          };
         }
+
+        visible-child-name: "select_scene";
       };
     };
   }

@@ -285,6 +285,9 @@ class Project(GObject.Object):
             self.repo.index.remove(data_file)
         self.repo.index.commit(f'Deleted resource "{resource.identifier}"')
 
+        # Finally emit the signal
+        resource.emit("deleted")
+
     def open(self):
         """Open the project by parsing the dict structure into objects."""
         logger.info(f"Open {self.title}")
