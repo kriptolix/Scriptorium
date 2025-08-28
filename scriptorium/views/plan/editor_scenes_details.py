@@ -1,4 +1,4 @@
-# editor_writing.py
+# views/plan/editor_scenes_details.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -35,7 +35,6 @@ class ScrptScenesDetailsPanel(Adw.NavigationPage):
 
     edit_title = Gtk.Template.Child()
     edit_synopsis = Gtk.Template.Child()
-    #open_editor = Gtk.Template.Child()
     identifier = Gtk.Template.Child()
     history_list = Gtk.Template.Child()
     entities_list = Gtk.Template.Child()
@@ -95,13 +94,6 @@ class ScrptScenesDetailsPanel(Adw.NavigationPage):
         message_entry.set_title(message.datetime)
         message_entry.set_subtitle(message.message)
         return message_entry
-
-    #@Gtk.Template.Callback()
-    #def on_open_editor_activated(self, _button):
-    #    """Open the scene editor."""
-    #    logger.info(f"Open text editor for {self._scene.title}")
-        #writer = Writer(self._scene)
-        #writer.present(self)
 
     @Gtk.Template.Callback()
     def on_delete_scene_activated(self, _button):

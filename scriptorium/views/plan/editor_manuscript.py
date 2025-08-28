@@ -1,4 +1,4 @@
-# views/editor_manuscript.py
+# views/plan/editor_manuscript.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -95,23 +95,6 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         message_entry.set_title(message.datetime)
         message_entry.set_subtitle(message.message)
         return message_entry
-
-    # @Gtk.Template.Callback()
-    # def on_delete_manuscript_activated(self, _button):
-    #     """Handle a request to delete the scene."""
-    #     title = self._editor.project.manuscript.title
-    #     logger.info(f"Delete {title}")
-    #     dialog = Adw.AlertDialog(
-    #         heading="Delete manuscript?",
-    #         body=f'This action can not be undone. Are you sure you want to delete the whole manuscript "{title}"',
-    #         close_response="cancel",
-    #     )
-    #     dialog.add_response("cancel", "Cancel")
-    #     dialog.add_response("delete", "Delete")
-
-    #     dialog.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
-
-    #     dialog.choose(self, None, self.on_delete_response_selected)
 
     def on_delete_response_selected(self, _dialog, task):
         """Handle the response to the confirmation dialog."""

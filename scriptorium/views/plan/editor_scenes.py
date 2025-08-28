@@ -1,4 +1,4 @@
-# editor_writing.py
+# views/plan/editor_scenes.py
 #
 # Copyright 2025 Christophe Gueret
 #
