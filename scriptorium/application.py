@@ -75,8 +75,15 @@ class ScriptoriumApplication(Adw.Application):
             developer_name='Christophe Guéret',
             version='0.3.0',
             website='https://github.com/cgueret/Scriptorium',
-            developers=['Christophe Guéret'],
+            developers=[
+                'Christophe Guéret <christophe.gueret@gmail.com>',
+                'Diego C Sampaio https://github.com/kriptolix'
+            ],
             copyright='© 2025 Christophe Guéret'
+        )
+        about.add_credit_section(
+            'Beta testing',
+            ['TheShadowOfHassen https://github.com/TheShadowOfHassen']
         )
         # Translators: Replace "translator-credits" with your name/username,
         # and optionally an email or URL.
