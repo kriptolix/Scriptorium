@@ -35,10 +35,15 @@ class WriteNavigation(Adw.Bin):
     factory = Gtk.Template.Child()
     list_view = Gtk.Template.Child()
 
+    add_menu = Gtk.Template.Child()
+
     drag_point = Graphene.Point()
     item_dragged = None
     accented_row = None
     place_holder = None
+
+    def __init__(self):
+        super().__init__(self)
 
     @Gtk.Template.Callback()
     def on_list_item_setup(self, _, list_item):
@@ -76,9 +81,7 @@ class WriteNavigation(Adw.Bin):
         roots = Gio.ListStore.new(Manuscript)
         roots.append(project.manuscript)
 
-        # TODO Add a special Manuscript root called "Unused scenes"
-        # It is populated with all the scenes that are not assigned
-
+        # Create a tree list model which recurse into content as applicable
         tree_list_model = Gtk.TreeListModel.new(
             roots, False, True,
             lambda item: item.content if isinstance(item, (Manuscript, Chapter)) else None
@@ -94,3 +97,22 @@ class WriteNavigation(Adw.Bin):
 
         # Assign this model to the navigation list view
         self.list_view.set_model(selection_model)
+
+        # Set the menu for the split button. We will trigger all the actions to
+        # append items at the end of the manuscript by default. Users who want
+        # to position items directly can use the context actions instead
+        manuscript_id = project.manuscript.identifier
+        menu = Gio.Menu()
+        menu.append(
+            label="Add new Scene",
+            detailed_action=f"editor.add_resource(('Scene', '{manuscript_id}'))"
+        )
+        menu.append(
+            label="Add new Chapter",
+            detailed_action=f"editor.add_resource(('Chapter', '{manuscript_id}'))"
+        )
+        self.add_menu.set_menu_model(menu)
+        self.add_menu.set_detailed_action_name(
+            f"editor.add_resource(('Scene', '{manuscript_id}'))"
+        )
+
