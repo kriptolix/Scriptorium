@@ -253,6 +253,15 @@ class Project(GObject.Object):
         # Remove the resource
         self._resources.remove(position)
 
+        # If the resource had content we re-parent it to the manuscript root
+        # in order to avoid creating orfan resources
+        if isinstance(resource, Chapter):
+            self.manuscript.content.splice(
+                self.manuscript.content.get_n_items(),
+                0, resource.content
+            )
+            resource.content.splice(0, resource.content.get_n_items(), [])
+
         # Look at the type of the resource we just removed
         resource_type = resource.__gtype__
 
@@ -279,14 +288,15 @@ class Project(GObject.Object):
             if data_file.exists():
                 data_file.unlink()
 
-        # Keep track of the deletion of this scene in the history
+        # Keep track of the deletion of this resource in the history
         self.save_to_disk()
         for data_file in resource.data_files:
             self.repo.index.remove(data_file)
         self.repo.index.commit(f'Deleted resource "{resource.identifier}"')
 
-        # Finally emit the signal
-        resource.emit("deleted")
+        # Emit the signal of the resource and eventually do additional
+        # actions
+        resource.process_deleted()
 
     def open(self):
         """Open the project by parsing the dict structure into objects."""
@@ -385,8 +395,10 @@ class Project(GObject.Object):
                     )
                 elif prop.value_type == Gio.ListStore.__gtype__:
                     for v in value:
-                        store = resource.get_property(prop.name)
-                        store.append(self.get_resource(v))
+                        r = self.get_resource(v)
+                        if r is not None:
+                            store = resource.get_property(prop.name)
+                            store.append(r)
 
         self._resources.append(resource)
         return resource

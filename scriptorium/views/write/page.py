@@ -109,9 +109,13 @@ class WritePage(Adw.Bin):
 
     def unselect_on_delete(self, _src):
         """Handle case when a selected resource is deleted."""
+        logger.info("Unselect on delete")
 
+        # Get the navigation model of the tree
         navigation_model = self.navigation.list_view.get_model()
-        navigation_model.unselect_all()
+
+        # Emit the signal to inform that the selection has changed
+        # TODO this should not be necessary, there must be a better approach
         navigation_model.emit("selection-changed", 0, 0)
 
     def on_selection_changed(self, selection, position, n_items):
