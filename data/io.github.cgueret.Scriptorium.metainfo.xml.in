@@ -45,28 +45,20 @@
 
   <screenshots>
     <screenshot type="default" xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/main_window.png</image>
-      <caption>Main window: all the facets of the book authoring process are accessible on the side navigation</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/739941bc737e790eee305f0c25424d4caddc742b/data/screenshots/plan.png</image>
+      <caption>Plan the content of the manuscript</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/overview.png</image>
-      <caption>Use the overview mode to drag and drop chapters and scenes</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/739941bc737e790eee305f0c25424d4caddc742b/data/screenshots/write.png</image>
+      <caption>Write and re-arrange the scenes</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/scenes_list.png</image>
-      <caption>Get a list of all your scenes, including those not included in the manuscript draft</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/739941bc737e790eee305f0c25424d4caddc742b/data/screenshots/write_dark.png</image>
+      <caption>Write and re-arrange the scenes (dark mode)</caption>
     </screenshot>
     <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/scene_details.png</image>
-      <caption>Use the scene details editor to assign story elements to them and jump onto editing the text</caption>
-    </screenshot>
-    <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/editor.png</image>
-      <caption>The text editor is minimal to let you focus on the content. Annotations can be hidden and re-styled in the preferences</caption>
-    </screenshot>
-    <screenshot xml:lang="en">
-      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/99acf3aee696297d1cd1a326e2d122ae45b83bf4/data/screenshots/editor_dark.png</image>
-      <caption>Scriptorium also supports dark mode for those writting sessions happening late at night</caption>
+      <image>https://raw.githubusercontent.com/cgueret/Scriptorium/739941bc737e790eee305f0c25424d4caddc742b/data/screenshots/publish.png</image>
+      <caption>Preview and publish the manuscript as an epub file</caption>
     </screenshot>
   </screenshots>
 
