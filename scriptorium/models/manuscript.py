@@ -20,8 +20,7 @@
 
 import logging
 
-from pathlib import Path
-from gi.repository import GObject, Gio, Gtk
+from gi.repository import GObject, Gio
 from .chapter import Chapter
 from .scene import Scene
 from .resource import Resource

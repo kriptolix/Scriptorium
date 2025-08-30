@@ -18,8 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-from gi.repository import Adw, Gtk, Gio, GObject, GLib
-from scriptorium.models import Project, Chapter
+from gi.repository import Adw, Gtk, Gio, GLib
 from scriptorium.globals import BASE
 from scriptorium.utils.publisher import Publisher
 from pathlib import Path

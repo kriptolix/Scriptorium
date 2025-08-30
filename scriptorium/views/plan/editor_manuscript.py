@@ -19,12 +19,10 @@
 """Editor panel to select and work on the scenes."""
 
 import logging
-from pathlib import Path
 
 from gi.repository import Adw, Gtk, GObject, Gio
 
 from scriptorium.globals import BASE
-from scriptorium.models import Image
 
 
 logger = logging.getLogger(__name__)
@@ -80,11 +78,11 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         menu = Gio.Menu()
         menu.append(
             label = "Import a new cover",
-            detailed_action = f"editor.import_cover"
+            detailed_action = "editor.import_cover"
         )
         menu.append(
             label = "Remove cover",
-            detailed_action = f"editor.set_cover('')"
+            detailed_action = "editor.set_cover('')"
         )
         self.cover_edit_button.set_menu_model(menu)
 

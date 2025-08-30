@@ -1,6 +1,3 @@
-from .page import PlanPage
-from .editor_entities import ScrptEntityPanel
-from .editor_entities_details import ScrptEntitiesDetailsPanel
 # views/plan/__init__.py
 #
 # Copyright 2025 Christophe Gueret
@@ -26,8 +23,9 @@ This is different from the writing and publishing views respectively focused
 on the content and the styling+export of the manuscript.
 """
 
-from .editor_scenes import ScrptScenesPanel
-from .editor_scenes_details import ScrptScenesDetailsPanel
+from .page import PlanPage
+from .editor_entities import ScrptEntityPanel
+from .editor_entities_details import ScrptEntitiesDetailsPanel
 
 __all__ = [
     "PlanPage",

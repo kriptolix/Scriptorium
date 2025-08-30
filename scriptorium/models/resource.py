@@ -18,7 +18,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from gi.repository import GObject, Gio
-from pathlib import Path
 
 import logging
 

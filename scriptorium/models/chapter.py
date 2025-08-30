@@ -19,14 +19,9 @@
 
 
 import logging
-import uuid
-from pathlib import Path
 
-import git
-import yaml
-from gi.repository import Gio, GObject, Gtk
+from gi.repository import Gio, GObject
 from .resource import Resource
-from .commit_message import CommitMessage
 from .scene import Scene
 
 logger = logging.getLogger(__name__)

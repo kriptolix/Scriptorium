@@ -19,8 +19,6 @@
 """Widget to display a list of cards."""
 
 from gi.repository import Gtk, GObject, Gdk, Gio, Adw
-from typing import Callable, Any
-from scriptorium.globals import BASE
 import logging
 
 logger = logging.getLogger(__name__)

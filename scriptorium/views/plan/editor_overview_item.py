@@ -19,7 +19,7 @@
 
 from gi.repository import Adw, Gtk
 from scriptorium.globals import BASE
-from scriptorium.models import Manuscript, Chapter, Scene, Resource
+from scriptorium.models import Manuscript, Chapter, Resource
 
 import logging
 

@@ -230,7 +230,7 @@ class ScrptLibraryView(Adw.NavigationPage):
         logger.info(f"Delete {project.title}")
 
         dialog = Adw.AlertDialog(
-            heading=f"Delete Project",
+            heading="Delete Project",
             body=f'This action can not be undone! Are you sure you want to delete "{project.title}" ?',
             close_response="cancel",
         )

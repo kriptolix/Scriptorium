@@ -1,4 +1,4 @@
-# text_view.py
+# widgets/text_view.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -103,7 +103,7 @@ class ScrptTextView(Gtk.TextView):
         """
         Handle a change in settings by updating the CSS
         """
-        logger.debug(f"Update styling")
+        logger.debug("Update styling")
 
         font = Pango.FontDescription.from_string(self.font_desc)
         style = f"""textview.text_editor {{

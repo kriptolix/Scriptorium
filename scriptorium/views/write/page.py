@@ -129,7 +129,7 @@ class WritePage(Adw.Bin):
             self.stack.set_visible_child_name("editor")
             scene.connect("deleted", self.unselect_on_delete)
         else:
-            logger.info(f"Nothing selected")
+            logger.info("Nothing selected")
             self.stack.set_visible_child_name("select_scene")
 
     def load_scene(self, scene: Scene):

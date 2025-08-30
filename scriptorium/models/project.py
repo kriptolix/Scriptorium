@@ -142,7 +142,7 @@ class Project(GObject.Object):
             self._save_yaml()
 
             # Commit the migration
-            self.repo.index.commit(f"Migrated project to new format")
+            self.repo.index.commit("Migrated project to new format")
 
             # The project can be opened now
             self.can_be_opened = True
