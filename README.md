@@ -1,20 +1,23 @@
 # Scriptorium
 
 <img src="data/icons/hicolor/scalable/apps/io.github.cgueret.Scriptorium.svg" width="128" height="128" />
-<p>Write short stories, novels, or anything in between in an IDE for books.</p>
+<p>Design and write manuscripts</p>
+
+Scriptorium is a text editor coupled with a planning tool and a publishing tool.
+
+The objective is to provide writers with a simple and complete environment to plan, write and publish e-books.
 
 Main features:
 
-  * Manage a set of scenes
-  * Edit the text of the scene in a focused writer tool
-  * Switch to dark mode or light mode if desired 
-  * Manage a set of chapters
-  * Assign scenes to chapter
-  * Manage a set of story elements (Places, characters, props, ...)
-  * Assign story elements to scenes
-  * Use the overview panel to re-organise the structure of the book
-  * Use the preview panel to see and adjust the look of the final book
-  * Versioning managed via Git on the back-end using YAML and HTML files
+  * **Plan** the list of scenes and story elements of the manuscript
+  * **Write** the content of the scenes with a text focused editor
+  * **Publish** your manuscript as an epub after previewing it
+
+In addition, some general features are:
+
+  * Dark mode
+  * Versioning of scenes managed via Git
+  * Back-end using plain text YAML and HTML files
 
 
 ## Installation
@@ -24,7 +27,7 @@ Main features:
 
 ## Screenshots
 
-![screenshot](data/screenshots/main_window.png)
+![screenshot](https://raw.githubusercontent.com/cgueret/Scriptorium/739941bc737e790eee305f0c25424d4caddc742b/data/screenshots/write.png)
 
 More screenshots are available in `data/screenshots`
 
