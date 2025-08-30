@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 SEND_PING_TIMEOUT_SECONDS = 1
 
 # TODO Replace pings with a passive check, update alive everytime asked
-# TODO Create a model "Annotation" and return instances of it, tagged with LanguageTool as author
 
 class LanguageTool(GObject.Object):
 

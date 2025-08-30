@@ -18,8 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-from gi.repository import Adw, Gtk, Gio, GObject, GLib
-from scriptorium.models import Project, Chapter
+from gi.repository import Adw, Gtk, Gio, GLib
 from scriptorium.globals import BASE
 from scriptorium.utils.publisher import Publisher
 from pathlib import Path
@@ -123,7 +122,9 @@ class PublishPage(Adw.Bin):
         logger.info(f"Chapter selected: {widget}")
 
         # Get all the HTML content from the model
-        content = widget.part.get_content().decode()
+        content = widget.part.get_content()
+        if isinstance(content, bytes):
+            content = content.decode()
 
         # Save the CSS to disk to be able to load it
         style = Gio.File.new_for_uri(

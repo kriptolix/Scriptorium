@@ -1,5 +1,27 @@
+# models/resource.py
+#
+# Copyright 2025 Christophe Gueret
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 from gi.repository import GObject, Gio
-from pathlib import Path
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Resource(GObject.Object):
     __gtype_name__ = "Resource"
@@ -12,6 +34,9 @@ class Resource(GObject.Object):
 
     # The description of the resource
     synopsis = GObject.Property(type=str)
+
+    # A signal to inform that the resource has been deleted
+    deleted = GObject.Signal()
 
     def __init__(self, project, identifier: str):
         """Create a resource."""
@@ -58,19 +83,14 @@ class Resource(GObject.Object):
 
         return output
 
+    def process_deleted(self):
+        """Handler used to perform actions needed post-deletion.
 
-    def to_dict(self):
-        """Serialize the content of the resource as JSON"""
-        return {
-            "a": "Resource",
-            "identifier": self.identifier,
-            "title": self.title,
-            "synopsis": self.synopsis,
-        }
+        By default only the signal "deleted" is emited but specific resources
+        might want to perform additional actions (such as deleting files on
+        disk)
+        """
 
-    def from_dict(self, data):
-        """Serialize the content of the resource as JSON"""
-        self.title = data["title"]
-        self.synopsis = data["synopsis"]
-
+        # We emit the signal
+        self.emit("deleted")
 

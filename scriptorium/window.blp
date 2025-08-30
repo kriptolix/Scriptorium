@@ -3,6 +3,8 @@ using Adw 1;
 
 template $ScrptWindow: Adw.ApplicationWindow {
   title: _("Scriptorium");
+  width-request: 820;
+  height-request: 575;
 
   content: Adw.ToastOverlay toast_overlay {
     child: Adw.NavigationView navigation {

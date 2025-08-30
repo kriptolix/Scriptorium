@@ -129,7 +129,7 @@ class Scene(Resource):
         self._history.remove_all()
         commits = self.project.repo.iter_commits(
             all=True,
-            paths=self._scene_content
+            paths=self._scene_content_path
         )
         for commit in commits:
             datetime = commit.committed_datetime

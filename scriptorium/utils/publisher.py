@@ -16,11 +16,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-from gi.repository import Gtk, Gio, GObject
+from gi.repository import Gio
 from scriptorium.models import Resource, Manuscript, Chapter, Scene
 from scriptorium.globals import BASE
 from ebooklib import epub
-from typing import List
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 import io

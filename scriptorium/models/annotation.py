@@ -19,7 +19,7 @@
 # TODO: Turn those into a Resource managed via the project to handle
 # sharing annotation across authors
 
-from gi.repository import GObject, Gio, Gtk
+from gi.repository import GObject, Gtk
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,4 @@
-# theme_selector.py
+# widgets/theme_selector.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -20,7 +20,7 @@
 # Code adapted from libpanel:
 # https://gitlab.gnome.org/GNOME/libpanel/-/blob/main/src/panel-theme-selector.c
 
-from gi.repository import Adw, Gtk, GObject, GLib
+from gi.repository import Adw, Gtk, GLib
 from scriptorium.globals import BASE
 
 import logging

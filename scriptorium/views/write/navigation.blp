@@ -3,19 +3,34 @@ using Adw 1;
 
 template $WriteNavigation: Adw.Bin {
   child: Adw.ToolbarView {
-    content: ScrolledWindow {
+    content: Box{
+      hexpand: true;
       vexpand: true;
+      orientation: vertical;
 
-      child: ListView list_view {
-        styles [
-          "navigation-sidebar"
-        ]
+      ScrolledWindow {
+        vexpand: true;
 
-        factory: SignalListItemFactory factory {
-          setup => $on_list_item_setup();
-          bind => $on_list_item_bind();
+        child: ListView list_view {
+          styles [
+            "navigation-sidebar"
+          ]
+
+          factory: SignalListItemFactory factory {
+            setup => $on_list_item_setup();
+            bind => $on_list_item_bind();
+          };
         };
-      };
+      }
+
+      Adw.SplitButton add_menu {
+        margin-end: 6;
+        margin-start: 6;
+        margin-bottom: 6;
+        margin-top: 3;
+
+        label: _("Add new Scene");
+      }
     };
   };
 }

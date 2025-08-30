@@ -22,7 +22,7 @@ from gi.repository import Gtk, Adw, GObject, Gdk, Gio, GLib
 from pathlib import Path
 
 # It seems Builder won't find the widgets unless we import them?
-from scriptorium.views import ScrptLibraryView, ScrptEditorView
+from scriptorium.views import ScrptEditorView
 
 from scriptorium.models import Project
 from scriptorium.globals import BASE

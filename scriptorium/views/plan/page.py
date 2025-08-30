@@ -135,17 +135,3 @@ class PlanPage(Adw.Bin):
 
         self.panels.replace([p])
 
-    def on_add_entity(self, _action, entity_type):
-        target_type = entity_type.get_string()
-        logger.info(f"Add {target_type}")
-        dialog = ScrptAddDialog(target_type)
-
-        def handle_response(dialog, task):
-            if dialog.choose_finish(task) == "add":
-                logger.info(f"Add entity {dialog.title}: {dialog.synopsis}")
-                self.manuscript.create_entity(
-                    target_type, dialog.title, dialog.synopsis
-                )
-
-        dialog.choose(self, None, handle_response)
-

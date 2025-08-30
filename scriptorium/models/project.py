@@ -1,3 +1,22 @@
+# models/project.py
+#
+# Copyright 2025 Christophe Gueret
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import logging
 from gi.repository import GObject, Gio, Gtk
 import git
@@ -11,7 +30,7 @@ from .chapter import Chapter
 from .scene import Scene
 from .entity import Entity
 from .manuscript import Manuscript
-from .link import Link
+
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +142,7 @@ class Project(GObject.Object):
             self._save_yaml()
 
             # Commit the migration
-            self.repo.index.commit(f"Migrated project to new format")
+            self.repo.index.commit("Migrated project to new format")
 
             # The project can be opened now
             self.can_be_opened = True
@@ -212,15 +231,6 @@ class Project(GObject.Object):
         )
         return model
 
-    @GObject.Property(type=Gio.ListStore)
-    def links(self):
-        """The scenes of the manuscript."""
-        model = Gtk.FilterListModel(
-            model=self._resources,
-            filter=Gtk.CustomFilter.new(lambda x: isinstance(x, Link))
-        )
-        return model
-
     @property
     def identifier(self):
         """Return the project identifier."""
@@ -253,6 +263,15 @@ class Project(GObject.Object):
         # Remove the resource
         self._resources.remove(position)
 
+        # If the resource had content we re-parent it to the manuscript root
+        # in order to avoid creating orfan resources
+        if isinstance(resource, Chapter):
+            self.manuscript.content.splice(
+                self.manuscript.content.get_n_items(),
+                0, resource.content
+            )
+            resource.content.splice(0, resource.content.get_n_items(), [])
+
         # Look at the type of the resource we just removed
         resource_type = resource.__gtype__
 
@@ -279,11 +298,15 @@ class Project(GObject.Object):
             if data_file.exists():
                 data_file.unlink()
 
-        # Keep track of the deletion of this scene in the history
+        # Keep track of the deletion of this resource in the history
         self.save_to_disk()
         for data_file in resource.data_files:
             self.repo.index.remove(data_file)
         self.repo.index.commit(f'Deleted resource "{resource.identifier}"')
+
+        # Emit the signal of the resource and eventually do additional
+        # actions
+        resource.process_deleted()
 
     def open(self):
         """Open the project by parsing the dict structure into objects."""
@@ -382,8 +405,10 @@ class Project(GObject.Object):
                     )
                 elif prop.value_type == Gio.ListStore.__gtype__:
                     for v in value:
-                        store = resource.get_property(prop.name)
-                        store.append(self.get_resource(v))
+                        r = self.get_resource(v)
+                        if r is not None:
+                            store = resource.get_property(prop.name)
+                            store.append(r)
 
         self._resources.append(resource)
         return resource

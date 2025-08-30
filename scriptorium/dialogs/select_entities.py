@@ -17,9 +17,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Dialog to select scenes in Scriptorium."""
-from gi.repository import Adw, GObject, Gtk
+from gi.repository import Adw, Gtk
 from scriptorium.globals import BASE
-from scriptorium.widgets import SceneCard
 
 import logging
 

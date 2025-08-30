@@ -25,12 +25,11 @@ from .scene import Scene
 from .commit_message import CommitMessage
 from .entity import Entity
 from .project import Project
-from .link import Link
 from .annotation import Annotation
 from .resource import Resource
 from .image import Image
 
 __all__ = [
     'Library', 'Manuscript', 'Chapter', 'Scene', 'CommitMessage',
-    'Entity', 'Link', 'Project', 'Annotation', 'Resource', 'Image'
+    'Entity', 'Project', 'Annotation', 'Resource', 'Image'
 ]

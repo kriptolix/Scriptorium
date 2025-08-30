@@ -23,11 +23,12 @@ from pathlib import Path
 from scriptorium.globals import BASE
 from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.widgets import ThemeSelector
-from scriptorium.models import Project, Scene, Chapter, Image
+from scriptorium.models import Project, Image
 
-import scriptorium.views.write
-import scriptorium.views.publish
-import scriptorium.views.plan
+# Import those to register them in Builder
+import scriptorium.views.write   # noqa: F401
+import scriptorium.views.publish # noqa: F401
+import scriptorium.views.plan    # noqa: F401
 
 import logging
 

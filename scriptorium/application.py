@@ -16,8 +16,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-import sys
-from scriptorium.widgets import MultiLineEntryRow
 from scriptorium.dialogs import ScrptPreferencesDialog
 from gi.repository import Gio, Adw, GLib, GObject
 from .window import ScrptWindow
@@ -73,10 +71,17 @@ class ScriptoriumApplication(Adw.Application):
             application_name='Scriptorium',
             application_icon='io.github.cgueret.Scriptorium',
             developer_name='Christophe Guéret',
-            version='0.3.0',
+            version='1.0.0',
             website='https://github.com/cgueret/Scriptorium',
-            developers=['Christophe Guéret'],
+            developers=[
+                'Christophe Guéret <christophe.gueret@gmail.com>',
+                'Diego C Sampaio https://github.com/kriptolix'
+            ],
             copyright='© 2025 Christophe Guéret'
+        )
+        about.add_credit_section(
+            'Beta testing',
+            ['TheShadowOfHassen https://github.com/TheShadowOfHassen']
         )
         # Translators: Replace "translator-credits" with your name/username,
         # and optionally an email or URL.

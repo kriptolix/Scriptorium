@@ -1,4 +1,4 @@
-# plotting_overview.py
+# views/plan/edit_overview.py
 #
 # Copyright 2025 Christophe Gueret
 #

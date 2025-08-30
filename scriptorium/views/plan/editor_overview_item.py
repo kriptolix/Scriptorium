@@ -1,4 +1,4 @@
-# plotting_overview.py
+# views/plan/edit_overview_item.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -19,7 +19,7 @@
 
 from gi.repository import Adw, Gtk
 from scriptorium.globals import BASE
-from scriptorium.models import Manuscript, Chapter, Scene, Resource
+from scriptorium.models import Manuscript, Chapter, Resource
 
 import logging
 
@@ -36,7 +36,8 @@ class ScrptOverviewPanelItem(Adw.Bin):
     expander = Gtk.Template.Child()
 
     def bind_to_resource(self, resource: Resource):
-        """Connect this item to an instance of Resource"""
+        """Connect this item to an instance of Resource."""
+
         # Keep a pointer to the resource
         self._resource = resource
 
@@ -74,4 +75,4 @@ class ScrptOverviewPanelItem(Adw.Bin):
         resource = list_item.get_item()
         item_widget = list_item.get_child()
         item_widget.bind_to_resource(resource)
-        
+

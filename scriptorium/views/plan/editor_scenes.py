@@ -1,4 +1,4 @@
-# editor_writing.py
+# views/plan/editor_scenes.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -71,7 +71,10 @@ class ScrptScenesPanel(Adw.NavigationPage):
             response = dialog.choose_finish(task)
             if response == "add":
                 logger.info(f"Add scene {dialog.title}: {dialog.synopsis}")
-                self.editor.project.create_resource(Scene, dialog.title, dialog.synopsis)
+                resource = self._editor.project.create_resource(
+                    Scene, dialog.title, dialog.synopsis
+                )
+                self._editor.project.manuscript.add_resource(resource)
 
         dialog = ScrptAddDialog("scene")
         dialog.choose(self, None, handle_response)

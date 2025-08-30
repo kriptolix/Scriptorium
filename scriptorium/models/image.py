@@ -1,5 +1,5 @@
 import logging
-from gi.repository import Gtk, GObject, Gio, Gdk
+from gi.repository import GObject, Gio, Gdk
 from .resource import Resource
 from pathlib import Path
 import shutil

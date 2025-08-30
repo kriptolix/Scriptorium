@@ -18,7 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """An entity is a story element (person, place, prop, ...)"""
 
-from gi.repository import GObject, Gio
+from gi.repository import GObject
 from .resource import Resource
 
 import logging
@@ -53,20 +53,4 @@ class Entity(Resource):
 
         # Remove the entity from the manuscript
         self._manuscript.entities.remove(position)
-
-    def to_dict(self):
-        return {
-            "a": "Entity",
-            "title": self.title,
-            "synopsis": self.synopsis,
-            "identifier": self.identifier,
-            "category": self.category,
-        }
-
-    def from_dict(self, data):
-        self.title = data["title"]
-        self.synopsis = data["synopsis"]
-        self.category = data["category"]
-        return self
-
 

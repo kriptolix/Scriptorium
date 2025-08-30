@@ -1,4 +1,4 @@
-# views/editor_manuscript.py
+# views/plan/editor_manuscript.py
 #
 # Copyright 2025 Christophe Gueret
 #
@@ -19,12 +19,10 @@
 """Editor panel to select and work on the scenes."""
 
 import logging
-from pathlib import Path
 
-from gi.repository import Adw, Gtk, GObject, Gio, GLib
+from gi.repository import Adw, Gtk, GObject, Gio
 
 from scriptorium.globals import BASE
-from scriptorium.models import Image
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +31,7 @@ logger = logging.getLogger(__name__)
 @Gtk.Template(resource_path=f"{BASE}/views/plan/editor_manuscript.ui")
 class ScrptManuscriptPanel(Adw.NavigationPage):
     __gtype_name__ = "ScrptManuscriptPanel"
-    __title__ = "Manuscript details"
+    __title__ = "Description"
     __icon_name__ = "dictionary-symbolic"
     __description__ = "Edit the information about the manuscript"
 
@@ -80,11 +78,11 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         menu = Gio.Menu()
         menu.append(
             label = "Import a new cover",
-            detailed_action = f"editor.import_cover"
+            detailed_action = "editor.import_cover"
         )
         menu.append(
             label = "Remove cover",
-            detailed_action = f"editor.set_cover('')"
+            detailed_action = "editor.set_cover('')"
         )
         self.cover_edit_button.set_menu_model(menu)
 
@@ -95,23 +93,6 @@ class ScrptManuscriptPanel(Adw.NavigationPage):
         message_entry.set_title(message.datetime)
         message_entry.set_subtitle(message.message)
         return message_entry
-
-    # @Gtk.Template.Callback()
-    # def on_delete_manuscript_activated(self, _button):
-    #     """Handle a request to delete the scene."""
-    #     title = self._editor.project.manuscript.title
-    #     logger.info(f"Delete {title}")
-    #     dialog = Adw.AlertDialog(
-    #         heading="Delete manuscript?",
-    #         body=f'This action can not be undone. Are you sure you want to delete the whole manuscript "{title}"',
-    #         close_response="cancel",
-    #     )
-    #     dialog.add_response("cancel", "Cancel")
-    #     dialog.add_response("delete", "Delete")
-
-    #     dialog.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
-
-    #     dialog.choose(self, None, self.on_delete_response_selected)
 
     def on_delete_response_selected(self, _dialog, task):
         """Handle the response to the confirmation dialog."""

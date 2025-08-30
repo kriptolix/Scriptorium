@@ -46,6 +46,7 @@ class WritePage(Adw.Bin):
     navigation = Gtk.Template.Child()
     edit_title = Gtk.Template.Child()
     edit_synopsis = Gtk.Template.Child()
+    stack = Gtk.Template.Child()
 
     active_scene = GObject.Property(type=Scene)
 
@@ -106,14 +107,30 @@ class WritePage(Adw.Bin):
         navigation_model = self.navigation.list_view.get_model()
         navigation_model.connect("selection-changed", self.on_selection_changed)
 
+    def unselect_on_delete(self, _src):
+        """Handle case when a selected resource is deleted."""
+        logger.info("Unselect on delete")
+
+        # Get the navigation model of the tree
+        navigation_model = self.navigation.list_view.get_model()
+
+        # Emit the signal to inform that the selection has changed
+        # TODO this should not be necessary, there must be a better approach
+        navigation_model.emit("selection-changed", 0, 0)
+
     def on_selection_changed(self, selection, position, n_items):
         """Called when a scene is selected in the navigation."""
-        # Get the select manuscript and unselect it
+        # Get the selected scene
         selected_item = selection.get_selected_item()
         if selected_item is not None:
             scene = selected_item.get_item()
             logger.info(f"Selected scene {scene.title}")
             self.load_scene(scene)
+            self.stack.set_visible_child_name("editor")
+            scene.connect("deleted", self.unselect_on_delete)
+        else:
+            logger.info("Nothing selected")
+            self.stack.set_visible_child_name("select_scene")
 
     def load_scene(self, scene: Scene):
         """Load a new scene into the text editor."""
