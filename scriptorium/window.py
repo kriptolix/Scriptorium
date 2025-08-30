@@ -84,9 +84,6 @@ class ScrptWindow(Adw.ApplicationWindow):
             Gio.SettingsBindFlags.DEFAULT
         )
 
-        # Used to make screenshots
-        #self.set_requested_width(800)
-
         # Create a property for last open project and connect that to a setting
         # Notify for changes here; check if correct version before pushing
         # if all fine push to editor

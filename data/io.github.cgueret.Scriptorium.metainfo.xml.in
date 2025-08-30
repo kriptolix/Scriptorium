@@ -63,6 +63,19 @@
   </screenshots>
 
   <releases>
+    <release version="1.0.0" date="2025-08-30">
+      <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v1.0.0</url>
+      <description translate="no">
+        <p>Release description</p>
+        <ul>
+          <li>Re-design of the interface around 3 main facets (Plan/Write/Publish)</li>
+          <li>Plan: addition of a tool to set the book cover</li>
+          <li>Plan: addition of a gallery tool to manage images</li>
+          <li>Write: right click on a suggestion to see its content</li>
+          <li>Publish: export the manuscript as an epub file</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.0" date="2025-07-04">
       <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v0.3.0</url>
       <description translate="no">
