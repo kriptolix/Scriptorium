@@ -7,19 +7,20 @@
   <name>Scriptorium</name>
   <summary>Design and write manuscripts</summary>
   <description>
-    <p>Scriptorium is a text editor coupled with a plotting tool and a formatting tool. The objective is to provide writers with a simple and complete environment to plan, plot, write and edit e-books.</p>
-    <p>Main features:</p>
+    <p>Scriptorium is a text editor coupled with a planning tool and a publishing tool.
+    The objective is to provide writers with a simple and complete environment to plan, write and publish e-books.
+    </p>
+    <p>Scriptorium features are organised around three facets:</p>
     <ul>
-      <li>Manage a set of scenes</li>
-      <li>Edit the text of the scene in a focused writer tool</li>
-      <li>Switch to dark mode or light mode if desired</li>
-      <li>Manage a set of chapters</li>
-      <li>Assign scenes to chapter</li>
-      <li>Manage a set of story elements (Places, characters, props, ...)</li>
-      <li>Assign story elements to scenes</li>
-      <li>Use the overview panel to re-organise the structure of the book</li>
-      <li>Use the preview panel to see and adjust the look of the final book</li>
-      <li>Versioning managed via Git on the back-end using YAML and HTML files</li>
+      <li><b>Plan</b> the list of scenes and story elements of the manuscript.</li>
+      <li><b>Write</b> the content of the scenes with a text focused editor.</li>
+      <li><b>Publish</b> your manuscript as an epub after previewing it.</li>
+    </ul>
+    <p>In addition, some general features are:</p>
+    <ul>
+      <li>Dark mode</li>
+      <li>Versioning of scenes managed via Git</li>
+      <li>Back-end using plain text YAML and HTML files</li>
     </ul>
   </description>
 
