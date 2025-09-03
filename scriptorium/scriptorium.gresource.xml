@@ -38,6 +38,7 @@
     <file preprocess="xml-stripblanks">views/plan/editor_overview_item.ui</file>
     <file preprocess="xml-stripblanks">views/plan/editor_images.ui</file>
     <file preprocess="xml-stripblanks">views/plan/editor_images_item.ui</file>
+    <file preprocess="xml-stripblanks">views/plan/editor_references_grid.ui</file>
 
     <!-- Write -->
     <file preprocess="xml-stripblanks">views/write/page.ui</file>

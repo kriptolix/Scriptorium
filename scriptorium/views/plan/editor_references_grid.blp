@@ -1,0 +1,43 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptReferencePanel: Adw.NavigationPage {
+  title: "Scenes";
+
+  child: Adw.NavigationView navigation {
+    Adw.NavigationPage {
+      title: "Scenes";
+      tag: "select_scene";
+
+      child:Adw.ToolbarView {
+        [bottom]
+        Adw.HeaderBar {
+          show-title: false;
+          show-back-button: false;
+          show-end-title-buttons: false;
+        }
+
+        content: ScrolledWindow {
+          vexpand: true;
+          child: Box {
+          orientation: vertical;
+          
+          Label {
+            label: "Research and Documentation";             
+          }
+          
+          Label {
+            label: "This is the list of your project references";
+          }
+          
+          GridView _grid{         
+          
+          
+          }
+          
+          };
+        };
+      };
+    }
+  };
+}

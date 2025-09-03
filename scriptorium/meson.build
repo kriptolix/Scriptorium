@@ -56,6 +56,7 @@ blueprints = custom_target(
 		'views/plan/editor_overview_item.blp',
 		'views/plan/editor_images.blp',
 		'views/plan/editor_images_item.blp',
+		'views/plan/editor_references_grid.blp',
 
 		'views/write/page.blp',
 		'views/write/navigation.blp',

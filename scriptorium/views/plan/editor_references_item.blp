@@ -1,0 +1,62 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ScrptReferenceItem: Box {
+  spacing: 10;
+
+  styles [
+    "view","frame"
+  ]
+
+  orientation: vertical;
+
+  Text {
+    margin-start: 10;
+    margin-end: 10;
+    max-length: 22;
+    hexpand: true;
+    xalign: 0.5;
+
+    styles [
+      "title-1",
+      "view",
+    ]
+  }  
+
+  Overlay {
+    child: Picture _picture {
+      halign: center;
+      valign: center;
+      can-shrink: true;
+      content-fit: contain;
+    };
+
+    [overlay]
+    Button {
+      label: _("E");
+      vexpand: false;
+      hexpand: false;
+      valign: start;
+      halign: end;
+
+      styles [
+        "flat",
+        "circular",
+      ]
+    }
+  }
+
+  ScrolledWindow {
+    hscrollbar-policy: never;
+    height-request: 120;
+    width-request: 300;
+
+    child: TextView {
+      left-margin: 20;
+      right-margin: 20;
+      bottom-margin: 5;
+      top-margin: 10;
+      wrap-mode: word;
+    };
+  }
+}
