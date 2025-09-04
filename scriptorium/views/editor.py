@@ -25,6 +25,10 @@ from scriptorium.dialogs import ScrptAddDialog
 from scriptorium.widgets import ThemeSelector
 from scriptorium.models import Project, Image
 
+# This is needed to import the Scene or Chapter when creating an object
+from scriptorium.models import Scene # noqa: F401
+from scriptorium.models import Chapter # noqa: F401
+
 # Import those to register them in Builder
 import scriptorium.views.write   # noqa: F401
 import scriptorium.views.publish # noqa: F401
