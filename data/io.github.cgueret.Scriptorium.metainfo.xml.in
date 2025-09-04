@@ -63,6 +63,15 @@
   </screenshots>
 
   <releases>
+    <release version="1.0.1" date="2025-09-04">
+      <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v1.0.1</url>
+      <description translate="no">
+        <p>Release description</p>
+        <ul>
+          <li>Fix regression in Write</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2025-08-30">
       <url type="details">https://github.com/cgueret/Scriptorium/releases/tag/v1.0.0</url>
       <description translate="no">
